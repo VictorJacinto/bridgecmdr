@@ -88,7 +88,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     import switches     from "../../../controllers/switches";
     import ties         from "../../../controllers/ties";
     import * as helpers from "../../../foundation/helpers";
-    import Driver       from "../../../foundation/system/driver";
+    import Driver       from "../../system/driver";
     import Source       from "../../../models/source";
     import Switch       from "../../../models/switch";
     import Tie          from "../../../models/tie";

@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Tie        from "../models/tie";
 import Controller from "../foundation/controller";
+import Tie        from "../models/tie";
 
 class TieController extends Controller<Tie> {
     public constructor() {

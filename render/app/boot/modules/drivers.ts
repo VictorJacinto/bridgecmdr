@@ -16,12 +16,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import axios from "axios";
+// The main driver module.
+import Driver from "../../system/driver";
 
-// eslint-disable-next-line dot-notation
-axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
-// eslint-disable-next-line dot-notation
-axios.defaults.headers.common["Accept"] = "application/json";
+// The available drivers.
+import ExtronMatrixSwitch         from "../../system/drivers/extron-matrix-switch";
+import SonySerialMonitor          from "../../system/drivers/sony-serial--monitor";
+import TeslaSmartMatrixSwitch     from "../../system/drivers/tesla-smart-matrix-switch";
+
+// Now we register our known drivers.
+Driver.register(ExtronMatrixSwitch);
+Driver.register(SonySerialMonitor);
+Driver.register(TeslaSmartMatrixSwitch);
 
 // This module is resolved once it executes.
 export default Promise.resolve();

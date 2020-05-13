@@ -412,11 +412,9 @@ class Packer {
         const html = String(this[myHtml]);
         if (html.length > 0) {
             plugins.push(new HtmlWebpackPlugin({
-                title:    productName,
                 filename: path.resolve(packerConfigPath, outdir, "index.html"),
                 template: path.resolve(packerConfigPath, html),
                 minify:   isProd,
-                // TODO: favicon, meta
             }));
         }
 

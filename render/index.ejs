@@ -21,12 +21,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><%= htmlWebpackPlugin.options["title"] %></title>
+    <title><%= require("../package.json").productName %></title>
 </head>
 <body>
-    <!--
-        TODO: Electron Packager with Electron Installer Debian.
-    -->
     <div id="root"></div>
 </body>
 </html>

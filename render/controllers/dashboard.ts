@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import * as helpers from "../foundation/helpers";
 import registry     from "../foundation/system/registry";
 import Source       from "../foundation/system/source";
-import * as helpers from "../foundation/helpers";
 
 export interface ButtonStyles {
     "white":     boolean;

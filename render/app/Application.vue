@@ -51,21 +51,21 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
     import Vue                       from "vue";
     import mixins                    from "vue-typed-mixins";
-    import SettingsPage              from "./pages/SettingsPage.vue";
-    import vuetify                   from "../config/vuetify";
-    import { Button, makeDashboard } from "../controllers/dashboard";
-    import withRefs                  from "../foundation/concerns/with-refs";
-    import * as helpers              from "../foundation/helpers";
-    import registry                  from "../foundation/system/registry";
-    import Switch                    from "../foundation/system/switch";
-    import doFirstRun                from "../support/first-run";
+    import packageInfo from "../../package.json";
     import {
         AlertModal,
         AlertModalOptions,
         ConfirmModal,
         ConfirmModalOptions,
     } from "../components/modals";
-    import packageInfo from "../../package.json";
+    import vuetify                   from "../config/vuetify";
+    import { Button, makeDashboard } from "../controllers/dashboard";
+    import withRefs                  from "../foundation/concerns/with-refs";
+    import * as helpers              from "../foundation/helpers";
+    import registry                  from "../foundation/system/registry";
+    import Switch                    from "../foundation/system/switch";
+    import SettingsPage              from "./pages/SettingsPage.vue";
+    import doFirstRun                from "./support/first-run";
 
     type References = {
         alert:   AlertModal;
@@ -114,7 +114,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
             this.$nextTick(() => doFirstRun(this));
 
             // Load and create the buttons.
-            this.$nextTick(async () => { this.buttons = await makeDashboard(); });
+            this.$nextTick(async () => { this.buttons = await makeDashboard() });
         },
         vuetify,
     });

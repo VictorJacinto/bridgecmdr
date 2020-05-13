@@ -17,11 +17,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import _        from "lodash";
-import Driver   from "./driver";
+import Driver   from "../../app/system/driver";
 import Source   from "./source";
 import Switch   from "./switch";
 import Tie      from "./tie";
-import database from "../../boot/modules/database";
+import database from "../../app/boot/modules/database";
 import sources  from "../../controllers/sources";
 import switches from "../../controllers/switches";
 import ties     from "../../controllers/ties";

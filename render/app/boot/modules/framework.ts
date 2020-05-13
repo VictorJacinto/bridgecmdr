@@ -60,9 +60,9 @@ configure({ mode: "lazy" });
  | ---------------------------------------------------------------------------------------------------------------------
 */
 
-import AlertModal   from "../../components/modals/alert.vue";
-import ConfirmModal from "../../components/modals/confirm.vue";
-import NumberInput  from "../../components/NumberInput";
+import AlertModal   from "../../../components/modals/alert.vue";
+import ConfirmModal from "../../../components/modals/confirm.vue";
+import NumberInput  from "../../../components/NumberInput";
 
 // Modals
 Vue.component("AlertModal",   AlertModal);
