@@ -17,14 +17,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import _        from "lodash";
-import Driver   from "../../app/system/driver";
-import Source   from "./source";
-import Switch   from "./switch";
-import Tie      from "./tie";
 import database from "../../app/boot/modules/database";
+import Driver   from "../../app/system/driver";
 import sources  from "../../controllers/sources";
 import switches from "../../controllers/switches";
 import ties     from "../../controllers/ties";
+import Source   from "./source";
+import Switch   from "./switch";
+import Tie      from "./tie";
 
 async function loadRegistry(): Promise<void> {
     await database;

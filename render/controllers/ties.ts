@@ -30,7 +30,7 @@ class TieController extends Controller<Tie> {
     public forSwitch(id: string): Promise<Tie[]> {
         return this.store.query(async function (db: PouchDB.Database<Tie>): Promise<Tie[]> {
             const response = await db.find({
-                selector: { switchid: id },
+                selector: { switchId: id },
             });
 
             return response.docs;

@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+// eslint-disable-next-line import/default,import/order
 import unhandled from "electron-unhandled";
 unhandled();
 
@@ -67,9 +68,9 @@ process.on("SIGTERM", () => {
 app.on("ready", (): void => {
     if (process.env.NODE_ENV !== "production") {
         installExtension(VUEJS_DEVTOOLS).
-            then(name => { console.log(`Installing ${name}`); }).
-            then(() => { createWindow(); }).
-            catch(error => { console.error(error); });
+            then(name => { console.log(`Installing ${name}`) }).
+            then(() => { createWindow() }).
+            catch(error => { console.error(error) });
     } else {
         createWindow();
     }

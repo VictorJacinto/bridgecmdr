@@ -84,14 +84,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
     import _            from "lodash";
     import Vue          from "vue";
-    import TieEditor    from "./TieEditor.vue";
     import switches     from "../../../controllers/switches";
     import ties         from "../../../controllers/ties";
     import * as helpers from "../../../foundation/helpers";
-    import Driver       from "../../system/driver";
     import Source       from "../../../models/source";
     import Switch       from "../../../models/switch";
     import Tie          from "../../../models/tie";
+    import Driver       from "../../system/driver";
+    import TieEditor    from "./TieEditor.vue";
 
     const EMPTY_SOURCE: Source = {
         _id:   "",

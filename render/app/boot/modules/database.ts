@@ -24,8 +24,8 @@ import Find    from "pouchdb-find";
 PouchDB.
     plugin(Find);
 
-import switches from "../../../controllers/switches";
 import sources from "../../../controllers/sources";
+import switches from "../../../controllers/switches";
 import ties from "../../../controllers/ties";
 
 async function databaseBootUp(): Promise<void> {

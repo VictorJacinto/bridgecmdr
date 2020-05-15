@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { promises as fs } from "fs";
 import path from "path";
 import Vue from "vue";
+// eslint-disable-next-line import/default
 import xdgBasedir from "xdg-basedir";
 
 export default async function doFirstRun(parent: Vue): Promise<void> {
@@ -42,7 +43,7 @@ export default async function doFirstRun(parent: Vue): Promise<void> {
                 });
 
                 if (createAutoStart) {
-                    const needsExecProxy = (/electron$/u).test(process.execPath);
+                    const needsExecProxy = process.execPath.endsWith("electron");
                     const exec = needsExecProxy ?
                         path.resolve(window.__dirname, "../../bridgecmdr") :
                         "bridgecmdr";

@@ -72,14 +72,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     import _                                                from "lodash";
     import { ValidationObserver }                           from "vee-validate";
     import mixins                                           from "vue-typed-mixins";
-    import ties                                             from "../../../controllers/ties";
     import switches                                         from "../../../controllers/switches";
+    import ties                                             from "../../../controllers/ties";
     import DoesValidation                                   from "../../../foundation/concerns/does-valiadtion";
     import withRefs                                         from "../../../foundation/concerns/with-refs";
-    import Driver, { DriverCapabilities, DriverDescriptor } from "../../system/driver";
     import Source                                           from "../../../models/source";
     import Switch                                           from "../../../models/switch";
     import Tie                                              from "../../../models/tie";
+    import Driver, { DriverCapabilities, DriverDescriptor } from "../../system/driver";
 
     type Validator  = InstanceType<typeof ValidationObserver>;
     type References = {

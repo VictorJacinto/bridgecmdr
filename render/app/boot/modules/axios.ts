@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import axios from "render/app/boot/modules/axios";
+import axios from "axios";
 
 // eslint-disable-next-line dot-notation
 axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";

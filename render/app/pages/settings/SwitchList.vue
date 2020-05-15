@@ -51,9 +51,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
     import Vue          from "vue";
-    import SwitchEditor from "./SwitchEditor.vue";
     import switches     from "../../../controllers/switches";
     import Switch       from "../../../models/switch";
+    import SwitchEditor from "./SwitchEditor.vue";
 
     export default Vue.extend({
         name:       "SwitchList",

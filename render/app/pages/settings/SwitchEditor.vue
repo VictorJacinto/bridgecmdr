@@ -82,7 +82,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     import switches               from "../../../controllers/switches";
     import DoesValidation         from "../../../foundation/concerns/does-valiadtion";
     import withRefs               from "../../../foundation/concerns/with-refs";
-    import Driver                 from "../../system/driver";
     import Switch                 from "../../../models/switch";
     import {
         DeviceLocation,
@@ -91,6 +90,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
         rebuildPath,
         SerialDevice,
     } from "../../support/switch-editing";
+    import Driver                 from "../../system/driver";
 
     type Validator  = InstanceType<typeof ValidationObserver>;
     type References = {

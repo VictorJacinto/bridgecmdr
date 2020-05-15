@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Driver, { DriverCapabilities, DriverDescriptor }         from "../driver";
 import { openStream, SerialBits, SerialParity, SerialStopBits } from "../../../foundation/streams/command";
+import Driver, { DriverCapabilities, DriverDescriptor }         from "../driver";
 import { Address, AddressKind, Command, CommandBlock }          from "./support/sony-bvm-support";
 
 const capabilities = DriverCapabilities.NONE;

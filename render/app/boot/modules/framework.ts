@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 /*
 BridgeCmdr - A/V switch and monitor controller
 Copyright (C) 2019-2020 Matthew Holder
@@ -40,9 +41,9 @@ Vue.use(Vuetify);
  | ---------------------------------------------------------------------------------------------------------------------
 */
 
-import { configure, extend, ValidationObserver, ValidationProvider } from "vee-validate";
-import * as rules                                                    from "vee-validate/dist/rules";
 import en                                                            from "vee-validate/dist/locale/en.json";
+import * as rules                                                    from "vee-validate/dist/rules";
+import { configure, extend, ValidationObserver, ValidationProvider } from "vee-validate";
 
 Vue.component("ValidationProvider", ValidationProvider);
 Vue.component("ValidationObserver", ValidationObserver);
@@ -60,9 +61,9 @@ configure({ mode: "lazy" });
  | ---------------------------------------------------------------------------------------------------------------------
 */
 
+import NumberInput  from "../../../components/NumberInput";
 import AlertModal   from "../../../components/modals/alert.vue";
 import ConfirmModal from "../../../components/modals/confirm.vue";
-import NumberInput  from "../../../components/NumberInput";
 
 // Modals
 Vue.component("AlertModal",   AlertModal);

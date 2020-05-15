@@ -18,9 +18,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import _ from "lodash";
 import net from "net";
 import stream from "stream";
+import _ from "lodash";
 import SerialPort from "serialport";
 
 export interface CommandStream {
@@ -54,9 +54,9 @@ abstract class AbstractStream<Stream extends stream.Duplex> implements CommandSt
     public write(data: string|Buffer): Promise<void> {
         return new Promise((resolve, reject) => {
             const ctx = {
-                then:  () => { resolve(); ctx.done(); },
-                error: (error: Error) => { reject(error); ctx.done(); },
-                done:  () => { this.connection.off("error", ctx.error); },
+                then:  () => { resolve(); ctx.done() },
+                error: (error: Error) => { reject(error); ctx.done() },
+                done:  () => { this.connection.off("error", ctx.error) },
             };
 
             this.connection.once("error", ctx.error);
@@ -76,7 +76,7 @@ class SerialStream extends AbstractStream<SerialPort> {
 
     public async close(): Promise<void> {
         await new Promise((resolve, reject) => {
-            this.connection.close(error => { error ? reject(error) : resolve(); });
+            this.connection.close(error => { error ? reject(error) : resolve() });
         });
 
         this.connection.destroy();
@@ -161,8 +161,8 @@ export function openStream(path: string, options = defaultOptions): Promise<Comm
         return new Promise((resolve, reject) => {
             const socket = new net.Socket();
             const ctx    = {
-                connect: () => { resolve(new NetStream(socket)); ctx.done(); },
-                error:   (error: Error) => { reject(error); ctx.done(); },
+                connect: () => { resolve(new NetStream(socket)); ctx.done() },
+                error:   (error: Error) => { reject(error); ctx.done() },
                 done:    () => {
                     socket.removeListener("connect", ctx.connect);
                     socket.removeListener("error", ctx.error);

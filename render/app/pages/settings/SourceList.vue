@@ -56,11 +56,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
     import Vue          from "vue";
+    import sources      from "../../../controllers/sources";
+    import * as helpers from "../../../foundation/helpers";
+    import Source       from "../../../models/source";
     import SourceEditor from "./SourceEditor.vue";
     import SourcePage   from "./SourcePage.vue";
-    import sources      from "../../../controllers/sources";
-    import Source       from "../../../models/source";
-    import * as helpers from "../../../foundation/helpers";
 
     export default Vue.extend({
         name:       "SourceList",
