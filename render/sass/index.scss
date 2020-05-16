@@ -16,21 +16,23 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-@import "~@mdi/font";
+@import "./settings";
+
+@import "~bulma";
+@import "~buefy/src/scss/buefy";
+@import "~@mdi/font/scss/materialdesignicons";
+
+// @import "../../node_modules/@mdi/font";
 // @import '~vuetify/src/styles/styles';
 
-body::-webkit-scrollbar {
-    display: none;
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
 .fab-container {
+    .level-item {
+        margin: 0 0.5rem;
+    }
+
     position: fixed;
-    bottom: 0;
-    right: 0;
+    bottom: 1rem;
+    right: 1rem;
 }
+
+@import "./bug-fixes";

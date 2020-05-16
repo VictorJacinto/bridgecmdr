@@ -1,0 +1,19 @@
+@function materialLighten($color) {
+    @return lighten($color, 0.18);
+}
+
+@function materialDarken($color) {
+    @return darken($color, 0.18);
+}
+
+@function materialInvert($color) {
+    @if (type_of($color) == "color") {
+        @if (lightness($color) > 0.55) {
+            @return hsla(0, 0%, 0%, 70%);
+        } @else {
+            @return hsl(0, 0%, 100%);
+        }
+    }
+
+    @return $color;
+}

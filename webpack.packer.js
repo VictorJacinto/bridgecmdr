@@ -26,7 +26,7 @@ packer.main.
 packer.render.
     html("./render/index.ejs").
     js("./render/index.ts").
-    sass("./render/index.scss").
+    sass("./render/sass/index.scss").
     output("./dist/render").
     plugin(new VuetifyLoaderPlugin()).
     loader("vue", {
