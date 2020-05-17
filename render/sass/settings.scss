@@ -122,3 +122,5 @@ $text:               $grey-lighter;
 $text-invert:        materialInvert($text);
 $text-light:         $grey-light;
 $text-strong:        $grey-lightest;
+
+@import "~bulma/sass/utilities/derived-variables";
