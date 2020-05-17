@@ -22,9 +22,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 @import "~buefy/src/scss/buefy";
 @import "~@mdi/font/scss/materialdesignicons";
 
-// @import "../../node_modules/@mdi/font";
-// @import '~vuetify/src/styles/styles';
-
 .fab-container {
     .level-item {
         margin: 0 0.5rem;
@@ -34,19 +31,4 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     bottom: 1rem;
     right: 1rem;
 }
-
-.media-list {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    & > .media {
-        .media-left {
-            img {
-                fill: $text;
-            }
-        }
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-}
-
 @import "./bug-fixes";

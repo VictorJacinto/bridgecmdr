@@ -21,32 +21,34 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 @import "./functions";
 
 // Black
-$black:     hsl(0, 0%, 0%);
-$black-bis: hsl(0, 0%, 13%);
-$black-ter: hsl(0, 0%, 26%);
+$black:     hsl(0, 0%, 0%);  // Black
+$black-bis: hsl(0, 0%, 13%); // Grey 900
+$black-ter: hsl(0, 0%, 26%); // Grey 800
 
 // Grey
-$grey-darker:   hsl(0, 0%, 38%);
-$grey-dark:     hsl(0, 0%, 46%);
-$grey:          hsl(0, 0%, 62%);
-$grey-light:    hsl(0, 0%, 74%);
-$grey-lighter:  hsl(0, 0%, 88%);
-$grey-lightest: hsl(0, 0%, 93%);
+$grey-darker:   hsl(0, 0%, 38%); // Grey 700
+$grey-dark:     hsl(0, 0%, 46%); // Grey 600
+$grey:          hsl(0, 0%, 62%); // Grey 500
+$grey-light:    hsl(0, 0%, 74%); // Grey 400
+$grey-lighter:  hsl(0, 0%, 88%); // Grey 300
+$grey-lightest: hsl(0, 0%, 93%); // Grey 200
 
 // White
-$white-ter: hsl(0, 0%, 96%);
-$white-bis: hsl(0, 0%, 98%);
-$white:     hsl(0, 0%, 100%);
+$white-ter: hsl(0, 0%, 96%);  // Grey 100
+$white-bis: hsl(0, 0%, 98%);  // Grey 50
+$white:     hsl(0, 0%, 100%); // White
 
 // Basic colors
-$orange:       hsl(36, 100%, 50%);
-$yellow:       hsl(54, 100%, 62%);
-$green:        hsl(122, 39%, 49%);
-$turquoise:    hsl(174, 100%, 29%);
-$cyan:         hsl(187, 100%, 42%);
-$blue:         hsl(207, 90%, 54%);
-$purple:       hsl(291, 64%, 42%);
-$red:          hsl(4, 90%, 58%);
+$orange:       hsl(36, 100%, 50%);  // Orange 500
+$yellow:       hsl(54, 100%, 62%);  // Yellow 500
+$green:        hsl(123, 46%, 34%);  // Green 800
+$turquoise:    hsl(173, 100%, 24%); // Teal 700
+$cyan:         hsl(185, 100%, 28%); // Cyan 800
+$blue:         hsl(212, 80%, 42%);  // Blue 800
+$indigo:       hsl(232, 54%, 41%);  // Indigo 700
+$purple:       hsl(277, 70%, 35%);  // Purple 800
+$pink:         hsl(334, 79%, 38%);  // Pink 700
+$red:          hsl(0, 73%, 41%);    // Red 900
 
 // Basic inverts
 $orange-invert:    materialInvert($orange);
@@ -58,34 +60,46 @@ $blue-invert:      materialInvert($blue);
 $purple-invert:    materialInvert($purple);
 $red-invert:       materialInvert($red);
 
-// Primary; Indigo
-$primary:        hsl(235, 66%, 30%);
+// Primary: Indigo 500
+$primary:        $indigo;
 $primary-light:  materialLighten($primary);
 $primary-dark:   materialDarken($primary);
 $primary-invert: materialInvert($primary);
 
+// Info
+$info:        $purple;
+$info-light:  materialLighten($purple);
+$info-dark:   materialDarken($purple);
+$info-invert: $purple-invert;
+
 // Link
-$link:        $blue;
-$link-light:  materialLighten($blue);
-$link-dark:   materialDarken($blue);
-$link-invert: materialInvert($blue);
+$link:               $blue;
+$link-light:         materialLighten($link);
+$link-dark:          materialDarken($link);
+$link-invert:        $blue-invert;
+$link-hover:         $grey-lightest;
+$link-hover-border:  $grey;
+$link-focus:         $grey-lightest;
+$link-focus-border:  $blue;
+$link-active:        $grey-lightest;
+$link-active-border: $grey-lighter;
 
 // Success
 $success:        $green;
-$success-light:  materialLighten($green);
-$success-dark:   materialDarken($green);
+$success-light:  materialLighten($success);
+$success-dark:   materialDarken($success);
 $success-invert: $green-invert;
 
 // Warning
 $warning:        $yellow;
-$warning-light:  materialLighten($yellow);
-$warning-dark:   materialDarken($yellow);
+$warning-light:  materialLighten($warning);
+$warning-dark:   materialDarken($warning);
 $warning-invert: $yellow-invert;
 
 // Danger
 $danger:        $red;
-$danger-light:  materialLighten($red);
-$danger-dark:   materialDarken($red);
+$danger-light:  materialLighten($danger);
+$danger-dark:   materialDarken($danger);
 $danger-invert: $red-invert;
 
 // Dark mode

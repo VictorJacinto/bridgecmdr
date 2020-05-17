@@ -5,16 +5,25 @@
                 <b-navbar-item tag="div">Settings</b-navbar-item>
             </template>
         </b-navbar>
-        <div class="media-list">
-            <article v-for="entry of list" :key="entry.name" class="media">
-                <div class="media-left">
-                    <figure class="image is-48x48">
-                        <img :src="entry.icon" alt=""/>
-                    </figure>
-                </div>
-                <div class="media-content">
-                    <p class="is-strong">{{ entry.name }}</p>
-                    <p>{{ entry.sub }}</p>
+        <!-- Make a simple settings list component. -->
+        <div class="setting-list">
+            <!-- Settings list should support @click event -->
+            <article v-for="entry of list" :key="entry.name" class="card">
+                <div class="card-content">
+                    <div class="media">
+                        <div class="media-left">
+                            <!-- Settings list slot #image -->
+                            <figure class="image is-48x48">
+                                <img :src="entry.icon" alt=""/>
+                            </figure>
+                        </div>
+                        <div class="media-content">
+                            <!-- Settings list slot #content -->
+                            <p class="is-strong">{{ entry.name }}</p>
+                            <p>{{ entry.sub }}</p>
+                        </div>
+                        <!-- Settings list slot #actions -->
+                    </div>
                 </div>
             </article>
         </div>
