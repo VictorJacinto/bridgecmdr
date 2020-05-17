@@ -1,6 +1,6 @@
 import { route } from "../foundation/vue/routing";
 import DashboardPage from "./pages/DashboardPage.vue";
-import SettingsPage from "./pages/SettingsPage.vue";
+import SettingsPage from "./pages/settings/SettingsPage.vue";
 
 const routes = [
     // Home

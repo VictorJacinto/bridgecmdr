@@ -35,4 +35,18 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     right: 1rem;
 }
 
+.media-list {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    & > .media {
+        .media-left {
+            img {
+                fill: $text;
+            }
+        }
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
 @import "./bug-fixes";
