@@ -16,24 +16,30 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { uniqueId } from "lodash";
 import Vue from "vue";
 import Component from "vue-class-component";
+import { Prop } from "vue-property-decorator";
 
 @Component({
     template: `
-        <div id="dashboard-page">
-            Dashboard
-            <div id="dashboard-action-buttons" class="fab-container level">
-                <b-field class="level-item" position="is-centered" grouped>
-                    <b-button icon-left="power" type="is-danger"/>
-                </b-field>
-                <b-field class="level-item" position="is-centered" grouped>
-                    <b-button icon-left="wrench" type="is-link" @click="() => $router.push({ name: 'settings' })"/>
-                </b-field>
+        <div class="card-list">
+            <div v-for="(entry, index) of entries" :key="getEntryKey(index)" class="card"
+                 @click="() => $emit('click', entry)">
+                <div class="card-content">
+                    <slot :entry="entry"/>
+                </div>
             </div>
         </div>
     `,
 })
-export default class DashboardPage extends Vue {
-    // TODO: Implement the dashboard.
+export default class CardList extends Vue {
+    @Prop({ type: Array, required: true }) entries!: unknown[];
+    @Prop(Boolean) hasActions!: boolean;
+    @Prop(Boolean) hasIcons!: boolean;
+    readonly uid = uniqueId("card-list-");
+
+    getEntryKey(index: number): string {
+        return `${this.uid}-${index}`;
+    }
 }
