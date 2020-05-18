@@ -1,4 +1,4 @@
-/*
+<!--
 BridgeCmdr - A/V switch and monitor controller
 Copyright (C) 2019-2020 Matthew Holder
 
@@ -14,32 +14,34 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+-->
 
-import { uniqueId } from "lodash";
-import Vue from "vue";
-import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
-
-@Component({
-    template: `
-        <div class="card-list">
-            <div v-for="(entry, index) of entries" :key="getEntryKey(index)" class="card"
-                 @click="() => $emit('click', entry)">
-                <div class="card-content">
-                    <slot :entry="entry"/>
-                </div>
+<template>
+    <div class="card-list">
+        <div v-for="(entry, index) of entries" :key="getEntryKey(index)" class="card"
+             @click="() => $emit('click', entry)">
+            <div class="card-content">
+                <slot :entry="entry"/>
             </div>
         </div>
-    `,
-})
-export default class CardList extends Vue {
-    @Prop({ type: Array, required: true }) entries!: unknown[];
-    @Prop(Boolean) hasActions!: boolean;
-    @Prop(Boolean) hasIcons!: boolean;
-    readonly uid = uniqueId("card-list-");
+    </div>
+</template>
 
-    getEntryKey(index: number): string {
-        return `${this.uid}-${index}`;
+<script lang="ts">
+    import { uniqueId } from "lodash";
+    import Vue from "vue";
+    import Component from "vue-class-component";
+    import { Prop } from "vue-property-decorator";
+
+    @Component
+    export default class CardList extends Vue {
+        @Prop({ type: Array, required: true }) entries!: unknown[];
+        @Prop(Boolean) hasActions!: boolean;
+        @Prop(Boolean) hasIcons!: boolean;
+        readonly uid = uniqueId("card-list-");
+
+        getEntryKey(index: number): string {
+            return `${this.uid}-${index}`;
+        }
     }
-}
+</script>

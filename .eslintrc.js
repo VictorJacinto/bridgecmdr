@@ -123,17 +123,12 @@ module.exports = {
             "exceptAfterSingleLine": true
         }],
 
-        // TODO; Still?
-        "new-cap": ["error", {
-            "capIsNewExceptions": [
-                "Source",
-                "SourceModel",
-                "Switch",
-                "SwitchModel",
-                "Tie",
-                "TieModel"
-            ]
-        }],
+        "new-cap": ["error", { "capIsNewExceptions":  [
+            "Component",
+            "Emit",
+            "Prop",
+            "Ref",
+        ] }],
         "new-parens": "error",
         "no-continue": "warn",
         "no-lonely-if": "error",

@@ -21,4 +21,5 @@ export default Promise.all([
     require("./modules/drivers"),
     require("./modules/axios"),
     require("./modules/framework"),
+    require("./modules/components"),
 ]);

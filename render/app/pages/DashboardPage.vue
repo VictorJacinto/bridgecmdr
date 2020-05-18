@@ -1,4 +1,4 @@
-/*
+<!--
 BridgeCmdr - A/V switch and monitor controller
 Copyright (C) 2019-2020 Matthew Holder
 
@@ -14,26 +14,28 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+-->
 
-import Vue from "vue";
-import Component from "vue-class-component";
-
-@Component({
-    template: `
-        <div id="dashboard-page">
-            Dashboard
-            <div id="dashboard-action-buttons" class="fab-container level">
-                <b-field class="level-item" position="is-centered" grouped>
-                    <b-button icon-left="power" type="is-danger"/>
-                </b-field>
-                <b-field class="level-item" position="is-centered" grouped>
-                    <b-button icon-left="wrench" type="is-link" @click="() => $router.push({ name: 'settings' })"/>
-                </b-field>
-            </div>
+<template>
+    <div id="dashboard-page">
+        Dashboard
+        <div id="dashboard-action-buttons" class="fab-container level">
+            <b-field class="level-item" position="is-centered" grouped>
+                <b-button icon-left="power" type="is-danger"/>
+            </b-field>
+            <b-field class="level-item" position="is-centered" grouped>
+                <b-button icon-left="wrench" type="is-link" @click="() => $router.push({ name: 'settings' })"/>
+            </b-field>
         </div>
-    `,
-})
-export default class DashboardPage extends Vue {
-    // TODO: Implement the dashboard.
-}
+    </div>
+</template>
+
+<script>
+    import Vue from "vue";
+    import Component from "vue-class-component";
+
+    @Component
+    export default class DashboardPage extends Vue {
+        // TODO: Implement the dashboard.
+    }
+</script>

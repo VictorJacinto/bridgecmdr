@@ -19,6 +19,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "resolveJsonModule": true,
+    "importHelpers": true,
+    "experimentalDecorators": true,
     "strict": true,
     "types": ["vuetify"]
   }

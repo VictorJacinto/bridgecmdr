@@ -17,8 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <template>
-    <router-view/>
-    <!--v-app id="bridgecmdr">
+    <v-app id="bridgecmdr">
         <v-content class="black">
             <v-container>
                 <v-row no-gutters>
@@ -46,12 +45,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
         </v-layout>
         <alert-modal ref="alert"/>
         <confirm-modal ref="confirm"/>
-    </v-app-->
+    </v-app>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
-    import VueRouter from "vue-router";
     import mixins from "vue-typed-mixins";
     import packageInfo from "../../package.json";
     import {
@@ -67,7 +65,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     import registry                  from "../foundation/system/registry";
     import Switch                    from "../foundation/system/switch";
     import SettingsPage              from "./pages/SettingsPage.vue";
-    import routes from "./routes";
     import doFirstRun                from "./support/first-run";
 
     type References = {
@@ -120,10 +117,5 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
             this.$nextTick(async () => { this.buttons = await makeDashboard() });
         },
         vuetify,
-        router: new VueRouter({
-            routes,
-            linkExactActiveClass: "is-active",
-            linkActiveClass:      "",
-        }),
     });
 </script>

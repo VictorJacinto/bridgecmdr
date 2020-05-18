@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // app scaffolding
 import Vue from "vue";
-import Application from "./app/Application.vue";
+import Application from "./app/Application";
 import booting from "./app/boot/bootstrap";
 
 // We need to declare the new property for window.
