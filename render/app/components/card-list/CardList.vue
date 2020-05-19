@@ -18,30 +18,20 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 <template>
     <div class="card-list">
-        <div v-for="(entry, index) of entries" :key="getEntryKey(index)" class="card"
-             @click="() => $emit('click', entry)">
-            <div class="card-content">
-                <slot :entry="entry"/>
-            </div>
-        </div>
+        <slot/>
     </div>
 </template>
 
 <script lang="ts">
-    import { uniqueId } from "lodash";
     import Vue from "vue";
     import Component from "vue-class-component";
-    import { Prop } from "vue-property-decorator";
 
-    @Component
+    @Component({
+        props: {
+            imageSize: { type: String, default: "is-48x48" },
+        },
+    })
     export default class CardList extends Vue {
-        @Prop({ type: Array, required: true }) entries!: unknown[];
-        @Prop(Boolean) hasActions!: boolean;
-        @Prop(Boolean) hasIcons!: boolean;
-        readonly uid = uniqueId("card-list-");
-
-        getEntryKey(index: number): string {
-            return `${this.uid}-${index}`;
-        }
+        imageSize!: string;
     }
 </script>

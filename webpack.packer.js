@@ -16,8 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-const packer              = require("./build/webpack-packer");
-const VuetifyLoaderPlugin = require("vuetify-loader/lib/plugin");
+const packer = require("./build/webpack-packer");
 
 packer.main.
     js("./main/index.ts").
@@ -28,7 +27,6 @@ packer.render.
     js("./render/index.ts").
     sass("./render/sass/index.scss").
     output("./dist/render").
-    plugin(new VuetifyLoaderPlugin()).
     loader("vue", {
         options: {
             transformAssetUrls: {

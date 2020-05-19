@@ -20,19 +20,19 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     <div id="settings-page">
         <b-navbar fixed-top type="is-primary" :mobile-burger="false">
             <template #brand>
+                <b-navbar-item tag="router-link" v-bind="{ to: { name: 'home' } }">
+                    <b-icon icon="arrow-left"/>
+                </b-navbar-item>
                 <b-navbar-item tag="div">Settings</b-navbar-item>
             </template>
         </b-navbar>
-        <card-list #default="{ entry }" has-icons :entries="list">
-            <card-list-entry>
-                <template #icon>
-                    <figure class="image is-48x48">
-                        <!--suppress HtmlUnknownTarget -->
-                        <img :src="entry.icon" alt=""/>
-                    </figure>
+        <card-list>
+            <card-list-entry v-for="(entry, index) of list" :key="`scl-${index}`" @click="() => log(entry)">
+                <template #image><!--suppress HtmlUnknownTarget --><img :src="entry.icon" alt=""/></template>
+                <template #default>
+                    <p class="is-strong">{{ entry.name }}</p>
+                    <p>{{ entry.sub }}</p>
                 </template>
-                <p class="is-strong">{{ entry.name }}</p>
-                <p>{{ entry.sub }}</p>
             </card-list-entry>
         </card-list>
     </div>
@@ -86,5 +86,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     @Component
     export default class SettingsPage extends Vue {
         list = list;
+
+        // eslint-disable-next-line class-methods-use-this
+        log(target: unknown): void {
+            console.log(target);
+        }
     }
 </script>

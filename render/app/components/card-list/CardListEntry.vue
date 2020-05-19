@@ -17,27 +17,32 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <template>
-    <div class="media">
-        <div v-if="hasIcons" class="media-left">
-            <slot name="icon"/>
-        </div>
-        <div class="media-content">
-            <slot/>
-        </div>
-        <div v-if="hasActions" class="media-right">
-            <slot name="actions"/>
+    <div class="card" @click="() => $emit('click')">
+        <div class="card-content">
+            <article class="media">
+                <figure v-show="hasImageSlot" class="media-left">
+                    <p :class="imageClasses"><slot name="image"/></p>
+                </figure>
+                <div class="media-content">
+                    <slot/>
+                </div>
+                <div v-show="hasActionsSlot" class="media-right">
+                    <slot name="actions"/>
+                </div>
+            </article>
         </div>
     </div>
 </template>
 
 <script lang="ts">
+    import { isNil } from "lodash";
     import Vue from "vue";
     import Component from "vue-class-component";
     import CardList from "./CardList.vue";
 
     @Component
     export default class CardListEntry extends Vue {
-        public get cardList(): CardList {
+        get cardList(): CardList {
             if (this.$parent instanceof CardList) {
                 return this.$parent;
             }
@@ -45,12 +50,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
             throw new TypeError("A CardListEntry may only be the child of a CardList");
         }
 
-        public get hasIcons(): boolean {
-            return this.cardList.hasIcons;
+        get hasImageSlot(): boolean {
+            return !isNil(this.$slots.image) || !isNil(this.$scopedSlots.image);
         }
 
-        public get hasActions(): boolean {
-            return this.cardList.hasActions;
+        get hasActionsSlot(): boolean {
+            return !isNil(this.$slots.actions) || !isNil(this.$scopedSlots.actions);
+        }
+
+        get imageClasses(): string[] {
+            return [ "image", this.cardList.imageSize ];
         }
     }
 </script>

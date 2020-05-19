@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 /*
 BridgeCmdr - A/V switch and monitor controller
 Copyright (C) 2019-2020 Matthew Holder
@@ -17,21 +16,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Vuex from "vuex";
-import Vue from "vue";
+import Buefy from "buefy";
+import { configure, localize, extend, ValidationObserver, ValidationProvider } from "vee-validate";
 import en from "vee-validate/dist/locale/en.json";
 import * as rules from "vee-validate/dist/rules";
-import { configure, extend, ValidationObserver, ValidationProvider } from "vee-validate";
-import Vuetify from "vuetify/lib";
-import Buefy from "buefy";
-import NumberInput from "../../../components/NumberInput";
-import AlertModal from "../../../components/modals/alert.vue";
-import ConfirmModal from "../../../components/modals/confirm.vue";
+import Vue from "vue";
 import VueRouter from "vue-router";
+import Vuex from "vuex";
 
 Vue.use(Vuex);
 Vue.use(VueRouter);
-Vue.use(Vuetify);
 Vue.use(Buefy);
 
 /*
@@ -43,28 +37,17 @@ Vue.use(Buefy);
 
 Vue.component("ValidationProvider", ValidationProvider);
 Vue.component("ValidationObserver", ValidationObserver);
-
-const messages = en.messages as Record<string, string>;
 for (const [ rule, validators ] of Object.entries(rules)) {
-    extend(rule, { ...validators, message: messages[rule] });
+    // if (rule in messages) {
+    //     const message = messages[rule];
+    //     extend(rule, { ...validators });
+    // } else {
+    extend(rule, { ...validators });
+    // }
 }
 
-configure({ mode: "lazy" });
+localize({ en });
 
-/*
- | ---------------------------------------------------------------------------------------------------------------------
- | Common components
- | ---------------------------------------------------------------------------------------------------------------------
-*/
-
-
-// Modals
-Vue.component("AlertModal",   AlertModal);
-Vue.component("ConfirmModal", ConfirmModal);
-
-// Controls
-Vue.component("NumberInput",  NumberInput);
-
-/* ------------------------------------------------------------------------------------------------------------------ */
+configure({ mode: "passive" });
 
 export default Promise.resolve();

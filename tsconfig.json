@@ -1,27 +1,28 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "inlineSourceMap": true,
     "module": "esnext",
-    "moduleResolution": "node",
     "target": "esnext",
+    "experimentalDecorators": true,
+
+    "inlineSourceMap": true,
+    "importHelpers": true,
 
     "allowJs": false,
-    "allowSyntheticDefaultImports": true,
     "checkJs": false,
-    "disableSizeLimit": true,
-    "emitBOM": false,
-    "esModuleInterop": false,
-    "noImplicitReturns": true,
-    "noEmitHelpers": true,
-    "noEmitOnError": true,
-    "noErrorTruncation": true,
+    "strict": true,
+
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "resolveJsonModule": true,
-    "importHelpers": true,
-    "experimentalDecorators": true,
-    "strict": true,
-    "types": ["vuetify"]
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "noEmitOnError": true,
+    "noErrorTruncation": true
   }
 }
