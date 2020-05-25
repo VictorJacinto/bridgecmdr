@@ -16,10 +16,26 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Model from "../app/support/data/model";
+// TODO: Replace Application.vue, by converting this to SFC (.vue).
 
-export default interface Switch extends Model{
-    driverId: string;
-    title:    string;
-    path:     string;
-}
+import VueRouter from "vue-router";
+import * as tsx from "vue-tsx-support";
+import routes from "./routes";
+import store from "./store/store";
+
+const Application = tsx.component({
+    name: "Application",
+    render() {
+        return (<transition mode="out-in"><router-view/></transition>);
+    },
+    router: new VueRouter({
+        linkExactActiveClass: "is-active",
+        linkActiveClass:      "",
+        routes,
+    }),
+    store,
+});
+
+export type ApplicationConstructor = typeof Application;
+type Application = InstanceType<ApplicationConstructor>;
+export default Application;

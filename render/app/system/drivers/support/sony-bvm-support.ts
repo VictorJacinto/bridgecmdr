@@ -21,7 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  * This driver is based on the current understanding of the protocol from observation of the remote output.  This may
  * not be entirely correct and will be missing other information.  Since the packet format vaguely mimics the 9-pin
- * protocol, the packet types use those names.
+ * protocol, the packet @types use those names.
  *
  * Packet Format
  * - Byte 1:        Packet type

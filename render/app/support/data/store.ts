@@ -1,8 +1,8 @@
-import { assign, findIndex, iteratee, tap } from "lodash";
+import { assign, findIndex, identity, iteratee, tap } from "lodash";
 import { ReadonlyDeep } from "type-fest";
-import { ActionContext, ActionTree,  GetterTree, Module, MutationTree, Store as StoreBase } from "vuex";
-import { GetDocument } from "../store";
-import Database, { Document, Indices } from "./database";
+import { ActionContext,  Module, Store as StoreBase } from "vuex";
+import { SetNullable } from "../../../foundation/helpers/type";
+import Database, { Document, GetDocument, Indices } from "./database";
 import Model from "./model";
 
 export interface StateEx<M extends Model> {
@@ -10,12 +10,30 @@ export interface StateEx<M extends Model> {
     current: ReadonlyDeep<M>|null;
 }
 
+type Injectee<M extends Model, R extends object> = ActionContext<StateEx<M>, R>;
+
 export interface ModuleEx<M extends Model, R extends object> extends Module<StateEx<M>, R> {
-    readonly namespace: true;
-    readonly state: StateEx<M>;
-    readonly getters: GetterTree<StateEx<M>, R>;
-    readonly mutations: MutationTree<StateEx<M>>;
-    readonly actions: ActionTree<StateEx<M>, R>;
+    readonly namespaced: true;
+    state: StateEx<M>;
+    readonly getters: {
+        empty(): SetNullable<M>;
+    };
+    readonly mutations: {
+        refresh(state: StateEx<M>, items: ReadonlyDeep<M>[]): void;
+        show(state: StateEx<M>, current: ReadonlyDeep<M>): void;
+        append(state: StateEx<M>, item: ReadonlyDeep<M>): void;
+        replace(state: StateEx<M>, item: ReadonlyDeep<M>): void;
+        delete(state: StateEx<M>, id: string): void;
+    };
+    readonly actions: {
+        compact(): Promise<void>;
+        all(injectee: Injectee<M, R>): Promise<void>;
+        get(injectee: Injectee<M, R>, id: string): Promise<void>;
+        find(injectee: Injectee<M, R>, selector: PouchDB.Find.FindRequest<M>): Promise<void>;
+        add(injectee: Injectee<M, R>, record: M): Promise<void>;
+        update(injectee: Injectee<M, R>, record: M): Promise<void>;
+        remove(injectee: Injectee<M, R>, id: string): Promise<void>;
+    };
 }
 
 export type ActionContextEx<M extends Model, R extends object, Doc extends M | Document<object> = M> =
@@ -25,13 +43,14 @@ export type ActionHandlerEx<M extends Model, R extends object, Doc extends M | D
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (this: StoreBase<R>, injectee: ActionContextEx<M, R, Doc>, payload?: any) => Promise<any>;
 
-export interface ActionTreeEx<M extends Model, R extends object, Doc extends M | Document<object> = M> {
-    [key: string]: ActionHandlerEx<M, R, Doc>;
-}
+export type ActionTreeEx<M extends Model, R extends object, Doc extends M | Document<object> = M> = Omit<{
+    [K in keyof ModuleEx<M, R>["actions"]]?: ActionHandlerEx<M, R, Doc>;
+}, "compact">;
 
 export interface ModuleOptionsEx<M extends Model, R extends object, Doc extends M | Document<object> = M> {
     name: string;
     indices?: Indices[];
+    empty: () => SetNullable<M>;
     actions?: ActionTreeEx<M, R, Doc>;
 }
 
@@ -57,11 +76,12 @@ const Store = {
             current: null,
         };
 
-        const getters: GetterTree<StateEx<M>, R> = {
+        const getters: ModuleEx<M, R>["getters"] = {
+            empty: options.empty,
             // Nothing right now...
         };
 
-        const mutations: MutationTree<StateEx<M>> = {
+        const mutations: ModuleEx<M, R>["mutations"] = {
             /** Replaces the items in the store, refreshing the data. */
             refresh: (_state, items: ReadonlyDeep<M>[]) => { _state.items = items },
 
@@ -78,7 +98,7 @@ const Store = {
             delete: (_state, id: string) => { removeItem(_state, id) },
         };
 
-        const actions: ActionTree<StateEx<M>, R> = {
+        const actions: ModuleEx<M, R>["actions"]/* ActionTree<StateEx<M>, R>*/ = {
             /** Compacts the database. */
             compact: async () => {
                 const connection = await database;
@@ -139,19 +159,49 @@ const Store = {
             },
         };
 
+        const wrapOverride = identity(<H extends ActionHandlerEx<M, R, Doc>>(overrider: H) =>
+            async function (this: StoreBase<R>, injectee: Injectee<M, R>, payload?: unknown) {
+                const connection = await database;
+
+                await overrider.call(this, assign(injectee, { database: connection }), payload);
+            },
+        );
+
         // Attach any custom actions passing the database in as part of the injectee.
         if (options.actions) {
-            for (const [ name, handler ] of Object.entries(options.actions)) {
-                actions[name] = async function (this: StoreBase<R>, injectee, payload) {
-                    const connection = await database;
+            const all = options.actions.all;
+            if (all) {
+                actions.all = wrapOverride(all);
+            }
 
-                    await handler.call(this, assign(injectee, { database: connection }), payload);
-                };
+            const get = options.actions.get;
+            if (get) {
+                actions.get = wrapOverride(get);
+            }
+
+            const find = options.actions.find;
+            if (find) {
+                actions.find = wrapOverride(find);
+            }
+
+            const add = options.actions.add;
+            if (add) {
+                actions.find = wrapOverride(add);
+            }
+
+            const update = options.actions.update;
+            if (update) {
+                actions.find = wrapOverride(update);
+            }
+
+            const remove = options.actions.remove;
+            if (remove) {
+                actions.find = wrapOverride(remove);
             }
         }
 
         return {
-            namespace: true,
+            namespaced: true,
             state,
             getters,
             mutations,
@@ -159,10 +209,5 @@ const Store = {
         };
     },
 };
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ModuleState<M extends Module<any, any>> = M extends Module<infer S, any> ? S : never;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ModuleRootState<M extends Module<any, any>> = M extends Module<any, infer R> ? R : never;
 
 export default Store;

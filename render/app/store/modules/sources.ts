@@ -1,8 +1,8 @@
 import { isNil, tap } from "lodash";
-import { ExistingDocument } from "../../../foundation/data/database";
-import Model from "../../../foundation/data/model";
-import Store, { ModuleState } from "../../../foundation/data/store";
-import { Document } from "../../../foundation/store";
+import { ModuleState } from "../../../foundation/helpers/vuex";
+import { Document, ExistingDocument } from "../../support/data/database";
+import Model from "../../support/data/model";
+import Store from "../../support/data/store";
 import { RootState } from "../root-state";
 
 export interface Source extends Model {
@@ -44,7 +44,12 @@ const translate = {
 };
 
 const sources = Store.of<Source, RootState, SourceDocument>({
-    name:    "sources",
+    name:  "sources",
+    empty: () => ({
+        _id:   null,
+        image: null,
+        title: "",
+    }),
     actions: {
         all: async ({ commit, database }) => {
             const docs = await database.all();

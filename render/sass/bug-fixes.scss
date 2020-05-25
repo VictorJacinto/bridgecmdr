@@ -14,3 +14,11 @@ input::-webkit-inner-spin-button {
 .level-item.is-grouped:not(:last-child) {
     margin-bottom: 0;
 }
+
+a.card {
+    display: block;
+    &:active { color: $text; }
+    &:hover { color: $text; }
+    &:visited { color: $text; }
+    &:focus { color: $text; }
+}

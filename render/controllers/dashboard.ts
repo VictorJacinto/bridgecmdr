@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import * as helpers from "../foundation/helpers";
+import { toDataUrl } from "../foundation/helpers/url";
 import registry     from "../foundation/system/registry";
 import Source       from "../foundation/system/source";
 
@@ -60,7 +60,7 @@ export class Button {
 export async function makeDashboard(): Promise<Button[]> {
     await registry.load();
     const sources   = Source.all();
-    const images    = await Promise.all(sources.map(source => helpers.toDataUrl(source.image)));
+    const images    = await Promise.all(sources.map(source => toDataUrl(source.image)));
     const dashboard = {
         buttons:      [] as Button[],
         activeButton: null as Button|null,

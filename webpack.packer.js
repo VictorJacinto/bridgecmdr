@@ -27,14 +27,14 @@ packer.render.
     js("./render/index.ts").
     sass("./render/sass/index.scss").
     output("./dist/render").
-    loader("vue", {
+    alias("buefy$", "buefy/dist/buefy.esm.js").
+    loader("sass", {
         options: {
-            transformAssetUrls: {
-                "video":  [ "src", "poster" ],
-                "source": "src",
-                "img":    "src",
-                "image":  "xlink:href",
-                "v-img":  [ "src" , "lazy-src" ],
-            },
+            prependData: `@import "${__dirname}/render/sass/settings.scss"`,
+        },
+    }).
+    loader("scss", {
+        options: {
+            prependData: `@import "${__dirname}/render/sass/settings.scss";`,
         },
     });

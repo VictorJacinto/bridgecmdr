@@ -16,11 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import "vue-tsx-support/enable-check";
 import Buefy from "buefy";
 import { configure, localize, extend, ValidationObserver, ValidationProvider } from "vee-validate";
 import en from "vee-validate/dist/locale/en.json";
 import * as rules from "vee-validate/dist/rules";
-import Vue from "vue";
+import Vue  from "vue";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
 

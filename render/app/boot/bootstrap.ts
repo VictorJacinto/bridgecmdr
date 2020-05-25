@@ -16,10 +16,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-export default Promise.all([
-    require("./modules/database"),
-    require("./modules/drivers"),
-    require("./modules/axios"),
-    require("./modules/framework"),
-    require("./modules/components"),
-]);
+import { once } from "lodash";
+import { defaultOf } from "../../foundation/helpers/module";
+
+const isBooted = once(async () => {
+    await Promise.all([
+        defaultOf(await import(/* webpackMode: "eager" */ "./modules/database")),
+        defaultOf(await import(/* webpackMode: "eager" */ "./modules/drivers")),
+        defaultOf(await import(/* webpackMode: "eager" */ "./modules/axios")),
+        defaultOf(await import(/* webpackMode: "eager" */ "./modules/framework")),
+        defaultOf(await import(/* webpackMode: "eager" */ "./modules/components")),
+    ]);
+});
+
+export default isBooted;

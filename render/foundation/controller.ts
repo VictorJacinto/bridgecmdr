@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import _                                         from "lodash";
-import Model                                     from "./data/model";
+import Model                                     from "../app/support/data/model";
 import Store, { GetDocument, Document, Indices } from "./store";
 
 export default abstract class Controller<T extends Model, Doc extends T|Document<{}> = T> {

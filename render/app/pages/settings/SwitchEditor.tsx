@@ -16,10 +16,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Model from "../app/support/data/model";
+import * as tsx from "vue-tsx-support";
 
-export default interface Switch extends Model{
-    driverId: string;
-    title:    string;
-    path:     string;
-}
+const SwitchEditor = tsx.component({
+    name:  "SwitchEditor",
+    props: {
+        id: { type: String, required: true },
+    },
+    render() {
+        return (<div></div>);
+    },
+});
+
+export type SwitchEditorConstructor = typeof SwitchEditor;
+type SwitchEditor = InstanceType<SwitchEditorConstructor>;
+export default SwitchEditor;

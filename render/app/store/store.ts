@@ -1,5 +1,5 @@
 import Vuex, { StoreOptions } from "vuex";
-import { ModuleState } from "../../foundation/data/store";
+import { ModuleState } from "../../foundation/helpers/vuex";
 import sources from "./modules/sources";
 import switches from "./modules/switches";
 import ties from "./modules/ties";

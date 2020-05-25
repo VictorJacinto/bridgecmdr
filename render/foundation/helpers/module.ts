@@ -16,23 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// TODO: Replace Application.vue, by converting this to SFC (.vue).
+type EsmModule<T = unknown> = { default: T };
 
-import Vue from "vue";
-import Component from "vue-class-component";
-import VueRouter from "vue-router";
-import routes from "./routes";
-
-@Component({
-    template: `
-        <router-view/>
-    `,
-    router: new VueRouter({
-        routes,
-        linkExactActiveClass: "is-active",
-        linkActiveClass:      "",
-    }),
-})
-export default class Application extends Vue {
-    // TODO: Implement the application.
+export function defaultOf<T extends EsmModule>(module: T): T["default"] {
+    return module.default;
 }

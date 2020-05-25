@@ -86,12 +86,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     import Vue          from "vue";
     import switches     from "../../../controllers/switches";
     import ties         from "../../../controllers/ties";
-    import * as helpers from "../../../foundation/helpers";
+    import * as helpers from "../../support/dbus";
     import Source       from "../../../models/source";
     import Switch       from "../../../models/switch";
     import Tie          from "../../../models/tie";
     import Driver       from "../../system/driver";
     import TieEditor    from "./TieEditor.vue";
+    import {toDataUrl} from "../../../foundation/helpers/url";
 
     const EMPTY_SOURCE: Source = {
         _id:   "",
@@ -185,7 +186,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
                 });
             },
             async updateImageUrl(blob: Blob): Promise<void> {
-                this.image = await helpers.toDataUrl(blob);
+                this.image = await toDataUrl(blob);
             },
             async readySubject(subject: Source): Promise<void> {
                 this.subject = subject;

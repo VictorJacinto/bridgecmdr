@@ -1,0 +1,19 @@
+
+.fab-container {
+    position: fixed;
+    &.is-left {
+        left: 1rem;
+        bottom: 1rem;
+        .fab-item {
+            margin-right: 0.5rem;
+        }
+    }
+
+    &.is-right {
+        right: 1rem;
+        bottom: 1rem;
+        .fab-item {
+            margin-left: 0.5rem;
+        }
+    }
+}

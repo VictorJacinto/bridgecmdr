@@ -3,11 +3,9 @@
   "compilerOptions": {
     "module": "esnext",
     "target": "esnext",
-    "experimentalDecorators": true,
-
     "inlineSourceMap": true,
-    "importHelpers": true,
 
+    "jsx": "preserve",
     "allowJs": false,
     "checkJs": false,
     "strict": true,

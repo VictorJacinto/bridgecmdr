@@ -61,7 +61,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     import vuetify                   from "../config/vuetify";
     import { Button, makeDashboard } from "../controllers/dashboard";
     import withRefs                  from "../foundation/concerns/with-refs";
-    import * as helpers              from "../foundation/helpers";
+    import * as helpers              from "./support/dbus";
     import registry                  from "../foundation/system/registry";
     import Switch                    from "../foundation/system/switch";
     import SettingsPage              from "./pages/SettingsPage.vue";

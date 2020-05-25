@@ -123,4 +123,17 @@ $text-invert:        materialInvert($text);
 $text-light:         $grey-light;
 $text-strong:        $grey-lightest;
 
+$box-shadow: 0 0.5em 1em -0.125em rgba($black, 0.1), 0 0px 0 1px rgba($black, 0.02);
+$box-link-hover-shadow: 0 0.5em 1em -0.125em rgba($black, 0.1), 0 0 0 1px $link;
+$box-link-active-shadow: inset 0 1px 2px rgba($black, 0.2), 0 0 0 1px $link;
+$card-shadow: 0 0 1px rgba($scheme-invert, 0.3);
+$card-header-shadow: 0 0.125em 0.25em rgba($black, 0.1);
+$dropdown-content-shadow: 0 0.5em 1em -0.125em rgba($black, 0.1), 0 0px 0 1px rgba($black, 0.02);
+$input-shadow: inset 0 0.0625em 0.125em rgba($black, 0.05);
+$list-shadow: 0 2px 3px rgba($black, 0.1), 0 0 0 1px rgba($black, 0.1);
+$navbar-dropdown-boxed-shadow: 0 8px 8px bulmaRgba($black, 0.1), 0 0 0 1px bulmaRgba($black, 0.1);
+$notices-box-shadow: 0 1px 4px rgba($black, 0.12), 0 0 6px rgba($black, 0.04);
+$panel-shadow: 0 0.5em 1em -0.125em rgba($black, 0.1), 0 0px 0 1px rgba($black, 0.02);
+$pagination-shadow-inset: inset 0 1px 2px rgba($black, 0.2);
+
 @import "~bulma/sass/utilities/derived-variables";

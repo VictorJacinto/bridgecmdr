@@ -1,5 +1,6 @@
-import Model from "../../../foundation/data/model";
-import Store, { ModuleState } from "../../../foundation/data/store";
+import { ModuleState } from "../../../foundation/helpers/vuex";
+import Model from "../../support/data/model";
+import Store from "../../support/data/store";
 import { RootState } from "../root-state";
 
 export interface Switch extends Model {
@@ -9,7 +10,13 @@ export interface Switch extends Model {
 }
 
 const switches = Store.of<Switch, RootState>({
-    name:    "switches",
+    name:  "switches",
+    empty: () => ({
+        _id:      null,
+        driverId: "",
+        path:     "",
+        title:    "",
+    }),
     actions: {
         remove: async ({ commit, dispatch, rootState, database }, id: string) => {
             await database.remove(id);

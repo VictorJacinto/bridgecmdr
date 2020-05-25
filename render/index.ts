@@ -18,8 +18,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // app scaffolding
 import Vue from "vue";
-import Application from "./app/Application";
-import booting from "./app/boot/bootstrap";
+import isBooted from "./app/boot/bootstrap";
+import { defaultOf } from "./foundation/helpers/module";
 
 // We need to declare the new property for window.
 declare global {
@@ -30,6 +30,8 @@ declare global {
 
 // The main application instance.
 window.addEventListener("DOMContentLoaded", async () => {
-    await booting;
+    await isBooted();
+    const Application = defaultOf(await import(/* webpackMode: "eager" */ "./app/Application"));
+
     window.theApp = new Application({ el: "#root" });
 });

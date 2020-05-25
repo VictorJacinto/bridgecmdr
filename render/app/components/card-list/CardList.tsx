@@ -16,10 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Model from "../app/support/data/model";
+import * as tsx from "vue-tsx-support";
 
-export default interface Switch extends Model{
-    driverId: string;
-    title:    string;
-    path:     string;
-}
+const CardList = tsx.component({
+    name: "CardList",
+    render() {
+        return (<div class="card-list">{ this.$slots.default }</div>);
+    },
+});
+
+export type CardListConstructor = typeof CardList;
+type CardList = InstanceType<CardListConstructor>;
+export default CardList;

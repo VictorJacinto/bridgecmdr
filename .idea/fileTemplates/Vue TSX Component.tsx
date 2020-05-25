@@ -1,4 +1,5 @@
-<!--
+#set($COMPONENT_NAME=${NAME})
+/*
 BridgeCmdr - A/V switch and monitor controller
 Copyright (C) 2019-2020 Matthew Holder
 
@@ -14,24 +15,17 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
--->
+*/
 
-<template>
-    <div class="card-list">
-        <slot/>
-    </div>
-</template>
+import * as tsx from "vue-tsx-support";
 
-<script lang="ts">
-    import Vue from "vue";
-    import Component from "vue-class-component";
+const ${COMPONENT_NAME} = tsx.component({
+name: "${COMPONENT_NAME}",
+render() {
+return (<div>#[[$END$]]#</div>);
+},
+});
 
-    @Component({
-        props: {
-            imageSize: { type: String, default: "is-48x48" },
-        },
-    })
-    export default class CardList extends Vue {
-        imageSize!: string;
-    }
-</script>
+export type ${COMPONENT_NAME}Constructor = typeof ${COMPONENT_NAME};
+type ${COMPONENT_NAME} = InstanceType<${COMPONENT_NAME}Constructor>;
+export default ${COMPONENT_NAME};

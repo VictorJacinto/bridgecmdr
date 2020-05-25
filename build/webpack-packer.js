@@ -90,6 +90,7 @@ const myStyles  = Symbol("[[Main Style Sheet]]");
 const mySass    = Symbol("[[Main SCSS Style Sheet]]");
 const myPlugins = Symbol("[[Extra Plugins]]");
 const myExtras  = Symbol("[[Extra configuration]]");
+const myAliases = Symbol("[[Aliases]]");
 
 /*
  * =====================================================================================================================
@@ -108,7 +109,7 @@ class Packer {
                     formatter: "unix",
                 },
             },
-            typeScript: {
+            ts: {
                 loader:  "ts-loader",
                 options: {
                     appendTsSuffixTo: [(/\.vue$/u)],
@@ -120,6 +121,13 @@ class Packer {
 
                         return color(`${file}:${error.line}:${character}: ${error.content} [TS${error.code}]`);
                     },
+
+                },
+            },
+            babel: {
+                loader:  "babel-loader",
+                options: {
+                    presets: ["@vue/babel-preset-jsx"]
                 },
             },
             vue: {
@@ -178,14 +186,19 @@ class Packer {
         const rules = {
             lint: {
                 enforce: "pre",
-                test:    (/\.(js|ts|vue)$/u),
+                test:    (/\.(js|jsx|ts|tsx|vue)$/u),
                 exclude: (/node_modules/u),
                 use:     [loaders.esLint],
             },
-            typeScript: {
+            ts: {
                 test:    (/\.ts$/u),
                 exclude: (/node_modules/u),
-                use:     [loaders.typeScript],
+                use:     [loaders.ts],
+            },
+            tsx: {
+                test:    (/\.tsx$/u),
+                exclude: (/node_modules/u),
+                use:     [loaders.babel, loaders.ts],
             },
             css: {
                 test: (/\.css$/u),
@@ -246,6 +259,8 @@ class Packer {
         this[myPlugins] = [];
         /** @type {Partial<WebpackOptions>} */
         this[myExtras] = {};
+        /** @type {Record<string, string>} */
+        this[myAliases] = {"vue$": "vue/dist/vue.esm.js"};
     }
 
     /**
@@ -298,6 +313,17 @@ class Packer {
      */
     sass(main) {
         this[mySass] = path.resolve(__dirname, packerConfigPath, main);
+
+        return this;
+    }
+
+    /**
+     * @param {string} pattern
+     * @param {string} path
+     * @returns {Packer}
+     */
+    alias(pattern, path) {
+        this[myAliases][pattern] = path;
 
         return this;
     }
@@ -480,7 +506,8 @@ class Packer {
             module:  {
                 rules: [
                     this[myRules].lint,
-                    this[myRules].typeScript,
+                    this[myRules].tsx,
+                    this[myRules].ts,
                     this[myRules].css,
                     this[myRules].sass,
                     this[myRules].scss,
@@ -491,8 +518,8 @@ class Packer {
             },
             plugins: this[GeneratePlugins](),
             resolve: {
-                extensions: [ ".wasm", ".mjs", ".js", ".ts", ".json", ".vue" ],
-                alias:      { "vue$": "vue/dist/vue.esm.js" },
+                extensions: [ ".wasm", ".mjs", ".js", ".jsx", ".ts", ".tsx", ".json", ".vue" ],
+                alias:      this[myAliases],
             },
         }, this[myExtras]));
     }

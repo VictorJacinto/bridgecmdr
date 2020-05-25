@@ -16,10 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Model from "../app/support/data/model";
+type MakeNullable<T> = {
+    [K in keyof T]: T[K]|null;
+};
 
-export default interface Switch extends Model{
-    driverId: string;
-    title:    string;
-    path:     string;
-}
+export type SetNullable<BaseType, Keys extends keyof BaseType = keyof BaseType> =
+    Omit<BaseType, Keys> &
+    MakeNullable<Pick<BaseType, Keys>> extends infer InferredType ?
+        { [K in keyof InferredType]: InferredType[K] } :
+        never;

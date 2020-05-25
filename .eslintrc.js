@@ -33,8 +33,11 @@ module.exports = {
         "ecmaVersion": 2018,
         "sourceType": "module",
         "parser": "@typescript-eslint/parser",
-        "project": "./tsconfig.json",
-        "tsconfigRootDir": __dirname
+        "project": `${__dirname}/tsconfig.json`,
+        "tsconfigRootDir": __dirname,
+        "ecmaFeatures": {
+            "jsx": true
+        }
     },
     "ignorePatterns": ["build/*"],
     "rules": {
@@ -225,10 +228,10 @@ module.exports = {
         "node/no-unpublished-require": "off",
         "node/no-unpublished-import": "off",
         "node/no-missing-require": ["error", {
-            "tryExtensions": [".js", ".ts", ".d.ts"]
+            "tryExtensions": [".js", ".jsx", ".ts", ".tsx", ".d.ts"]
         }],
         "node/no-missing-import": ["error", {
-            "tryExtensions": [".js", ".ts", ".d.ts"]
+            "tryExtensions": [".js", ".jsx", ".ts", ".tsx", ".d.ts"]
         }],
 
         // # Vue

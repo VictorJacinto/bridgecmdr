@@ -73,8 +73,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     import sources                from "../../../controllers/sources";
     import DoesValidation         from "../../../foundation/concerns/does-valiadtion";
     import withRefs               from "../../../foundation/concerns/with-refs";
-    import * as helpers           from "../../../foundation/helpers";
     import Source                 from "../../../models/source";
+    import {toDataUrl} from "../../../foundation/helpers/url";
 
     type Validator  = InstanceType<typeof ValidationObserver>;
     type References = {
@@ -145,7 +145,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
                 this.updateImageUrl(file);
             },
             async updateImageUrl(blob: Blob): Promise<void> {
-                this.image = blob.size > 0 ? await helpers.toDataUrl(blob) : hdmiIcon;
+                this.image = blob.size > 0 ? await toDataUrl(blob) : hdmiIcon;
             },
             async readySubject(subject: Source): Promise<void> {
                 this.subject = subject;

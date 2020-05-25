@@ -1,4 +1,3 @@
-#set($COMPONENT_NAME=${NAME})
 /*
 BridgeCmdr - A/V switch and monitor controller
 Copyright (C) 2019-2020 Matthew Holder
@@ -17,13 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Vue from "vue";
-import Component from "vue-class-component";
-
-@Component({
-template: `
-#[[$END$]]#
-`,
-})
-export default class ${COMPONENT_NAME} extends Vue {
+export function toDataUrl(blob: Blob): Promise<string> {
+    return new Promise<string>(function (resolve, reject): void {
+        const reader = new FileReader();
+        reader.onload  = () => resolve(reader.result as string);
+        reader.onerror = () => reject(reader.error ? reader.error as Error : new Error("unknown error"));
+        reader.readAsDataURL(blob);
+    });
 }

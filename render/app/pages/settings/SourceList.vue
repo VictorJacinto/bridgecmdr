@@ -57,10 +57,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
     import Vue          from "vue";
     import sources      from "../../../controllers/sources";
-    import * as helpers from "../../../foundation/helpers";
     import Source       from "../../../models/source";
     import SourceEditor from "./SourceEditor.vue";
     import SourcePage   from "./SourcePage.vue";
+    import {toDataUrl} from "../../../foundation/helpers/url";
 
     export default Vue.extend({
         name:       "SourceList",
@@ -87,7 +87,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
                 try {
                     this.sources = await sources.all();
                     for (const source of this.sources) {
-                        helpers.toDataUrl(source.image).then(url => this.$set(this.images, source._id, url));
+                        toDataUrl(source.image).then(url => this.$set(this.images, source._id, url));
                     }
                 } catch (error) {
                     const ex = error as Error;

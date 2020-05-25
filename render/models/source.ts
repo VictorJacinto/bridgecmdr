@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Model from "../foundation/data/model";
+import Model from "../app/support/data/model";
 
 export default interface Source extends Model {
     title: string;
