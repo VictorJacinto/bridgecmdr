@@ -18,37 +18,52 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { identity } from "lodash";
 import { ReadonlyDeep } from "type-fest";
-import Vue, { PropType } from "vue";
+import Vue, { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { CombinedVueInstance } from "vue/types/vue";
+import { BButton, BField, BIcon } from "../../../foundation/components/buefy-tsx";
 import { mapActions, mapState } from "../../../foundation/helpers/vuex";
+import { is, maybe, prop } from "../../../foundation/validation/valid";
 import { RootState } from "../../store/root-state";
 import Model from "../../support/data/model";
 import { ModuleEx, StateEx } from "../../support/data/store";
 
-type DataSourceEvents = {
+type DataSourceEvents<M extends Model> = {
+    onChange(items: ReadonlyDeep<M>[]): void;
 };
 
 type DataSourceSlots<M extends Model> = {
-    default: { items: ReadonlyDeep<M>[] };
+    default: { items: ReadonlyDeep<M>[]; loading: boolean };
 };
 
 type BaseModuleEx<M extends Model> = ModuleEx<M, RootState>;
 
 export const dataSource = identity(
     <M extends Model>(namespace: string) =>
-        tsx.componentFactoryOf<DataSourceEvents, DataSourceSlots<M>>().create({
+        tsx.componentFactoryOf<DataSourceEvents<M>, DataSourceSlots<M>>().create({
             name:  "DataSource",
             props: {
-                selector: { type: Object as PropType<PouchDB.Find.FindRequest<M>>, default: undefined },
+                selector: prop(maybe.object<PouchDB.Find.FindRequest<M>>()),
+                tag:      prop(is.string.notEmpty, "div"),
             },
             data: function () {
                 return {
-                    loading: true,
+                    error: null as Error|null,
                 };
             },
             computed: {
                 ...mapState<StateEx<M>>()(namespace, ["items"]),
+                loading(): boolean {
+                    return this.$data.$loadingWeight > 0;
+                },
+            },
+            watch: {
+                selector: {
+                    deep: true,
+                    handler() {
+                        this.refresh();
+                    },
+                },
             },
             methods: {
                 ...mapActions<BaseModuleEx<M>>()(namespace, {
@@ -56,20 +71,55 @@ export const dataSource = identity(
                     findSome: "find",
                 }),
                 async refresh() {
-                    if (this.selector) {
-                        await this.findSome(this.selector);
-                    } else {
-                        await this.getAll();
+                    try {
+                        if (this.selector) {
+                            await this.$loading.while(this.findSome(this.selector));
+                        } else {
+                            await this.$loading.while(this.getAll());
+                        }
+
+                        this.error = null;
+                    } catch (error) {
+                        this.error = error;
                     }
                 },
             },
             mounted() {
                 this.refresh();
             },
-            render() {
-                return (<div>{
-                    this.$scopedSlots.default && this.$scopedSlots.default({ items: this.items })
-                }</div>);
+            render(): VNode {
+                const RootTag = this.tag;
+
+                if (this.error) {
+                    return (
+                        <RootTag class="section">
+                            <div class="content has-text-danger has-text-centered">
+                                <BField><BIcon icon="emoticon-sad" size="is-large" type="is-danger"/></BField>
+                                <BField>There was an error loading.</BField>
+                                <BField><BButton label="Try again" type="is-warning" onClick={() => this.refresh()}/></BField>
+                                <BField>{this.error.message}</BField>
+                            </div>
+                        </RootTag>
+                    );
+                }
+
+                if (this.loading || this.items.length > 0) {
+                    return (<RootTag>{
+                        this.$scopedSlots.default && this.$scopedSlots.default({
+                            items: this.items, loading: this.loading,
+                        })
+                    }</RootTag>);
+                }
+
+                return (
+                    <RootTag class="section">
+                        <div class="content has-text-centered">
+                            <BField><BIcon icon="set-none" size="is-large" type="is-danger"/></BField>
+                            <BField>There are no items.</BField>
+                            <BField><BButton label="Refresh" type="is-primary" onClick={() => this.refresh()}/></BField>
+                        </div>
+                    </RootTag>
+                );
             },
         }),
 );
@@ -78,21 +128,14 @@ type DataSourceProps<M extends Model> = {
     selector?: PouchDB.Find.FindRequest<M>|undefined;
 };
 
-type DataSourceData = {
-    loading: boolean;
-};
-
-type DataSourceComputed<M extends Model> = {
-    items: ReadonlyDeep<M>[];
-};
-
 type DataSourceMethods = {
     refresh(): Promise<void>;
 };
 
-type DataSourceBase<M extends Model> = CombinedVueInstance<Vue, DataSourceData, DataSourceMethods, DataSourceComputed<M>, DataSourceProps<M>>;
+type DataSourceBase<M extends Model> = CombinedVueInstance<Vue, unknown, DataSourceMethods, unknown, DataSourceProps<M>>;
 
-export type DataSourceConstructor<M extends Model> = tsx.TsxComponent<DataSourceBase<M>, DataSourceProps<M>, DataSourceEvents, DataSourceSlots<M>>;
+export type DataSourceConstructor<M extends Model> = tsx.TsxComponent<DataSourceBase<M>, DataSourceProps<M>, DataSourceEvents<M>, DataSourceSlots<M>>;
 
 type DataSource<M extends Model> = InstanceType<DataSourceConstructor<M>>;
+// noinspection JSUnusedGlobalSymbols
 export default DataSource;

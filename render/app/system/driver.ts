@@ -30,11 +30,11 @@ export enum DriverCapabilities {
     CAN_DECOUPLE_AUDIO_OUTPUT = 1 << 1,
 }
 
-export interface DriverDescriptor {
+export type DriverDescriptor = {
     guid:         string;
     title:        string;
     capabilities: DriverCapabilities;
-}
+};
 
 export interface DriverConstructor {
     about(): DriverDescriptor;
@@ -98,7 +98,7 @@ export default abstract class Driver {
      *
      * @param capabilities The capabilities of the driver
      */
-    constructor(capabilities: DriverCapabilities) {
+    protected constructor(capabilities: DriverCapabilities) {
         this.capabilities  = capabilities;
 
         // Ensure all current properties are read-only.

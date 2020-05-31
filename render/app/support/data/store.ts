@@ -1,7 +1,6 @@
 import { assign, findIndex, identity, iteratee, tap } from "lodash";
 import { ReadonlyDeep } from "type-fest";
 import { ActionContext,  Module, Store as StoreBase } from "vuex";
-import { SetNullable } from "../../../foundation/helpers/type";
 import Database, { Document, GetDocument, Indices } from "./database";
 import Model from "./model";
 
@@ -16,7 +15,7 @@ export interface ModuleEx<M extends Model, R extends object> extends Module<Stat
     readonly namespaced: true;
     state: StateEx<M>;
     readonly getters: {
-        empty(): SetNullable<M>;
+        empty(): Partial<M>;
     };
     readonly mutations: {
         refresh(state: StateEx<M>, items: ReadonlyDeep<M>[]): void;
@@ -50,7 +49,7 @@ export type ActionTreeEx<M extends Model, R extends object, Doc extends M | Docu
 export interface ModuleOptionsEx<M extends Model, R extends object, Doc extends M | Document<object> = M> {
     name: string;
     indices?: Indices[];
-    empty: () => SetNullable<M>;
+    empty: () => Partial<M>;
     actions?: ActionTreeEx<M, R, Doc>;
 }
 
@@ -78,27 +77,26 @@ const Store = {
 
         const getters: ModuleEx<M, R>["getters"] = {
             empty: options.empty,
-            // Nothing right now...
         };
 
         const mutations: ModuleEx<M, R>["mutations"] = {
             /** Replaces the items in the store, refreshing the data. */
-            refresh: (_state, items: ReadonlyDeep<M>[]) => { _state.items = items },
+            refresh: (_state, items) => { _state.items = items },
 
             /** Updates the current item in the store, show the data.  */
-            show: (_state, current: ReadonlyDeep<M>) => { _state.current = current },
+            show: (_state, current) => { _state.current = current },
 
             /** Appends an item to the store.  */
-            append: (_state, item: ReadonlyDeep<M>) => { _state.items.push(item) },
+            append: (_state, item) => { _state.items.push(item) },
 
             /** Replaces an item in the store, updating it.  */
-            replace: (_state, item: ReadonlyDeep<M>) => { replaceItem(_state, item) },
+            replace: (_state, item) => { replaceItem(_state, item) },
 
             /** Deletes an item from the store.  */
-            delete: (_state, id: string) => { removeItem(_state, id) },
+            delete: (_state, id) => { removeItem(_state, id) },
         };
 
-        const actions: ModuleEx<M, R>["actions"]/* ActionTree<StateEx<M>, R>*/ = {
+        const actions: ModuleEx<M, R>["actions"] = {
             /** Compacts the database. */
             compact: async () => {
                 const connection = await database;
@@ -114,13 +112,13 @@ const Store = {
             },
 
             /** Gets the specified record from the database. */
-            get: async ({ commit }, id: string) => {
+            get: async ({ commit }, id) => {
                 const connection = await database;
 
                 commit("show", await connection.get(id));
             },
 
-            find: async ({ commit }, selector: PouchDB.Find.FindRequest<M>) => {
+            find: async ({ commit }, selector) => {
                 const connection = await database;
 
                 const docs = await connection.query(async function (db) {
@@ -133,14 +131,14 @@ const Store = {
             },
 
             /** Adds a new record to the database. */
-            add: async ({ commit }, record: M) => {
+            add: async ({ commit }, record) => {
                 const connection = await database;
 
                 commit("append", await connection.add(record as Doc));
             },
 
             /** Updates a record in the database. */
-            update: async ({ commit }, record: M) => {
+            update: async ({ commit }, record) => {
                 const connection = await database;
                 const doc = await connection.get(record._id);
 
@@ -150,7 +148,7 @@ const Store = {
             },
 
             /** Removes a record from the database. */
-            remove: async ({ commit }, id: string) => {
+            remove: async ({ commit }, id) => {
                 const connection = await database;
 
                 await connection.remove(id);

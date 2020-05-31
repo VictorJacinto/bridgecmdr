@@ -15,26 +15,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import Vue from "vue";
+import { PropOptions } from "vue";
 
-const DoesValidation = Vue.extend({
-    methods: {
-        unvalidated() {
-            return {
-                "message": "",
-            };
-        },
-        validationState(errors: string[]) {
-            return {
-                "message":     errors.length ? errors : "",
-                "customClass": errors.length ? "has-text-danger" : undefined,
-                "type":        errors.length ? "is-danger" : undefined,
-            };
-        },
-    },
-});
+export type Constructor = { new (...args: any[]): any };
+export type ConstructorFor<T> = { new (...args: any[]): T };
+export type BaseType<T> = T extends undefined ? never : T;
 
-export type DoesValidationConstructor = typeof DoesValidation;
-type DoesValidation = InstanceType<DoesValidationConstructor>;
-export default DoesValidation;
+export type DefaultOf<T> = T|(() => T);
+export type KnownRequirement<R> = R extends true ? { required: true } : { };
+export type KnownPropOptions<T, R> = Omit<PropOptions<T>, "required"> & KnownRequirement<R>;

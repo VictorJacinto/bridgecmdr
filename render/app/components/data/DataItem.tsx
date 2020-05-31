@@ -16,89 +16,106 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { identity, isNil } from "lodash";
+import { identity } from "lodash";
+import { ReadonlyDeep } from "type-fest";
+import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { CombinedVueInstance } from "vue/types/vue";
-import { SetNullable } from "../../../foundation/helpers/type";
-import { mapActions, mapGetters, mapState } from "../../../foundation/helpers/vuex";
+import { BButton, BField, BIcon } from "../../../foundation/components/buefy-tsx";
+import { mapActions, mapState } from "../../../foundation/helpers/vuex";
+import { is, prop } from "../../../foundation/validation/valid";
 import { RootState } from "../../store/root-state";
 import Model from "../../support/data/model";
 import { ModuleEx, StateEx } from "../../support/data/store";
+import { IDPattern } from "../../support/validation";
 
-type DataItemEvents = {
+type DataItemEvents<M extends Model> = {
+    onInput(value: ReadonlyDeep<M>|null): void;
 };
 
 type DataItemSlots<M extends Model> = {
-    default: { current: SetNullable<M> };
+    default: { current: ReadonlyDeep<M>|null; loading: boolean };
 };
 
 type BaseModuleEx<M extends Model> = ModuleEx<M, RootState>;
 
 export const dataItem = identity(
     <M extends Model>(namespace: string) =>
-        tsx.componentFactoryOf<DataItemEvents, DataItemSlots<M>>().create({
+        tsx.componentFactoryOf<DataItemEvents<M>, DataItemSlots<M>>().create({
             name:  "DataItem",
             props: {
-                id: { type: String, default: undefined },
+                id:  prop(is.string.matches(IDPattern)),
+                tag: prop(is.string.notEmpty, "div"),
             },
             data: function () {
-                const getters = mapGetters<BaseModuleEx<M>>()(namespace, { getEmpty: "empty" });
-
                 return {
-                    loading: true,
-                    item:    getters.getEmpty.call(this),
+                    error: null as Error|null,
                 };
             },
+            computed: {
+                ...mapState<StateEx<M>>()(namespace, ["current"]),
+                loading(): boolean {
+                    return this.$data.$loadingWeight > 0;
+                },
+            },
+            watch: {
+                id() {
+                    this.refresh();
+                },
+            },
             methods: {
-                ...mapState<StateEx<M>>()(namespace, { getCurrent: "current" }),
-                ...mapGetters<BaseModuleEx<M>>()(namespace, { getEmpty: "empty" }),
                 ...mapActions<BaseModuleEx<M>>()(namespace, { getItem: "get" }),
                 async refresh() {
-                    this.loading = true;
-                    this.item = this.getEmpty();
-                    if (!isNil(this.id)) {
-                        try {
-                            await this.getItem(this.id);
-
-                            this.item = this.getCurrent() as SetNullable<M>;
-                        } catch (error) {
-                            console.error(error);
-                        }
+                    try {
+                        await this.getItem(this.id);
+                        this.$emit("input", this.current);
+                        this.error = null;
+                    } catch (error) {
+                        this.error = error;
                     }
-
-                    this.loading = false;
                 },
             },
             mounted() {
                 this.refresh();
             },
-            render() {
-                return (<div>{
-                    this.$scopedSlots.default && this.$scopedSlots.default({ current: this.item })
-                }</div>);
+            render(): VNode {
+                const RootTag = this.tag;
+
+                if (this.error) {
+                    return (
+                        <RootTag class="section">
+                            <div class="content has-text-danger has-text-centered">
+                                <BField><BIcon icon="emoticon-sad" size="is-large" type="is-danger"/></BField>
+                                <BField>There was an error finding {this.id}.</BField>
+                                <BField><BButton label="Try again" type="is-warning" onClick={() => this.refresh()}/></BField>
+                                <BField>{this.error.message}</BField>
+                            </div>
+                        </RootTag>
+                    );
+                }
+
+                return (<RootTag>{
+                    this.$scopedSlots.default && this.$scopedSlots.default({
+                        current: this.current, loading: this.loading,
+                    })
+                }</RootTag>);
             },
         }),
 );
 
 type DataItemProps = {
     id?: string|undefined;
-};
-
-type DataItemData<M extends Model> = {
-    loading: boolean;
-    item: SetNullable<M>;
-};
-
-type DataItemComputed = {
+    tag?: string|undefined;
 };
 
 type DataItemMethods = {
     refresh(): Promise<void>;
 };
 
-type DataItemBase<M extends Model> = CombinedVueInstance<Vue, DataItemData<M>, DataItemComputed, DataItemMethods, DataItemProps>;
+type DataItemBase = CombinedVueInstance<Vue, unknown, DataItemMethods, unknown, DataItemProps>;
 
-export type DataItemConstructor<M extends Model> = tsx.TsxComponent<DataItemBase<M>, DataItemProps, DataItemEvents, DataItemSlots<M>>;
+export type DataItemConstructor<M extends Model> = tsx.TsxComponent<DataItemBase, DataItemProps, DataItemEvents<M>, DataItemSlots<M>>;
 
 type DataItem<M extends Model> = InstanceType<DataItemConstructor<M>>;
+// noinspection JSUnusedGlobalSymbols
 export default DataItem;

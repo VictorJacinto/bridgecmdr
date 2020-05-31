@@ -16,12 +16,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-type MakeNullable<T> = {
-    [K in keyof T]: T[K]|null;
-};
+import ow, { BasePredicate } from "ow";
+import { PropValidator } from "vue/types/options";
 
-export type SetNullable<BaseType, Keys extends keyof BaseType = keyof BaseType> =
-    Omit<BaseType, Keys> &
-    MakeNullable<Pick<BaseType, Keys>> extends infer InferredType ?
-        { [K in keyof InferredType]: InferredType[K] } :
-        never;
+type DefaultProp<T> =
+    T extends Function ? T :
+    T extends unknown[] ? () => T :
+    T extends object ? () => T :
+    T;
+
+export function owProp<T, D extends T>(predicate: BasePredicate<T>, $default?: DefaultProp<D>): PropValidator<T> {
+    return {
+        validator: (value: unknown): value is T => ow.isValid(value, predicate),
+        default:   $default,
+    };
+}

@@ -23,9 +23,9 @@ const ties = Store.of<Tie, RootState>({
         { switchId: ["switchId"] },
     ],
     empty: () => ({
-        _id:            null,
-        sourceId:       null,
-        switchId:       null,
+        _id:            undefined,
+        sourceId:       undefined,
+        switchId:       undefined,
         inputChannel:   0,
         outputChannels: {
             audio: 0,

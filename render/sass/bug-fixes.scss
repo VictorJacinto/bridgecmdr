@@ -22,3 +22,9 @@ a.card {
     &:visited { color: $text; }
     &:focus { color: $text; }
 }
+
+.field.has-addons {
+    .dropdown.control + .dropdown.control {
+        margin-left: inherit;
+    }
+}

@@ -16,25 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Vue from "vue";
+export type Lit = string | number | boolean | undefined | null | void | {};
+export const tuple = <T extends Lit[]>(...args: T): T => args;
 
-const DoesValidation = Vue.extend({
-    methods: {
-        unvalidated() {
-            return {
-                "message": "",
-            };
-        },
-        validationState(errors: string[]) {
-            return {
-                "message":     errors.length ? errors : "",
-                "customClass": errors.length ? "has-text-danger" : undefined,
-                "type":        errors.length ? "is-danger" : undefined,
-            };
-        },
-    },
-});
-
-export type DoesValidationConstructor = typeof DoesValidation;
-type DoesValidation = InstanceType<DoesValidationConstructor>;
-export default DoesValidation;
+export type TupleToUnion<T> = T extends readonly [...unknown[]] ? T[number] : never;

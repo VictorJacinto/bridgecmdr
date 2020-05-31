@@ -8,7 +8,9 @@ const routes = [
     route("home", "/", DashboardPage),
 
     // Settings
-    route("settings", "/settings",          SettingsPage),
+    route("settings", "/settings", SettingsPage),
+
+    // Switches
     route("switches", "/settings/switches", SwitchList),
 ];
 

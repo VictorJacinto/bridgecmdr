@@ -18,16 +18,32 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { ColorModifiers } from "buefy/types/helpers";
 import Vue from "vue";
+import { RawLocation } from "vue-router";
 import * as tsx from "vue-tsx-support";
+import { InputHTMLAttributes } from "vue-tsx-support/types/dom";
 import { CombinedVueInstance } from "vue/types/vue";
+import { tuple, TupleToUnion } from "../helpers/typing";
 
-export type SizeModifiers = "is-small" | "is-medium" | "is-large";
-export type VerticalPositionModifiers = "is-bottom" | "is-top";
-export type HorizontalPositionModifiers = "is-left" | "is-right";
+export const KnownColorModifiers = tuple("is-white", "is-black", "is-light", "is-dark", "is-primary", "is-info", "is-success", "is-warning", "is-danger");
+export type KnownColorModifiers = TupleToUnion<typeof KnownColorModifiers>;
 
-type Model<T> = {
-    vModel?: T;
-};
+export const SizeModifiers = tuple("is-small", "is-medium", "is-large");
+export type SizeModifiers = TupleToUnion<typeof SizeModifiers>;
+
+export const VerticalPositionModifiers = tuple("is-bottom", "is-top");
+export type VerticalPositionModifiers = TupleToUnion<typeof VerticalPositionModifiers>;
+
+export const HorizontalPositionModifiers = tuple("is-left", "is-right");
+export type HorizontalPositionModifiers = TupleToUnion<typeof HorizontalPositionModifiers>;
+
+export const PopupPositionModifiers = tuple("is-top-right", "is-top-left", "is-bottom-left", "is-bottom-right");
+export type PopupPositionModifiers = TupleToUnion<typeof PopupPositionModifiers>;
+
+export const GlobalPositions = tuple(...PopupPositionModifiers, ...VerticalPositionModifiers);
+export type GlobalPositions = TupleToUnion<typeof GlobalPositions>;
+
+export const AllPositions = tuple(...GlobalPositions, ...HorizontalPositionModifiers);
+export type AllPositions = TupleToUnion<typeof AllPositions>;
 
 type BFormElementProps = {
     disabled?: boolean;
@@ -53,11 +69,23 @@ type BFormElementMethods = {
     focus(): void;
 };
 
-type BCheckRadioSelectValue = string|number|boolean|Function|object|unknown[];
+type BActionElementProps<E extends string> = {
+    tag?: E|"a"|"router-link";
+    // <a href>
+    href?: string;
+    // <router-link to>
+    to?: RawLocation;
+};
 
-type BCheckRadioProps =  Model<BCheckRadioSelectValue> & {
-    value?: BCheckRadioSelectValue;
-    nativeValue?: BCheckRadioSelectValue;
+type BActionElementEvents = {
+    onClick: () => void;
+};
+
+export type BAnyValue = string|number|boolean|Function|object|unknown[];
+
+type BCheckRadioProps =  {
+    value?: BAnyValue;
+    nativeValue?: BAnyValue;
     type?: ColorModifiers;
     required?: boolean;
     name?: string;
@@ -65,10 +93,10 @@ type BCheckRadioProps =  Model<BCheckRadioSelectValue> & {
 };
 
 type BCheckRadioEvents = {
-    onInput: (value: BCheckRadioSelectValue) => void;
+    onInput: (value: BAnyValue) => void;
 };
 
-type BAutocompleteProps = BFormElementProps & Model<number|string> & {
+type BAutocompleteProps = BFormElementProps & {
     value?: number|string;
     data?: unknown[];
     field?: string;
@@ -84,6 +112,7 @@ type BAutocompleteProps = BFormElementProps & Model<number|string> & {
     iconRight?: string;
     iconRightClickable?: boolean;
     appendToBody?: boolean;
+    placeholder?: string;
 };
 
 type BAutocompleteEvents = BFormElementEvents & {
@@ -104,11 +133,11 @@ type BBAutocompleteMethods = BFormElementMethods & {
 };
 
 export type BAutocomplete =
-    CombinedVueInstance<Vue, {}, BBAutocompleteMethods, {}, BAutocompleteProps>;
+    CombinedVueInstance<Vue, unknown, BBAutocompleteMethods, unknown, BAutocompleteProps>;
 export const BAutocomplete =
     tsx.ofType<BAutocompleteProps, BAutocompleteEvents, BAutocompleteSlots>().convert(Vue.component("BAutocomplete"));
 
-type BButtonProps = {
+type BButtonProps = BActionElementProps<"button"|"input"|"nuxt-link"> & {
     type?: ColorModifiers|object;
     size?: SizeModifiers;
     label?: string;
@@ -124,20 +153,18 @@ type BButtonProps = {
     active?: boolean;
     hovered?: boolean;
     selected?: boolean;
+    disabled?: boolean;
     nativeType?: "buttons"|"submit"|"reset";
-    tag?: "button"|"a"|"input"|"router-link"|"nuxt-link";
 };
 
-type BButtonEvents = {
-    onClick: () => void;
-};
+type BButtonEvents = BActionElementEvents;
 
 export type BButton =
-    CombinedVueInstance<Vue, {}, {}, {}, BButtonProps>;
+    CombinedVueInstance<Vue, unknown, unknown, unknown, BButtonProps>;
 export const BButton =
     tsx.ofType<BButtonProps, BButtonEvents>().convert(Vue.component("BButton"));
 
-type BCarouselProps = Model<number> & {
+type BCarouselProps = {
     value?: number;
     animated?: "fade" | "slide";
     interval?: number;
@@ -180,7 +207,7 @@ type BCarouselSlots = {
 };
 
 export type BCarousel =
-    CombinedVueInstance<Vue, {}, {}, {}, BCarouselProps>;
+    CombinedVueInstance<Vue, unknown, unknown, unknown, BCarouselProps>;
 export const BCarousel =
     tsx.ofType<BCarouselProps, BCarouselEvents, BCarouselSlots>().convert(Vue.component("BCarousel"));
 
@@ -192,7 +219,7 @@ export type BCarouselListItem = {
     image: string;
 };
 
-type BCarouselListProps = Model<number> & {
+type BCarouselListProps = {
     config?: object;
     data?: BCarouselListItem[];
     value?: number;
@@ -221,20 +248,20 @@ type BCarouselListSlots = {
 };
 
 export type BCarouselList =
-    CombinedVueInstance<Vue, {}, {}, {}, BCarouselListProps>;
+    CombinedVueInstance<Vue, unknown, unknown, unknown, BCarouselListProps>;
 export const BCarouselList =
     tsx.ofType<BCarouselListProps, BCarouselListEvents, BCarouselListSlots>().convert(Vue.component("BCarouselList"));
 
 type BCheckboxProps = BCheckRadioProps & {
     indeterminate?: boolean;
-    trueValue?: BCheckRadioSelectValue;
-    falseValue?: BCheckRadioSelectValue;
+    trueValue?: BAnyValue;
+    falseValue?: BAnyValue;
 };
 
 type BCheckboxEvents = BCheckRadioEvents;
 
 export type BCheckbox =
-    CombinedVueInstance<Vue, {}, {}, {}, BCheckboxProps>;
+    CombinedVueInstance<Vue, unknown, unknown, unknown, BCheckboxProps>;
 export const BCheckbox =
     tsx.ofType<BCheckboxProps, BCheckboxEvents>().convert(Vue.component("BCheckbox"));
 
@@ -246,9 +273,68 @@ type BCheckboxButtonProps = BCheckRadioProps & {
 type BCheckboxButtonEvents = BCheckRadioEvents;
 
 export type BCheckboxButton =
-    CombinedVueInstance<Vue, {}, {}, {}, BCheckboxButtonProps>;
+    CombinedVueInstance<Vue, unknown, unknown, unknown, BCheckboxButtonProps>;
 export const BCheckboxButton =
     tsx.ofType<BCheckboxButtonProps, BCheckboxButtonEvents>().convert(Vue.component("BCheckboxButton"));
+
+type BDropdownProps = {
+    value?: BAnyValue;
+    disabled?: boolean;
+    hoverable?: boolean;
+    inline?: boolean;
+    scrollable?: boolean;
+    maxHeight?: number|string;
+    position?: PopupPositionModifiers;
+    mobileModal?: boolean;
+    ariaRole?: "menu"|"list"|"dialog";
+    animation?: string;
+    multiple?: boolean;
+    trapFocus?: boolean;
+    closeOnClick?: boolean;
+    canClose?: boolean|("escape"|"outside")[];
+    expanded?: boolean;
+    appendToBody?: boolean;
+    appendToBodyCopyParent?: boolean;
+};
+
+type BDropdownEvents = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onChange: (value: any) => void;
+    onActiveChange: (active: boolean) => void;
+};
+
+type BDropdownSlots = {
+    trigger: { active: boolean };
+};
+
+type BDropdownMethods = {
+    toggle(): void;
+};
+
+export type BDropdown =
+    CombinedVueInstance<Vue, unknown, BDropdownMethods, unknown, BDropdownProps>;
+export const BDropdown =
+    tsx.ofType<BDropdownProps, BDropdownEvents, BDropdownSlots>().convert(Vue.component("BDropdown"));
+
+type BDropdownItemProps = {
+    value?: BAnyValue;
+    separator?: boolean;
+    disabled?: boolean;
+    custom?: boolean;
+    focusable?: boolean;
+    paddingless?: boolean;
+    hasLink?: boolean;
+    ariaRole?: string;
+};
+
+type BDropdownItemEvents = {
+    onClick: () => void;
+};
+
+export type BDropdownItem =
+    CombinedVueInstance<Vue, unknown, unknown, unknown, BDropdownItemProps>;
+export const BDropdownItem =
+    tsx.ofType<BDropdownItemProps, BDropdownItemEvents, unknown>().convert(Vue.component("BDropdownItem"));
 
 type BFieldProps = {
     type?: ColorModifiers|object;
@@ -266,7 +352,7 @@ type BFieldProps = {
 };
 
 export type BField =
-    CombinedVueInstance<Vue, {}, {}, {}, BFieldProps>;
+    CombinedVueInstance<Vue, unknown, unknown, unknown, BFieldProps>;
 export const BField =
     tsx.ofType<BFieldProps>().convert(Vue.component("BField"));
 
@@ -280,7 +366,7 @@ type BIconProps = {
 };
 
 export type BIcon =
-    CombinedVueInstance<Vue, {}, {}, {}, BIconProps>;
+    CombinedVueInstance<Vue, unknown, unknown, unknown, BIconProps>;
 export const BIcon =
     tsx.ofType<BIconProps>().convert(Vue.component("BIcon"));
 
@@ -288,16 +374,16 @@ type BInputType = "button"|"checkbox"|"color"|"date"|"datetime-local"|"email"|"f
 "month"|"number"|"password"|"radio"|"range"|"reset"|"search"|"submit"|"tel"|"text"|"url"|"week"|
 "datetime";
 
-type BInputProps = BFormElementProps & Model<number|string> & {
-    value: number|string;
-    type: BInputType;
+type BInputProps = BFormElementProps & {
+    value?: number|string;
+    type?: BInputType;
     passwordReveal?: boolean;
     iconClickable?: boolean;
     hasCounter?: boolean;
     customClass?: string;
     iconRight?: string;
     iconRightClickable?: boolean;
-};
+} & Omit<InputHTMLAttributes, "size"|"type">;
 
 type BInputEvents = BFormElementEvents & {
     onInput: (value: string|number) => void;
@@ -308,7 +394,7 @@ type BInputEvents = BFormElementEvents & {
 type BInputMethods = BFormElementMethods;
 
 export type BInput =
-    CombinedVueInstance<Vue, {}, BInputMethods, {}, BInputProps>;
+    CombinedVueInstance<Vue, unknown, BInputMethods, unknown, BInputProps>;
 export const BInput =
     tsx.ofType<BInputProps, BInputEvents>().convert(Vue.component("BInput"));
 
@@ -330,20 +416,20 @@ type BNavbarSlots = {
 };
 
 export type BNavbar =
-    CombinedVueInstance<Vue, {}, {}, {}, BNavnarProps>;
+    CombinedVueInstance<Vue, unknown, unknown, unknown, BNavnarProps>;
 export const BNavbar =
-    tsx.ofType<BNavnarProps, {}, BNavbarSlots>().convert(Vue.component("BNavbar"));
+    tsx.ofType<BNavnarProps, unknown, BNavbarSlots>().convert(Vue.component("BNavbar"));
 
-type BNavbarItemProps = {
-    tag?: "a"|"router-link"|"div";
+type BNavbarItemProps = BActionElementProps<"div"> & {
     activate?: boolean;
-    [key: string]: unknown;
 };
 
+type BNavbarItemEvents = BActionElementEvents;
+
 export type BNavbarItem =
-    CombinedVueInstance<Vue, {}, {}, {}, BNavbarItemProps>;
+    CombinedVueInstance<Vue, unknown, unknown, unknown, BNavbarItemProps>;
 export const BNavbarItem =
-    tsx.ofType<BNavbarItemProps>().convert(Vue.component("BNavbarItem"));
+    tsx.ofType<BNavbarItemProps, BNavbarItemEvents>().convert(Vue.component("BNavbarItem"));
 
 type BNavbarDropdownProps = {
     label?: string;
@@ -357,11 +443,11 @@ type BNavbarDropdownProps = {
 };
 
 export type BNavbarDropdown =
-    CombinedVueInstance<Vue, {}, {}, {}, BNavbarDropdownProps>;
+    CombinedVueInstance<Vue, unknown, unknown, unknown, BNavbarDropdownProps>;
 export const BNavbarDropdown =
     tsx.ofType<BNavbarDropdownProps>().convert(Vue.component("BNavbarDropdown"));
 
-type BNumberinputProps = BFormElementProps & Model<number|string> & {
+type BNumberinputProps = BFormElementProps & {
     value?: number;
     min?: number|string;
     max?: number|string;
@@ -380,7 +466,7 @@ type BNumberinputEvents = BFormElementEvents & {
 type BNumberinputMethods = BFormElementMethods;
 
 export type BNumberinput =
-    CombinedVueInstance<Vue, {}, BNumberinputMethods, {}, BNumberinputProps>;
+    CombinedVueInstance<Vue, unknown, BNumberinputMethods, unknown, BNumberinputProps>;
 export const BNumberinput =
     tsx.ofType<BNumberinputProps, BNumberinputEvents>().convert(Vue.component("BNumberinput"));
 
@@ -389,7 +475,7 @@ type BRadioProps = BCheckRadioProps;
 type BRadioEvents = BCheckRadioEvents;
 
 export type BRadio =
-    CombinedVueInstance<Vue, {}, {}, {}, BRadioProps>;
+    CombinedVueInstance<Vue, unknown, unknown, unknown, BRadioProps>;
 export const BRadio =
     tsx.ofType<BRadioProps, BRadioEvents>().convert(Vue.component("BRadio"));
 
@@ -401,51 +487,67 @@ type BRadioButtonProps = BCheckRadioProps & {
 type BRadioButtonEvents = BCheckRadioEvents;
 
 export type BRadioButton =
-    CombinedVueInstance<Vue, {}, {}, {}, BRadioButtonProps>;
+    CombinedVueInstance<Vue, unknown, unknown, unknown, BRadioButtonProps>;
 export const BRadioButton =
     tsx.ofType<BRadioButtonProps, BRadioButtonEvents>().convert(Vue.component("BRadioButton"));
 
-type BSelectProps = BFormElementProps & Model<BCheckRadioSelectValue> & {
-    value?: BCheckRadioSelectValue;
+type BSelectProps = BFormElementProps & {
+    value?: BAnyValue;
     placeholder?: string;
     multiple?: boolean;
     nativeSize?: number|string;
 };
 
 type BSelectEvents = BFormElementEvents & {
-    onInput: (value: BCheckRadioSelectValue) => void;
+    onInput: (value: BAnyValue) => void;
 };
 
 type BSelectMethods = BFormElementMethods;
 
 export type BSelect =
-    CombinedVueInstance<Vue, {}, BSelectMethods, {}, BSelectProps>;
+    CombinedVueInstance<Vue, unknown, BSelectMethods, unknown, BSelectProps>;
 export const BSelect =
     tsx.ofType<BSelectProps, BSelectEvents>().convert(Vue.component("BSelect"));
 
-type BSwitchProps = Model<BCheckRadioSelectValue|Date> & {
-    value?: BCheckRadioSelectValue|Date;
-    nativeValue?: BCheckRadioSelectValue|Date;
+type BSwitchProps = {
+    value?: BAnyValue|Date;
+    nativeValue?: BAnyValue|Date;
     disabled?: boolean;
     type?: string;
     passiveType?: string;
     name?: string;
     required?: boolean;
     size?: string;
-    trueValue?: BCheckRadioSelectValue|Date;
-    falseValue?: BCheckRadioSelectValue|Date;
+    trueValue?: BAnyValue|Date;
+    falseValue?: BAnyValue|Date;
     rounded?: boolean;
     outlined?: boolean;
 };
 
+type BSkeletonProps = {
+    active?: boolean;
+    animated?: boolean;
+    width?: number|string;
+    height?: number|string;
+    circle?: boolean;
+    rounded?: boolean;
+    count?: number;
+    size?: string;
+};
+
+export type BSkeleton =
+    CombinedVueInstance<Vue, unknown, unknown, unknown, BSkeletonProps>;
+export const BSkeleton =
+    tsx.ofType<BSkeletonProps>().convert(Vue.component("BSkeleton"));
+
 type BSwitchEvents = BCheckRadioEvents;
 
 export type BSwitch =
-    CombinedVueInstance<Vue, {}, {}, {}, BSwitchProps>;
+    CombinedVueInstance<Vue, unknown, unknown, unknown, BSwitchProps>;
 export const BSwitch =
     tsx.ofType<BSwitchProps, BSwitchEvents>().convert(Vue.component("BSwitch"));
 
-type BUploadProps = BFormElementProps & Model<File|File[]> & {
+type BUploadProps = BFormElementProps & {
     value?: File|File[];
     multiple?: boolean;
     accept?: string;
@@ -461,6 +563,6 @@ type BUploadEvents = BFormElementEvents & {
 type BUploadMethods = BFormElementMethods;
 
 export type BUpload =
-    CombinedVueInstance<Vue, {}, BUploadMethods, {}, BUploadProps>;
+    CombinedVueInstance<Vue, unknown, BUploadMethods, unknown, BUploadProps>;
 export const BUpload =
     tsx.ofType<BUploadProps, BUploadEvents>().convert(Vue.component("BUpload"));

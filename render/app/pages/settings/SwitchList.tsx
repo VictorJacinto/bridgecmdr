@@ -16,17 +16,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { map } from "lodash";
+import { map, times } from "lodash";
 import * as tsx from "vue-tsx-support";
-import { BButton, BIcon, BNavbar, BNavbarItem } from "../../../foundation/components/buefy-tsx";
+import { BButton, BIcon, BNavbar, BNavbarItem, BSkeleton } from "../../../foundation/components/buefy-tsx";
 import CardList from "../../components/card-list/CardList";
 import CardListEntry from "../../components/card-list/CardListEntry";
 import { dataSource } from "../../components/data/DataSource";
+import ManagesSwitches from "../../concerns/manages-switches";
 import { Switch } from "../../store/modules/switches";
 
 const DataSource = dataSource<Switch>("switches");
 
-const SwitchList = tsx.component({
+const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
     name: "SwitchList",
     render() {
         return (
@@ -40,17 +41,23 @@ const SwitchList = tsx.component({
                     </template>
                 </BNavbar>
                 <DataSource scopedSlots={{
-                    default: ({ items }) => (
+                    default: ({ items, loading }) => (loading ? (
+                        <CardList>{
+                            times(3, () => (
+                                <CardListEntry><BSkeleton/></CardListEntry>
+                            ))
+                        }</CardList>
+                    ) : (
                         <CardList>{
                             map(items, item => (
                                 <CardListEntry>{ item.title }</CardListEntry>
                             ))
                         }</CardList>
-                    ),
+                    )),
                 }}>
                 </DataSource>
                 <div class="fab-container is-right">
-                    <BButton class="fab-item" iconLeft="plus" type="is-primary"/>
+                    <BButton class="fab-item" iconLeft="plus" type="is-primary" onClick={() => this.createSwitch()}/>
                 </div>
             </div>
         );

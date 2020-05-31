@@ -46,8 +46,8 @@ const translate = {
 const sources = Store.of<Source, RootState, SourceDocument>({
     name:  "sources",
     empty: () => ({
-        _id:   null,
-        image: null,
+        _id:   undefined,
+        image: undefined,
         title: "",
     }),
     actions: {

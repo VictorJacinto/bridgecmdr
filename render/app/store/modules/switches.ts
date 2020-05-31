@@ -12,9 +12,9 @@ export interface Switch extends Model {
 const switches = Store.of<Switch, RootState>({
     name:  "switches",
     empty: () => ({
-        _id:      null,
-        driverId: "",
-        path:     "",
+        _id:      undefined,
+        driverId: undefined,
+        path:     "port:",
         title:    "",
     }),
     actions: {

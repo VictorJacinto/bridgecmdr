@@ -26,6 +26,25 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 @import "./components/fab-container";
 @import "./components/svg-icon";
 
+.form {
+    padding: 1.5rem;
+}
+
+.dialog-like .modal-card .modal-card-foot {
+    justify-content: flex-end;
+}
+
+.modal.is-full-screen {
+    .modal-card-head {
+        border-top-left-radius: inherit;
+        border-top-right-radius: inherit;
+    }
+    .modal-card-foot {
+        border-bottom-left-radius: inherit;
+        border-bottom-right-radius: inherit;
+    }
+}
+
 .has-cursor-none {
     cursor: none;
 }

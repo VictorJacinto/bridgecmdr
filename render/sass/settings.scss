@@ -103,9 +103,9 @@ $danger-dark:   materialDarken($danger);
 $danger-invert: $red-invert;
 
 // Dark mode
-$light:              $grey-darker;
+$light:              $grey-dark;
 $light-invert:       materialInvert($light);
-$dark:               $grey-lightest;
+$dark:               $black-ter;
 $dark-invert:        materialInvert($dark);
 $scheme-main:        $black;
 $scheme-main-bis:    $black-bis;
@@ -114,15 +114,31 @@ $scheme-invert-ter:  $white-ter;
 $scheme-invert-bis:  $white-bis;
 $scheme-invert:      $white;
 $background:         $black-ter;
-$border:             $grey-dark;
-$border-hover:       $grey;
-$border-light:       $grey-dark;
-$border-light-hover: $grey;
+$border:             $black-bis;
+$border-hover:       $black-ter;
+$border-light:       $black-ter;
+$border-light-hover: $grey-darker;
 $text:               $grey-lighter;
 $text-invert:        materialInvert($text);
 $text-light:         $grey-light;
 $text-strong:        $grey-lightest;
 
+// Modals
+$modal-card-head-background-color: $border;
+$modal-card-body-background-color: $black;
+$modal-background-background-color: bulmaRgba($black, 0.75);
+$loading-background-legacy: $grey;
+$loading-background: bulmaRgba($black, 0.75);
+
+// Inputs
+$input-arrow: $primary;
+$input-border-color: $border;
+$input-focus-border-color: $primary-dark;
+$input-hover-border-color: $border-hover;
+$input-disabled-border-color: $border;
+$input-disabled-background-color: $border;
+
+// Shadows
 $box-shadow: 0 0.5em 1em -0.125em rgba($black, 0.1), 0 0px 0 1px rgba($black, 0.02);
 $box-link-hover-shadow: 0 0.5em 1em -0.125em rgba($black, 0.1), 0 0 0 1px $link;
 $box-link-active-shadow: inset 0 1px 2px rgba($black, 0.2), 0 0 0 1px $link;
@@ -135,5 +151,8 @@ $navbar-dropdown-boxed-shadow: 0 8px 8px bulmaRgba($black, 0.1), 0 0 0 1px bulma
 $notices-box-shadow: 0 1px 4px rgba($black, 0.12), 0 0 6px rgba($black, 0.04);
 $panel-shadow: 0 0.5em 1em -0.125em rgba($black, 0.1), 0 0px 0 1px rgba($black, 0.02);
 $pagination-shadow-inset: inset 0 1px 2px rgba($black, 0.2);
+
+// Skeleton
+$skeleton-background: linear-gradient(90deg, $black-ter 25%, rgba($black-ter, 0.5) 50%, $black-ter 75%);
 
 @import "~bulma/sass/utilities/derived-variables";
