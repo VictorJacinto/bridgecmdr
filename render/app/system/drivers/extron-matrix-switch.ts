@@ -15,38 +15,42 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+/* eslint-disable class-methods-use-this */
 
 import { openStream, SerialBits, SerialParity, SerialStopBits } from "../../support/streams/command";
-import Driver, { DriverCapabilities, DriverDescriptor }         from "../driver";
+import Driver, { DeviceType, DriverCapabilities, DriverDescriptor } from "../driver";
 
 const capabilities =
-    DriverCapabilities.HAS_MULTIPLE_OUTPUTS |
-    DriverCapabilities.CAN_DECOUPLE_AUDIO_OUTPUT;
-const about = {
+    DriverCapabilities.HasMultipleOutputs |
+    DriverCapabilities.CanDecoupleAudioOutput;
+const about: DriverDescriptor = Object.freeze({
     guid:  "4C8F2838-C91D-431E-84DD-3666D14A6E2C",
     title: "Extron SIS-compatible matrix switch",
+    type:  DeviceType.Switch,
     capabilities,
-};
+});
 
 export default class ExtronMatrixSwitch extends Driver {
     private readonly path: string;
 
-    public static about(): DriverDescriptor {
+    static about(): DriverDescriptor {
         return about;
     }
 
-    public static load(path: string): Promise<Driver> {
+    static load(path: string): Promise<Driver> {
         return Promise.resolve(new ExtronMatrixSwitch(path));
     }
 
-    // eslint-disable-next-line class-methods-use-this
-    public get guid(): string {
+    get guid(): string {
         return about.guid;
     }
 
-    // eslint-disable-next-line class-methods-use-this
-    public get title(): string {
+    get title(): string {
         return about.title;
+    }
+
+    get type(): DeviceType {
+        return about.type;
     }
 
     private constructor(path: string) {
@@ -54,7 +58,7 @@ export default class ExtronMatrixSwitch extends Driver {
         this.path = path;
     }
 
-    public async setTie(inputChannel: number, videoOutputChannel: number, audioOutputChannel: number): Promise<void> {
+    async setTie(inputChannel: number, videoOutputChannel: number, audioOutputChannel: number): Promise<void> {
         console.log(`Extron SIS: ${inputChannel}, ${videoOutputChannel}, ${audioOutputChannel}`);
 
         const videoCommand = `${inputChannel}*${videoOutputChannel}%`;
@@ -79,18 +83,15 @@ export default class ExtronMatrixSwitch extends Driver {
         await connection.close();
     }
 
-    // eslint-disable-next-line class-methods-use-this
-    public powerOn(): Promise<void> {
+    powerOn(): Promise<void> {
         return Promise.resolve();
     }
 
-    // eslint-disable-next-line class-methods-use-this
-    public powerOff(): Promise<void> {
+    powerOff(): Promise<void> {
         return Promise.resolve();
     }
 
-    // eslint-disable-next-line class-methods-use-this
-    public unload(): Promise<void> {
+    unload(): Promise<void> {
         return Promise.resolve();
     }
 }

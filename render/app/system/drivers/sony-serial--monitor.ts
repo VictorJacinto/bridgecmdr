@@ -15,37 +15,41 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+/* eslint-disable class-methods-use-this */
 
 import { openStream, SerialBits, SerialParity, SerialStopBits } from "../../support/streams/command";
-import Driver, { DriverCapabilities, DriverDescriptor }         from "../driver";
+import Driver, { DeviceType, DriverCapabilities, DriverDescriptor } from "../driver";
 import { Address, AddressKind, Command, CommandBlock }          from "./support/sony-bvm-support";
 
-const capabilities = DriverCapabilities.NONE;
-const about        = Object.freeze({
+const capabilities = DriverCapabilities.None;
+const about: DriverDescriptor = Object.freeze({
     guid:  "8626D6D3-C211-4D21-B5CC-F5E3B50D9FF0",
     title: "Sony RS-485 controllable monitor",
+    type:  DeviceType.Monitor,
     capabilities,
 });
 
 export default class SonySerialMonitor extends Driver {
     private readonly path: string;
 
-    public static about(): DriverDescriptor {
+    static about(): DriverDescriptor {
         return about;
     }
 
-    public static load(path: string): Promise<Driver> {
+    static load(path: string): Promise<Driver> {
         return Promise.resolve(new SonySerialMonitor(path));
     }
 
-    // eslint-disable-next-line class-methods-use-this
-    public get guid(): string {
+    get guid(): string {
         return about.guid;
     }
 
-    // eslint-disable-next-line class-methods-use-this
-    public get title(): string {
+    get title(): string {
         return about.title;
+    }
+
+    get type(): DeviceType {
+        return about.type;
     }
 
     private constructor(path: string) {
@@ -53,26 +57,25 @@ export default class SonySerialMonitor extends Driver {
         this.path = path;
     }
 
-    public setTie(inputChannel: number): Promise<void> {
+    setTie(inputChannel: number): Promise<void> {
         console.log(`Sony BVM: ${inputChannel}`);
 
         return this.sendCommand(Command.SET_CHANNEL, 1, inputChannel);
     }
 
-    public powerOn(): Promise<void> {
+    powerOn(): Promise<void> {
         console.log("Sony BVM: Power On");
 
         return this.sendCommand(Command.POWER_ON);
     }
 
-    public powerOff(): Promise<void> {
+    powerOff(): Promise<void> {
         console.log("Sony BVM: Power Off");
 
         return this.sendCommand(Command.POWER_OFF);
     }
 
-    // eslint-disable-next-line class-methods-use-this
-    public unload(): Promise<void> {
+    unload(): Promise<void> {
         return Promise.resolve();
     }
 

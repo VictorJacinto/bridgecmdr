@@ -20,6 +20,7 @@ import { ColorModifiers } from "buefy/types/helpers";
 import Vue from "vue";
 import { RawLocation } from "vue-router";
 import * as tsx from "vue-tsx-support";
+import { EventHandler } from "vue-tsx-support/lib/modifiers";
 import { InputHTMLAttributes } from "vue-tsx-support/types/dom";
 import { CombinedVueInstance } from "vue/types/vue";
 import { tuple, TupleToUnion } from "../helpers/typing";
@@ -60,8 +61,8 @@ type BFormElementProps = {
 };
 
 type BFormElementEvents = {
-    onBlur: () => void;
-    onFocus: () => void;
+    onBlur: EventHandler<Event>;
+    onFocus: EventHandler<Event>;
 };
 
 type BFormElementMethods = {
@@ -78,7 +79,7 @@ type BActionElementProps<E extends string> = {
 };
 
 type BActionElementEvents = {
-    onClick: () => void;
+    onClick: EventHandler<Event>;
 };
 
 export type BAnyValue = string|number|boolean|Function|object|unknown[];
@@ -118,8 +119,6 @@ type BAutocompleteProps = BFormElementProps & {
 type BAutocompleteEvents = BFormElementEvents & {
     onInput: (value: string|number) => void;
     onSelect: (options: string|number|object) => void;
-    onFocus: () => void;
-    onBlur: () => void;
     onTyping: (value: string) => void;
     onInfiniteScroll: () => void;
 };
@@ -328,7 +327,7 @@ type BDropdownItemProps = {
 };
 
 type BDropdownItemEvents = {
-    onClick: () => void;
+    onClick: EventHandler<Event>;
 };
 
 export type BDropdownItem =
@@ -387,8 +386,8 @@ type BInputProps = BFormElementProps & {
 
 type BInputEvents = BFormElementEvents & {
     onInput: (value: string|number) => void;
-    onIconClick: () => void;
-    onIconRightClick: () => void;
+    onIconClick: EventHandler<Event>;
+    onIconRightClick: EventHandler<Event>;
 };
 
 type BInputMethods = BFormElementMethods;
@@ -509,21 +508,6 @@ export type BSelect =
 export const BSelect =
     tsx.ofType<BSelectProps, BSelectEvents>().convert(Vue.component("BSelect"));
 
-type BSwitchProps = {
-    value?: BAnyValue|Date;
-    nativeValue?: BAnyValue|Date;
-    disabled?: boolean;
-    type?: string;
-    passiveType?: string;
-    name?: string;
-    required?: boolean;
-    size?: string;
-    trueValue?: BAnyValue|Date;
-    falseValue?: BAnyValue|Date;
-    rounded?: boolean;
-    outlined?: boolean;
-};
-
 type BSkeletonProps = {
     active?: boolean;
     animated?: boolean;
@@ -539,6 +523,21 @@ export type BSkeleton =
     CombinedVueInstance<Vue, unknown, unknown, unknown, BSkeletonProps>;
 export const BSkeleton =
     tsx.ofType<BSkeletonProps>().convert(Vue.component("BSkeleton"));
+
+type BSwitchProps = {
+    value?: BAnyValue|Date;
+    nativeValue?: BAnyValue|Date;
+    disabled?: boolean;
+    type?: string;
+    passiveType?: string;
+    name?: string;
+    required?: boolean;
+    size?: string;
+    trueValue?: BAnyValue|Date;
+    falseValue?: BAnyValue|Date;
+    rounded?: boolean;
+    outlined?: boolean;
+};
 
 type BSwitchEvents = BCheckRadioEvents;
 

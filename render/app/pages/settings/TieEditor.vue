@@ -122,12 +122,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
             },
             showVideoOutput(): boolean {
                 return this.driver ?
-                    Boolean(this.driver.capabilities & DriverCapabilities.HAS_MULTIPLE_OUTPUTS) :
+                    Boolean(this.driver.capabilities & DriverCapabilities.HasMultipleOutputs) :
                     false;
             },
             showAudioOutput(): boolean {
                 return (this.showVideoOutput && this.driver) ?
-                    Boolean(this.driver.capabilities & DriverCapabilities.CAN_DECOUPLE_AUDIO_OUTPUT) :
+                    Boolean(this.driver.capabilities & DriverCapabilities.CanDecoupleAudioOutput) :
                     false;
             },
             videoOutputName(): string {

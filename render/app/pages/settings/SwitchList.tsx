@@ -18,17 +18,44 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { map, times } from "lodash";
 import * as tsx from "vue-tsx-support";
+import { modifiers as m } from "vue-tsx-support";
 import { BButton, BIcon, BNavbar, BNavbarItem, BSkeleton } from "../../../foundation/components/buefy-tsx";
+import SvgIcon from "../../components/SvgIcon";
 import CardList from "../../components/card-list/CardList";
 import CardListEntry from "../../components/card-list/CardListEntry";
 import { dataSource } from "../../components/data/DataSource";
 import ManagesSwitches from "../../concerns/manages-switches";
 import { Switch } from "../../store/modules/switches";
+import Driver, { DeviceType } from "../../system/driver";
 
+const drivers = Driver.all();
 const DataSource = dataSource<Switch>("switches");
+const iconMap = {
+    [DeviceType.Switch]:  "mdiVideoSwitch",
+    [DeviceType.Monitor]: "mdiMonitor",
+};
 
 const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
-    name: "SwitchList",
+    name:    "SwitchList",
+    methods: {
+        getIconForSwitch(item: Switch): string {
+            const info = drivers.find(driver => driver.guid === item.driverId);
+            const icon = info && iconMap[info.type];
+            if (icon) {
+                return icon;
+            }
+
+            return "mdiHelp";
+        },
+        getDriverForSwitch(item: Switch): string {
+            const info = drivers.find(driver => driver.guid === item.driverId);
+            if (info) {
+                return info.title;
+            }
+
+            return "Unknown...";
+        },
+    },
     render() {
         return (
             <div id="switch-list">
@@ -44,13 +71,34 @@ const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
                     default: ({ items, loading }) => (loading ? (
                         <CardList>{
                             times(3, () => (
-                                <CardListEntry><BSkeleton/></CardListEntry>
+                                <CardListEntry>
+                                    <template slot="image">
+                                        <BSkeleton/>
+                                    </template>
+                                    <template slot="default">
+                                        <BSkeleton count={2}/>
+                                    </template>
+                                    <template slot="actions">
+                                        <BSkeleton/>
+                                    </template>
+                                </CardListEntry>
                             ))
                         }</CardList>
                     ) : (
                         <CardList>{
                             map(items, item => (
-                                <CardListEntry>{ item.title }</CardListEntry>
+                                <CardListEntry onClick={() => this.updateSwitch(item)}>
+                                    <template slot="image">
+                                        <SvgIcon name={this.getIconForSwitch(item)} type="is-link" size="is-48x48" inverted rounded/>
+                                    </template>
+                                    <template slot="default">
+                                        <p class="has-text-weight-semibold">{ item.title }</p>
+                                        <p>{ this.getDriverForSwitch(item) }</p>
+                                    </template>
+                                    <template slot="actions">
+                                        <BButton iconLeft="delete" type="is-danger" onClick={m.stop(() => this.removeSwitch(item))}/>
+                                    </template>
+                                </CardListEntry>
                             ))
                         }</CardList>
                     )),

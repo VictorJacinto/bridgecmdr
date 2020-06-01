@@ -46,7 +46,7 @@ const SettingsPage = tsx.component({
                             <SvgIcon name="mdiCogs" type="is-link" size="is-48x48" inverted rounded/>
                         </template>
                         <template slot="default">
-                            <p class="is-strong">General</p>
+                            <p class="has-text-weight-semibold">General</p>
                             <p>Change other miscellaneous settings.</p>
                         </template>
                     </CardListEntry>
@@ -55,7 +55,7 @@ const SettingsPage = tsx.component({
                             <SvgIcon name="mdiGamepadVariant" type="is-link" size="is-48x48" inverted rounded/>
                         </template>
                         <template slot="default">
-                            <p class="is-strong">Sources</p>
+                            <p class="has-text-weight-semibold">Sources</p>
                             <p>Add, edit, or remove sources.</p>
                         </template>
                     </CardListEntry>
@@ -64,7 +64,7 @@ const SettingsPage = tsx.component({
                             <SvgIcon name="mdiVideoSwitch" type="is-link" size="is-48x48" inverted rounded/>
                         </template>
                         <template slot="default">
-                            <p class="is-strong">Switches</p>
+                            <p class="has-text-weight-semibold">Switches</p>
                             <p>Add, edit, or remove switches and monitors.</p>
                         </template>
                     </CardListEntry>

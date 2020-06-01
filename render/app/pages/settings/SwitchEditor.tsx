@@ -33,7 +33,6 @@ const DriverDropdown = simpleDropdown(drivers, "guid", "title");
 
 const switchEditor = identity(async () => {
     const ports = await makeSerialDeviceList();
-    console.dir(ports);
 
     return tsx.component({
         name:  "SwitchEditor",

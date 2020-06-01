@@ -56,7 +56,7 @@ export interface ModuleOptionsEx<M extends Model, R extends object, Doc extends 
 function replaceItem<M extends Model>(_state: StateEx<M>, item: ReadonlyDeep<M>): void {
     const index = findIndex(_state.items, iteratee({ _id: item._id }));
     if (index !== -1) {
-        _state.items[index] = item;
+        _state.items.splice(index, 1, item);
     }
 }
 

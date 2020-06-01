@@ -16,18 +16,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import ow, { BasePredicate } from "ow";
-import { PropValidator } from "vue/types/options";
+import Vue, { VNode } from "vue";
 
-type DefaultProp<T> =
-    T extends Function ? T :
-    T extends unknown[] ? () => T :
-    T extends object ? () => T :
-    T;
+type SlotOn<C extends Vue> = keyof C["$scopedSlots"];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SlotProps<C extends Vue, S extends SlotOn<C>> = C["$scopedSlots"][S] extends (props: infer P) => any ? P : {};
 
-export function owProp<T, D extends T>(predicate: BasePredicate<T>, $default?: DefaultProp<D>): PropValidator<T> {
-    return {
-        validator: (value: unknown): value is T => ow.isValid(value, predicate),
-        default:   $default,
-    };
+export function normalizeChildren<C extends Vue, S extends SlotOn<C>>(component: C, slot: S, props: SlotProps<C, S>): VNode[] {
+    const scopedSlot = component.$scopedSlots[slot as string];
+    if (scopedSlot) {
+        return scopedSlot(props) || [];
+    }
+
+    return component.$slots[slot as string] || [];
 }

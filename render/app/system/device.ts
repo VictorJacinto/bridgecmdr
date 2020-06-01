@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import _ from "lodash";
+import { last, tail } from "lodash";
 import SerialPort from "serialport";
 
 export type SerialDevice = {
@@ -41,7 +41,7 @@ export function generateLabel(port: SerialPort.PortInfo): string {
     }
 
     for (;;) {
-        const part = _.last(labelParts) as string;
+        const part = last(labelParts) as string;
         if ((/^port\d+$/u).test(part)) {
             labelParts.pop();
         } else if ((/^if\d+$/u).test(part)) {
@@ -51,7 +51,7 @@ export function generateLabel(port: SerialPort.PortInfo): string {
         }
     }
 
-    labelParts = _.tail(labelParts);
+    labelParts = tail(labelParts);
     if (labelParts.length === 0) {
         return port.path;
     }

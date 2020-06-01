@@ -15,36 +15,40 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+/* eslint-disable class-methods-use-this */
 
 import { openStream, SerialBits, SerialParity, SerialStopBits } from "../../support/streams/command";
-import Driver, { DriverCapabilities, DriverDescriptor }         from "../driver";
+import Driver, { DeviceType, DriverCapabilities, DriverDescriptor } from "../driver";
 
-const capabilities = DriverCapabilities.NONE;
-const about        = {
+const capabilities = DriverCapabilities.None;
+const about: DriverDescriptor = Object.freeze({
     guid:  "91D5BC95-A8E2-4F58-BCAC-A77BA1054D61",
     title: "TeslaSmart-compatible matrix switch",
+    type:  DeviceType.Switch,
     capabilities,
-};
+});
 
 export default class TeslaSmartMatrixSwitch extends Driver {
     private readonly path: string;
 
-    public static about(): DriverDescriptor {
+    static about(): DriverDescriptor {
         return about;
     }
 
-    public static load(path: string): Promise<Driver> {
+    static load(path: string): Promise<Driver> {
         return Promise.resolve(new TeslaSmartMatrixSwitch(path));
     }
 
-    // eslint-disable-next-line class-methods-use-this
-    public get guid(): string {
+    get guid(): string {
         return about.guid;
     }
 
-    // eslint-disable-next-line class-methods-use-this
-    public get title(): string {
+    get title(): string {
         return about.title;
+    }
+
+    get type(): DeviceType {
+        return about.type;
     }
 
     private constructor(path: string) {
@@ -52,7 +56,7 @@ export default class TeslaSmartMatrixSwitch extends Driver {
         this.path = path;
     }
 
-    public async setTie(inputChannel: number): Promise<void> {
+    async setTie(inputChannel: number): Promise<void> {
         console.log(`Tesla: ${inputChannel}`);
 
         const command = Buffer.from(Uint8Array.from([ 0xAA, 0xBB, 0x03, 0x01, inputChannel, 0xEE ]));
@@ -72,18 +76,15 @@ export default class TeslaSmartMatrixSwitch extends Driver {
         await connection.close();
     }
 
-    // eslint-disable-next-line class-methods-use-this
-    public powerOn(): Promise<void> {
+    powerOn(): Promise<void> {
         return Promise.resolve();
     }
 
-    // eslint-disable-next-line class-methods-use-this
-    public powerOff(): Promise<void> {
+    powerOff(): Promise<void> {
         return Promise.resolve();
     }
 
-    // eslint-disable-next-line class-methods-use-this
-    public unload(): Promise<void> {
+    unload(): Promise<void> {
         return Promise.resolve();
     }
 }

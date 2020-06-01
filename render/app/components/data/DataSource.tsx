@@ -22,6 +22,7 @@ import Vue, { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { CombinedVueInstance } from "vue/types/vue";
 import { BButton, BField, BIcon } from "../../../foundation/components/buefy-tsx";
+import { normalizeChildren } from "../../../foundation/helpers/vue";
 import { mapActions, mapState } from "../../../foundation/helpers/vuex";
 import { is, maybe, prop } from "../../../foundation/validation/valid";
 import { RootState } from "../../store/root-state";
@@ -105,9 +106,7 @@ export const dataSource = identity(
 
                 if (this.loading || this.items.length > 0) {
                     return (<RootTag>{
-                        this.$scopedSlots.default && this.$scopedSlots.default({
-                            items: this.items, loading: this.loading,
-                        })
+                        normalizeChildren(this, "default", { items: this.items, loading: this.loading })
                     }</RootTag>);
                 }
 
@@ -118,6 +117,10 @@ export const dataSource = identity(
                             <BField>There are no items.</BField>
                             <BField><BButton label="Refresh" type="is-primary" onClick={() => this.refresh()}/></BField>
                         </div>
+                        {
+                            /* Still need to render the slot in case there is an add button to start things along */
+                            normalizeChildren(this, "default", { items: this.items, loading: this.loading })
+                        }
                     </RootTag>
                 );
             },

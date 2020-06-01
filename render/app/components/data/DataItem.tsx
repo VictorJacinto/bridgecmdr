@@ -28,6 +28,7 @@ import { RootState } from "../../store/root-state";
 import Model from "../../support/data/model";
 import { ModuleEx, StateEx } from "../../support/data/store";
 import { IDPattern } from "../../support/validation";
+import {normalizeChildren} from "../../../foundation/helpers/vue";
 
 type DataItemEvents<M extends Model> = {
     onInput(value: ReadonlyDeep<M>|null): void;
@@ -95,9 +96,7 @@ export const dataItem = identity(
                 }
 
                 return (<RootTag>{
-                    this.$scopedSlots.default && this.$scopedSlots.default({
-                        current: this.current, loading: this.loading,
-                    })
+                    normalizeChildren(this, "default", { current: this.current, loading: this.loading })
                 }</RootTag>);
             },
         }),

@@ -1,4 +1,4 @@
-import { route } from "../foundation/vue/routing";
+import { route } from "../foundation/helpers/routing";
 import DashboardPage from "./pages/DashboardPage";
 import SettingsPage from "./pages/settings/SettingsPage";
 import SwitchList from "./pages/settings/SwitchList";

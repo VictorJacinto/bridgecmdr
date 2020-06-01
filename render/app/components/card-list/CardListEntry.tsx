@@ -32,10 +32,10 @@ const CardListEntry = tsx.componentFactoryOf<Events>().create({
     },
     computed: {
         hasImageSlot(): boolean {
-            return !isNil(this.$slots.image) || !isNil(this.$scopedSlots.image);
+            return !isNil(this.$slots.image);
         },
         hasActionsSlot(): boolean {
-            return !isNil(this.$slots.actions) || !isNil(this.$scopedSlots.actions);
+            return !isNil(this.$slots.actions);
         },
     },
     methods: {

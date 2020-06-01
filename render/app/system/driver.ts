@@ -16,24 +16,32 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import _ from "lodash";
+import { once } from "lodash";
 
 /**
  * Indicates a device's capabilities.
  */
 export enum DriverCapabilities {
     /** The device has no extended capabilities. */
-    NONE                      = 0,
+    None = 0,
     /** The device has multiple output channels. */
-    HAS_MULTIPLE_OUTPUTS      = 1 << 0,
+    HasMultipleOutputs = 1 << 0,
     /** The device support sending the audio output to a different channel. */
-    CAN_DECOUPLE_AUDIO_OUTPUT = 1 << 1,
+    CanDecoupleAudioOutput = 1 << 1,
+}
+
+export enum DeviceType {
+    /** Indicates that the device is a switch. */
+    Switch,
+    /** Indicates that the device is a monitor. */
+    Monitor,
 }
 
 export type DriverDescriptor = {
-    guid:         string;
-    title:        string;
-    capabilities: DriverCapabilities;
+    readonly guid: string;
+    readonly title: string;
+    readonly type: DeviceType;
+    readonly capabilities: DriverCapabilities;
 };
 
 export interface DriverConstructor {
@@ -42,6 +50,7 @@ export interface DriverConstructor {
 }
 
 const driverRegistry = new Map<string, DriverConstructor>();
+const descriptors = once(() => Array.from(driverRegistry.values()).map(entry => entry.about()));
 
 /**
  * Provides information about and means for operating a switchable device.
@@ -51,9 +60,7 @@ export default abstract class Driver {
      * Gets basic data about all the drivers in the registry.
      */
     static all(): DriverDescriptor[] {
-        return _.map(Array.from(driverRegistry.values()), function (entry: DriverConstructor) {
-            return entry.about();
-        });
+        return descriptors();
     }
 
     /**
@@ -91,7 +98,7 @@ export default abstract class Driver {
         return driver.load(path);
     }
 
-    public readonly capabilities: DriverCapabilities;
+    readonly capabilities: DriverCapabilities;
 
     /**
      * Initializes a new instance of the Driver class
@@ -116,13 +123,17 @@ export default abstract class Driver {
     abstract get title(): string;
 
     /**
+     * Gets the type of the device operated by the driver.
+     */
+    abstract get type(): DeviceType;
+
+    /**
      * Sets input and output ties.
      *
      * @param inputChannel       The input channel to tie.
      * @param videoOutputChannel The output video channel to tie.
      * @param audioOutputChannel The output audio channel to tie.
      */
-    // eslint-disable-next-line class-methods-use-this
     abstract setTie(inputChannel: number, videoOutputChannel: number, audioOutputChannel: number): Promise<void>;
 
     /**

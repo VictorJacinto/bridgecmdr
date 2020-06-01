@@ -24,9 +24,9 @@ import * as rules from "vee-validate/dist/rules";
 import Vue  from "vue";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
-import Dialogs from "../../components/dialogs";
-import Loading from "../../components/loading";
-import Modals from "../../components/modals";
+import Dialogs from "../../plugins/dialogs";
+import Loading from "../../plugins/loading";
+import Modals from "../../plugins/modals";
 
 Vue.use(Vuex);
 Vue.use(VueRouter);
