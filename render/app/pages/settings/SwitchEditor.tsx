@@ -76,7 +76,7 @@ const switchEditor = identity(async () => {
                                     </BField>
                                 ),
                             }}/>
-                            <ValidationProvider name="device" rules="required" slim scopedSlots={{
+                            <ValidationProvider name="device" rules="required|location" slim scopedSlots={{
                                 default: ({ errors }) => /* TODO: The validator needs to better handle this */ (
                                     <BField label="Device" expanded {...validationStatus(errors)}>
                                         <DeviceLocationInput v-model={this.source.path} devices={ports}
