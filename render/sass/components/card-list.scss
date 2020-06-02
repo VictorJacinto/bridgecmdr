@@ -1,0 +1,14 @@
+
+.card-list {
+    a.card {
+        // Have card anchors/links to card as normal cards would, but with a link pointer cursor.
+        cursor: pointer;
+        display: block;
+        &:active { color: $text; }
+        &:hover { color: $text; }
+        &:visited { color: $text; }
+        &:focus { color: $text; }
+    }
+
+}
+

@@ -1,0 +1,11 @@
+// Fields in levels.
+.level-item.is-grouped:not(:last-child) {
+    margin-bottom: 0;
+}
+
+// Side-by-side dropdowns as add-ons.
+.field.has-addons {
+    .dropdown.control + .dropdown.control {
+        margin-left: inherit;
+    }
+}

@@ -1,0 +1,16 @@
+// Make a "dialog-like" modals have right justified buttons.  Using dialog class causes issues with full-screen modals.
+.dialog-like .modal-card .modal-card-foot {
+    justify-content: flex-end;
+}
+
+// Remove the rounded borders on modals.
+.modal.is-full-screen {
+    .modal-card-head {
+        border-top-left-radius: inherit;
+        border-top-right-radius: inherit;
+    }
+    .modal-card-foot {
+        border-bottom-left-radius: inherit;
+        border-bottom-right-radius: inherit;
+    }
+}

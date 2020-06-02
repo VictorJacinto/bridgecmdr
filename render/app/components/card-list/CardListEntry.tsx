@@ -17,9 +17,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { isNil } from "lodash";
-import { PropType, VNode } from "vue";
-import { RawLocation } from "vue-router";
+import { VNode } from "vue";
+import { Location } from "vue-router";
 import * as tsx from "vue-tsx-support";
+import { EventHandler } from "vue-tsx-support/lib/modifiers";
+import { is, maybe, prop } from "../../../foundation/validation/valid";
 
 interface Events {
     onClick: () => void;
@@ -28,9 +30,27 @@ interface Events {
 const CardListEntry = tsx.componentFactoryOf<Events>().create({
     name:  "CardListEntry",
     props: {
-        to: { type: Object as PropType<RawLocation>, default: undefined },
+        href: prop(maybe.string.notEmpty),
+        to:   prop(maybe(is.string.notEmpty, is.object<Location>())),
     },
     computed: {
+        tag(): "a"|"router-link"|"div" {
+            if (this.href) {
+                return "a";
+            }
+
+            if (this.to) {
+                return "router-link";
+            }
+
+            return "div";
+        },
+        classes(): string[] {
+            return this.$listeners.click ? [ "card" , "has-cursor-pointer" ] : ["card"];
+        },
+        click(): EventHandler<MouseEvent> {
+            return this.$listeners.click ? $event => this.$emit("click", $event) : () => undefined;
+        },
         hasImageSlot(): boolean {
             return !isNil(this.$slots.image);
         },
@@ -38,32 +58,26 @@ const CardListEntry = tsx.componentFactoryOf<Events>().create({
             return !isNil(this.$slots.actions);
         },
     },
-    methods: {
-        onClicked(): void {
-            this.to ? this.$router.push(this.to) : this.$emit("click");
-        },
-    },
-    render() {
-        const renderAsLink = (inner: VNode): VNode =>
-            (<router-link class="card" to={this.to}>{inner}</router-link>);
-        const renderAsBlock = (inner: VNode): VNode =>
-            (<div class="card has-cursor-pointer" onClick={() => this.onClicked()}>{inner}</div>);
-        const renderAs = this.to ? renderAsLink : renderAsBlock;
+    render(): VNode {
+        const RootTag = this.tag;
+        const href = this.to ? undefined : this.href;
 
-        return renderAs(
-            <div class="card-content">
-                <article class="media">
-                    <figure v-show={this.hasImageSlot} class="media-left">
-                        { this.$slots.image }
-                    </figure>
-                    <div class="media-content">
-                        { this.$slots.default }
-                    </div>
-                    <div v-show={this.hasActionsSlot} class="media-right">
-                        { this.$slots.actions }
-                    </div>
-                </article>
-            </div>,
+        return (
+            <RootTag onClick={this.click} class={this.classes} to={this.to} href={href}>
+                <div class="card-content">
+                    <article class="media">
+                        <figure v-show={this.hasImageSlot} class="media-left">
+                            { this.$slots.image }
+                        </figure>
+                        <div class="media-content">
+                            { this.$slots.default }
+                        </div>
+                        <div v-show={this.hasActionsSlot} class="media-right">
+                            { this.$slots.actions }
+                        </div>
+                    </article>
+                </div>
+            </RootTag>
         );
     },
 });

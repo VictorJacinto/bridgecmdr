@@ -18,53 +18,25 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { times } from "lodash";
 import * as tsx from "vue-tsx-support";
-import { modifiers as m } from "vue-tsx-support";
-import { BButton, BIcon, BNavbar, BNavbarItem, BSkeleton } from "../../../foundation/components/buefy-tsx";
-import SvgIcon from "../../components/SvgIcon";
+import { BIcon, BNavbar, BNavbarItem, BSkeleton } from "../../../foundation/components/buefy-tsx";
 import CardList from "../../components/card-list/CardList";
 import CardListEntry from "../../components/card-list/CardListEntry";
 import { dataSource } from "../../components/data/DataSource";
-import ManagesSwitches from "../../concerns/manages-switches";
-import { Switch } from "../../store/modules/switches";
-import Driver, { DeviceType } from "../../system/driver";
+import { Source } from "../../store/modules/sources";
 
-const drivers = Driver.all();
-const DataSource = dataSource<Switch>("switches");
-const iconMap = {
-    [DeviceType.Switch]:  "mdiVideoSwitch",
-    [DeviceType.Monitor]: "mdiMonitor",
-};
+const DataSource = dataSource<Source>("sources");
 
-const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
-    name:    "SwitchList",
-    methods: {
-        getIconForSwitch(item: Switch): string {
-            const info = drivers.find(driver => driver.guid === item.driverId);
-            const icon = info && iconMap[info.type];
-            if (icon) {
-                return icon;
-            }
-
-            return "mdiHelp";
-        },
-        getDriverForSwitch(item: Switch): string {
-            const info = drivers.find(driver => driver.guid === item.driverId);
-            if (info) {
-                return info.title;
-            }
-
-            return "Unknown...";
-        },
-    },
+const SourceList = tsx.component({
+    name: "SourceList",
     render() {
         return (
-            <div id="switch-list">
+            <div id="source-list">
                 <BNavbar fixedTop type="is-primary" mobileBurger={false}>
                     <template slot="brand">
                         <BNavbarItem tag="router-link" to={{ name: "settings" }}>
                             <BIcon icon="arrow-left"/>
                         </BNavbarItem>
-                        <BNavbarItem tag="div">Switches</BNavbarItem>
+                        <BNavbarItem tag="div">Sources</BNavbarItem>
                     </template>
                 </BNavbar>
                 <DataSource scopedSlots={{
@@ -87,31 +59,21 @@ const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
                     ) : (
                         <CardList>{
                             items.map(item => (
-                                <CardListEntry onClick={() => this.updateSwitch(item)}>
-                                    <template slot="image">
-                                        <SvgIcon name={this.getIconForSwitch(item)} type="is-link" size="is-48x48" inverted rounded/>
-                                    </template>
+                                <CardListEntry>
                                     <template slot="default">
-                                        <p class="has-text-weight-semibold">{ item.title }</p>
-                                        <p>{ this.getDriverForSwitch(item) }</p>
-                                    </template>
-                                    <template slot="actions">
-                                        <BButton iconLeft="delete" type="is-danger" onClick={m.stop(() => this.removeSwitch(item))}/>
+                                        <p class="has-text-weight-semibold">{item.title}</p>
+                                        <p>Stuff and things</p>
                                     </template>
                                 </CardListEntry>
                             ))
                         }</CardList>
                     )),
-                }}>
-                </DataSource>
-                <div class="fab-container is-right">
-                    <BButton class="fab-item" iconLeft="plus" type="is-primary" onClick={() => this.createSwitch()}/>
-                </div>
+                }}/>
             </div>
         );
     },
 });
 
-export type SwitchListConstructor = typeof SwitchList;
-type SwitchList = InstanceType<SwitchListConstructor>;
-export default SwitchList;
+export type SourceListConstructor = typeof SourceList;
+type SourceList = InstanceType<SourceListConstructor>;
+export default SourceList;

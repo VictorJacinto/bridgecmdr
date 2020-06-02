@@ -22,41 +22,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 @import "~buefy/src/scss/buefy";
 @import "~@mdi/font/scss/materialdesignicons";
 
-@import "./bug-fixes";
+@import "./fixes/body-scroll";
+@import "./fixes/fields";
+
+@import "./interactivity/cursor";
+
+@import "./components/card-list";
 @import "./components/fab-container";
+@import "./components/modals";
 @import "./components/svg-icon";
-
-.form {
-    padding: 1.5rem;
-}
-
-.dialog-like .modal-card .modal-card-foot {
-    justify-content: flex-end;
-}
-
-.modal.is-full-screen {
-    .modal-card-head {
-        border-top-left-radius: inherit;
-        border-top-right-radius: inherit;
-    }
-    .modal-card-foot {
-        border-bottom-left-radius: inherit;
-        border-bottom-right-radius: inherit;
-    }
-}
-
-.has-cursor-none {
-    cursor: none;
-}
-
-.has-cursor-default {
-    cursor: default;
-}
-
-.has-cursor-pointer {
-    cursor: pointer;
-}
-
-.has-cursor-text {
-    cursor: text;
-}

@@ -50,7 +50,7 @@ const SettingsPage = tsx.component({
                             <p>Change other miscellaneous settings.</p>
                         </template>
                     </CardListEntry>
-                    <CardListEntry onClick={ () => this.log("sources") }>
+                    <CardListEntry to={{ name: "sources" }}>
                         <template slot="image">
                             <SvgIcon name="mdiGamepadVariant" type="is-link" size="is-48x48" inverted rounded/>
                         </template>
