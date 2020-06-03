@@ -39,16 +39,16 @@ $white-bis: hsl(0, 0%, 98%);  // Grey 50
 $white:     hsl(0, 0%, 100%); // White
 
 // Basic colors
-$orange:       hsl(36, 100%, 50%);  // Orange 500
-$yellow:       hsl(54, 100%, 62%);  // Yellow 500
-$green:        hsl(123, 46%, 34%);  // Green 800
-$turquoise:    hsl(173, 100%, 24%); // Teal 700
-$cyan:         hsl(185, 100%, 28%); // Cyan 800
-$blue:         hsl(212, 80%, 42%);  // Blue 800
-$indigo:       hsl(232, 54%, 41%);  // Indigo 700
-$purple:       hsl(277, 70%, 35%);  // Purple 800
-$pink:         hsl(334, 79%, 38%);  // Pink 700
-$red:          hsl(0, 73%, 41%);    // Red 900
+$orange:    hsl(36, 100%, 50%);  // Orange 500
+$yellow:    hsl(54, 100%, 62%);  // Yellow 500
+$green:     hsl(123, 46%, 34%);  // Green 800
+$turquoise: hsl(173, 100%, 24%); // Teal 700
+$cyan:      hsl(185, 100%, 28%); // Cyan 800
+$blue:      hsl(212, 80%, 42%);  // Blue 800
+$indigo:    hsl(232, 54%, 41%);  // Indigo 700
+$purple:    hsl(277, 70%, 35%);  // Purple 800
+$pink:      hsl(334, 79%, 38%);  // Pink 700
+$red:       hsl(0, 73%, 41%);    // Red 900
 
 // Basic inverts
 $orange-invert:    materialInvert($orange);
@@ -57,22 +57,24 @@ $green-invert:     materialInvert($green);
 $turquoise-invert: materialInvert($turquoise);
 $cyan-invert:      materialInvert($cyan);
 $blue-invert:      materialInvert($blue);
+$indigo-invert:    materialInvert($indigo);
 $purple-invert:    materialInvert($purple);
+$pink-invert:      materialInvert($pink);
 $red-invert:       materialInvert($red);
 
-// Primary: Indigo 500
+// Primary: Indigo
 $primary:        $indigo;
 $primary-light:  materialLighten($primary);
 $primary-dark:   materialDarken($primary);
 $primary-invert: materialInvert($primary);
 
-// Info
+// Info: Purple
 $info:        $purple;
 $info-light:  materialLighten($purple);
 $info-dark:   materialDarken($purple);
 $info-invert: $purple-invert;
 
-// Link
+// Link: Blue
 $link:               $blue;
 $link-light:         materialLighten($link);
 $link-dark:          materialDarken($link);
@@ -84,19 +86,19 @@ $link-focus-border:  $blue;
 $link-active:        $grey-lightest;
 $link-active-border: $grey-lighter;
 
-// Success
+// Success; Green
 $success:        $green;
 $success-light:  materialLighten($success);
 $success-dark:   materialDarken($success);
 $success-invert: $green-invert;
 
-// Warning
+// Warning: Yellow
 $warning:        $yellow;
 $warning-light:  materialLighten($warning);
 $warning-dark:   materialDarken($warning);
 $warning-invert: $yellow-invert;
 
-// Danger
+// Danger: Red
 $danger:        $red;
 $danger-light:  materialLighten($danger);
 $danger-dark:   materialDarken($danger);

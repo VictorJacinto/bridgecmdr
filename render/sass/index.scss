@@ -24,10 +24,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 @import "./fixes/body-scroll";
 @import "./fixes/fields";
+@import "./fixes/upload";
 
 @import "./interactivity/cursor";
+
+@import "./flexbox/justify-content";
 
 @import "./components/card-list";
 @import "./components/fab-container";
 @import "./components/modals";
-@import "./components/svg-icon";
+@import "./components/icons";

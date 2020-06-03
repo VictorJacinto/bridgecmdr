@@ -10,5 +10,10 @@
         &:focus { color: $text; }
     }
 
+    .media-right {
+        .card-action-item {
+            margin-left: 0.5rem;
+        }
+    }
 }
 

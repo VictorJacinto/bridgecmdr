@@ -1,0 +1,9 @@
+.upload {
+    .upload-draggable {
+        border: 1px dashed $input-border-color;
+        &:hover,
+        &.is-hovered {
+            border: 1px dashed $input-hover-border-color;
+        }
+    }
+}

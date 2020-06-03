@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { clone } from "lodash";
 import Vue from "vue";
 import { mapActions, mapGetters } from "../../foundation/helpers/vuex";
-import switchEditor from "../pages/settings/SwitchEditor";
+import switchModal from "../components/modals/SwitchModal";
 import switches, { Switch } from "../store/modules/switches";
 
 const ManagesSwitches = Vue.extend({
@@ -33,9 +33,9 @@ const ManagesSwitches = Vue.extend({
             doUpdateSwitch: "update",
             doRemoveSwitch: "remove",
         }),
-        async showEditSwitchModal(item: Partial<Switch>): Promise<Switch|null> {
+        async showSwitchModal(item: Partial<Switch>): Promise<Switch|null> {
             // Serial device list required asynchronous loading, so a factory function is used.
-            const editor = await switchEditor();
+            const editor = await switchModal();
 
             return this.$modals.open<Switch>(editor, {
                 props:       { item: clone(item) },
@@ -44,8 +44,11 @@ const ManagesSwitches = Vue.extend({
                 customClass: "dialog-like",
             });
         },
+        showEditSwitchModal(item: Switch): Promise<Switch|null> {
+            return this.showSwitchModal(item);
+        },
         showAddSwitchModal(): Promise<Switch|null> {
-            return this.showEditSwitchModal(this.getEmpty());
+            return this.showSwitchModal(this.getEmpty());
         },
         async removeSwitch(item: Switch) {
             const remove = await this.$dialogs.confirm({

@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { times } from "lodash";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
+import { modifiers as m } from "vue-tsx-support/lib/modifiers";
 import { BButton, BIcon, BNavbar, BNavbarItem, BSkeleton } from "../../../foundation/components/buefy-tsx";
 import CardList from "../../components/card-list/CardList";
 import CardListEntry from "../../components/card-list/CardListEntry";
@@ -78,7 +79,8 @@ const SourceList = tsx.componentFactory.mixin(ManagesSources).create({
                                         <BSkeleton height="1em" count={2}/>
                                     </template>
                                     <template slot="actions">
-                                        <BButton disabled={true} loading={true}/>
+                                        <BButton class="card-action-item" disabled loading/>
+                                        <BButton class="card-action-item" disabled loading/>
                                     </template>
                                 </CardListEntry>
                             ))
@@ -86,21 +88,29 @@ const SourceList = tsx.componentFactory.mixin(ManagesSources).create({
                     ) : (
                         <CardList>{
                             items.map(item => (
-                                <CardListEntry>
+                                <CardListEntry>{/* TODO Tap logic */}
                                     <template slot="image">
-                                        <figure class="image is-48x48">
-                                            <img src={this.icons[item._id]} class="is-rounded" alt="icon"/>
+                                        <figure class="image icon is-48x48">
+                                            <img src={this.icons[item._id]} class="is-rounded has-background-grey-light"
+                                                alt="icon"/>
                                         </figure>
                                     </template>
                                     <template slot="default">
                                         <p class="has-text-weight-semibold">{item.title}</p>
                                         { /* TODO: Tie count? */ }
                                     </template>
+                                    <template slot="actions">
+                                        <BButton class="card-action-item" iconLeft="pencil" type="is-primary" onClick={m.stop(() => this.showEditSourceModal(item))}/>
+                                        <BButton class="card-action-item" iconLeft="delete" type="is-danger"/>{/* TODO Delete logic */}
+                                    </template>
                                 </CardListEntry>
                             ))
                         }</CardList>
                     )),
                 }}/>
+                <div class="fab-container is-right">
+                    <BButton class="fab-item" iconLeft="plus" type="is-primary" onClick={() => this.showAddSourceModal()}/>
+                </div>
             </div>
         );
     },

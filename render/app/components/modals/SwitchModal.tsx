@@ -21,37 +21,35 @@ import * as tsx from "vue-tsx-support";
 import { BButton, BField, BInput } from "../../../foundation/components/buefy-tsx";
 import { ValidationObserver, ValidationProvider } from "../../../foundation/components/vee-validate-tsx";
 import { is, prop } from "../../../foundation/validation/valid";
-import DeviceLocationInput from "../../components/DeviceLocationInput";
-import simpleDropdown from "../../components/SimpleDropdown";
 import { Switch } from "../../store/modules/switches";
 import { validationStatus } from "../../support/validation";
 import { makeSerialDeviceList } from "../../system/device";
 import Driver from "../../system/driver";
+import DeviceLocationInput from "../DeviceLocationInput";
+import simpleDropdown from "../SimpleDropdown";
 
 const drivers = Driver.all();
 const DriverDropdown = simpleDropdown(drivers, "guid", "title");
 
-const switchEditor = identity(async () => {
+const switchModal = identity(async () => {
     const ports = await makeSerialDeviceList();
 
     return tsx.component({
-        name:  "SwitchEditor",
+        name:  "SwitchModal",
         props: {
             item: prop(is.object<Partial<Switch>>()),
-        },
-        data: function () {
-            return {
-                source: this.item,
-            };
         },
         computed: {
             title(): string {
                 return this.item._id === null ? "Add switch" : "Edit switch";
             },
+            confirmText(): string {
+                return this.item._id === null ? "Create" : "Save";
+            },
         },
         methods: {
             onSaveClicked() {
-                this.$modals.confirm(this.source);
+                this.$modals.confirm(this.item);
             },
         },
         render() {
@@ -65,30 +63,31 @@ const switchEditor = identity(async () => {
                             <ValidationProvider name="title" rules="required" slim scopedSlots={{
                                 default: ({ errors }) => (
                                     <BField label="Title" expanded {...validationStatus(errors)}>
-                                        <BInput v-model={this.source.title} placeholder="Required"/>
+                                        <BInput v-model={this.item.title} placeholder="Required"/>
                                     </BField>
                                 ),
                             }}/>
                             <ValidationProvider name="driver" rules="required" slim scopedSlots={{
                                 default: ({ errors }) => (
                                     <BField label="Driver" expanded {...validationStatus(errors)}>
-                                        <DriverDropdown v-model={this.source.driverId} tag="input" placeholder="Required" expanded/>
+                                        <DriverDropdown v-model={this.item.driverId} tag="input" placeholder="Required" expanded/>
                                     </BField>
                                 ),
                             }}/>
                             <ValidationProvider name="device" rules="required|location" slim scopedSlots={{
                                 default: ({ errors }) => /* TODO: The validator needs to better handle this */ (
                                     <BField label="Device" expanded {...validationStatus(errors)}>
-                                        <DeviceLocationInput v-model={this.source.path} devices={ports}
+                                        <DeviceLocationInput v-model={this.item.path} devices={ports}
                                             type={errors.length > 0 ? "is-danger" : undefined}/>
                                     </BField>
                                 ),
                             }}/>
                         </main>,
                         <footer class="modal-card-foot">
-                            <BButton label="Cancel" type="is-dark" onClick={() => this.$modals.cancel() }/>
-                            { /* TODO Save or Create  */ }
-                            <BButton label="Save" type="is-primary" onClick={() => handleSubmit(() => this.onSaveClicked()) }/>
+                            <BButton label="Cancel" type="is-dark"
+                                onClick={() => this.$modals.cancel() }/>
+                            <BButton label={this.confirmText} type="is-primary"
+                                onClick={() => handleSubmit(() => this.onSaveClicked()) }/>
                         </footer>,
                     ],
                 }}/>
@@ -99,7 +98,7 @@ const switchEditor = identity(async () => {
 
 type PromiseResult<P> = P extends Promise<infer T> ? T : never;
 
-export type SwitchEditorConstructor = PromiseResult<ReturnType<typeof switchEditor>>;
+export type SwitchModalConstructor = PromiseResult<ReturnType<typeof switchModal>>;
 // noinspection JSUnusedGlobalSymbols
-export type SwitchEditor = InstanceType<SwitchEditorConstructor>;
-export default switchEditor;
+export type SwitchModal = InstanceType<SwitchModalConstructor>;
+export default switchModal;

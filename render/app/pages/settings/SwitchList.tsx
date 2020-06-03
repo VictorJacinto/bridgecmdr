@@ -81,7 +81,7 @@ const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
                                         <BSkeleton height="1em" count={2}/>
                                     </template>
                                     <template slot="actions">
-                                        <BButton disabled={true} loading={true}/>
+                                        <BButton class="card-action-item" disabled loading/>
                                     </template>
                                 </CardListEntry>
                             ))
@@ -91,21 +91,20 @@ const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
                             items.map(item => (
                                 <CardListEntry onClick={() => this.updateSwitch(item)}>
                                     <template slot="image">
-                                        <SvgIcon name={this.getIconForSwitch(item)} type="is-link" size="is-48x48" inverted rounded/>
+                                        <SvgIcon name={this.getIconForSwitch(item)} type="is-primary" size="is-48x48" inverted rounded/>
                                     </template>
                                     <template slot="default">
                                         <p class="has-text-weight-semibold">{ item.title }</p>
                                         <p class="has-text-light">{ this.getDriverForSwitch(item) }</p>
                                     </template>
                                     <template slot="actions">
-                                        <BButton iconLeft="delete" type="is-danger" onClick={m.stop(() => this.removeSwitch(item))}/>
+                                        <BButton class="card-action-item" iconLeft="delete" type="is-danger" onClick={m.stop(() => this.removeSwitch(item))}/>
                                     </template>
                                 </CardListEntry>
                             ))
                         }</CardList>
                     )),
-                }}>
-                </DataSource>
+                }}/>
                 <div class="fab-container is-right">
                     <BButton class="fab-item" iconLeft="plus" type="is-primary" onClick={() => this.createSwitch()}/>
                 </div>
