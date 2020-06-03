@@ -17,17 +17,21 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import * as mdiPaths from "@mdi/js";
+import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
+import { KnownColorModifiers } from "../../foundation/components/buefy-tsx";
+import { KnownIconsSizes } from "../../foundation/components/bulma-typing";
+import { is, maybe, prop } from "../../foundation/validation/valid";
 
 const icons = mdiPaths as Record<string, string>;
 
 const SvgIcon = tsx.component({
     name:  "SvgIcon",
     props: {
-        path:     { type: String, default: undefined },
-        name:     { type: String, default: undefined },
-        size:     { type: String, default: "is-48x48" },
-        type:     { type: String, default: undefined },
+        path:     prop(maybe.string.notEmpty),
+        name:     prop(maybe.string.notEmpty),
+        size:     prop(is.enum(KnownIconsSizes), "is-48x48"),
+        type:     prop(maybe.enum(KnownColorModifiers)),
         rounded:  Boolean,
         inverted: Boolean,
     },
@@ -75,13 +79,13 @@ const SvgIcon = tsx.component({
             return "svg-fill-text";
         },
     },
-    render() {
+    render(): VNode {
         return (
-            <div class={this.imageClasses}>
+            <figure class={this.imageClasses}>
                 <svg class="svg-icon-image" viewBox="0 0 24 24">
                     <path class={this.pathClasses} d={this.pathData}/>
                 </svg>
-            </div>
+            </figure>
         );
     },
 });

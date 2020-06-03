@@ -16,9 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-export type Lit = string | number | boolean | undefined | null | void | {};
-export const tuple = <T extends Lit[]>(...args: T): T => args;
+import Vue from "vue";
 
-export type TupleToUnion<T> = T extends readonly [...unknown[]] ? T[number] : never;
+const ManagesSources = Vue.extend({
+    name: "ManagesSources",
+});
 
-export type ElementType<A extends unknown[]> = A extends (infer E)[] ? E : never;
+export type ManagesSourcesConstructor = typeof ManagesSources;
+type ManagesSources = InstanceType<ManagesSourcesConstructor>;
+export default ManagesSources;

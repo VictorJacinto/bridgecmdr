@@ -25,7 +25,7 @@ import { InputHTMLAttributes } from "vue-tsx-support/types/dom";
 import { CombinedVueInstance } from "vue/types/vue";
 import { tuple, TupleToUnion } from "../helpers/typing";
 
-export const KnownColorModifiers = tuple("is-white", "is-black", "is-light", "is-dark", "is-primary", "is-info", "is-success", "is-warning", "is-danger");
+export const KnownColorModifiers = tuple("is-white", "is-black", "is-light", "is-dark", "is-primary", "is-link", "is-info", "is-success", "is-warning", "is-danger");
 export type KnownColorModifiers = TupleToUnion<typeof KnownColorModifiers>;
 
 export const SizeModifiers = tuple("is-small", "is-medium", "is-large");

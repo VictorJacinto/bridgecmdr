@@ -16,8 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-
 /*
  * =====================================================================================================================
  * Common modules.
@@ -70,7 +68,6 @@ const allReady = Promise.all([
                     return;
                 }
 
-                // eslint-disable-next-line dot-notation
                 productName = data["productName"];
                 resolve(productName);
             })),

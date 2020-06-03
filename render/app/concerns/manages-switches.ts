@@ -23,9 +23,7 @@ import switchEditor from "../pages/settings/SwitchEditor";
 import switches, { Switch } from "../store/modules/switches";
 
 const ManagesSwitches = Vue.extend({
-    computed: {
-
-    },
+    name:    "ManagesSwitches",
     methods: {
         ...mapGetters<typeof switches>()("switches", {
             getEmpty: "empty",

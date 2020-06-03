@@ -1,3 +1,4 @@
+#set($MIXIN_NAME=${NAME})
 /*
 BridgeCmdr - A/V switch and monitor controller
 Copyright (C) 2019-2020 Matthew Holder
@@ -16,9 +17,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-export type Lit = string | number | boolean | undefined | null | void | {};
-export const tuple = <T extends Lit[]>(...args: T): T => args;
+import Vue from "vue";
 
-export type TupleToUnion<T> = T extends readonly [...unknown[]] ? T[number] : never;
+const ${MIXIN_NAME} = Vue.extend({
+    name: "ManagesSources",
+});
 
-export type ElementType<A extends unknown[]> = A extends (infer E)[] ? E : never;
+export type ${MIXIN_NAME}Constructor = typeof ${MIXIN_NAME};
+type ${MIXIN_NAME} = InstanceType<${MIXIN_NAME}Constructor>;
+export default ${MIXIN_NAME};

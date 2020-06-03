@@ -18,9 +18,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { identity } from "lodash";
 import { ReadonlyDeep } from "type-fest";
-import Vue, { VNode } from "vue";
+import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import { CombinedVueInstance } from "vue/types/vue";
 import { BButton, BField, BIcon } from "../../../foundation/components/buefy-tsx";
 import { normalizeChildren } from "../../../foundation/helpers/vue";
 import { mapActions, mapState } from "../../../foundation/helpers/vuex";
@@ -39,7 +38,7 @@ type DataSourceSlots<M extends Model> = {
 
 type BaseModuleEx<M extends Model> = ModuleEx<M, RootState>;
 
-export const dataSource = identity(
+const dataSource = identity(
     <M extends Model>(namespace: string) =>
         tsx.componentFactoryOf<DataSourceEvents<M>, DataSourceSlots<M>>().create({
             name:  "DataSource",
@@ -83,6 +82,8 @@ export const dataSource = identity(
                     } catch (error) {
                         this.error = error;
                     }
+
+                    this.$emit("change", this.items);
                 },
             },
             mounted() {
@@ -127,18 +128,4 @@ export const dataSource = identity(
         }),
 );
 
-type DataSourceProps<M extends Model> = {
-    selector?: PouchDB.Find.FindRequest<M>|undefined;
-};
-
-type DataSourceMethods = {
-    refresh(): Promise<void>;
-};
-
-type DataSourceBase<M extends Model> = CombinedVueInstance<Vue, unknown, DataSourceMethods, unknown, DataSourceProps<M>>;
-
-export type DataSourceConstructor<M extends Model> = tsx.TsxComponent<DataSourceBase<M>, DataSourceProps<M>, DataSourceEvents<M>, DataSourceSlots<M>>;
-
-type DataSource<M extends Model> = InstanceType<DataSourceConstructor<M>>;
-// noinspection JSUnusedGlobalSymbols
-export default DataSource;
+export default dataSource;

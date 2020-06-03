@@ -17,15 +17,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { identity, toString } from "lodash";
-import { PropOptions } from "vue";
+import { PropOptions, VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import {
-    BAnyValue,
-    BButton,
-    BDropdown,
-    BDropdownItem, BInput,
-    KnownColorModifiers,
-    PopupPositionModifiers, SizeModifiers,
+    BAnyValue, BButton, BDropdown, BDropdownItem, BInput,
+    KnownColorModifiers, PopupPositionModifiers, SizeModifiers,
 } from "../../foundation/components/buefy-tsx";
 import { tuple, TupleToUnion } from "../../foundation/helpers/typing";
 import { be, is, maybe, must, prop } from "../../foundation/validation/valid";
@@ -87,7 +83,7 @@ const simpleDropdown = identity(<T extends SimpleDropdownItems, V extends keyof 
                 this.$emit("input", value);
             },
         },
-        render() {
+        render(): VNode {
             return (
                 <BDropdown
                     onChange={(value: T[V]) => this.updateValue(value)}
@@ -136,7 +132,4 @@ const simpleDropdown = identity(<T extends SimpleDropdownItems, V extends keyof 
     }),
 );
 
-// export type SimpleDropdownConstructor = typeof SimpleDropdown;
-// type SimpleDropdown = InstanceType<SimpleDropdownConstructor>;
-// export default SimpleDropdown;
 export default simpleDropdown;

@@ -19,7 +19,7 @@ export interface ModuleEx<M extends Model, R extends object> extends Module<Stat
     };
     readonly mutations: {
         refresh(state: StateEx<M>, items: ReadonlyDeep<M>[]): void;
-        show(state: StateEx<M>, current: ReadonlyDeep<M>): void;
+        show(state: StateEx<M>, current: ReadonlyDeep<M>|null): void;
         append(state: StateEx<M>, item: ReadonlyDeep<M>): void;
         replace(state: StateEx<M>, item: ReadonlyDeep<M>): void;
         delete(state: StateEx<M>, id: string): void;
@@ -108,6 +108,7 @@ const Store = {
             all: async ({ commit }) => {
                 const connection = await database;
 
+                commit("refresh", []);
                 commit("refresh", await connection.all());
             },
 
@@ -115,12 +116,14 @@ const Store = {
             get: async ({ commit }, id) => {
                 const connection = await database;
 
+                commit("show", null);
                 commit("show", await connection.get(id));
             },
 
             find: async ({ commit }, selector) => {
                 const connection = await database;
 
+                commit("refresh", []);
                 const docs = await connection.query(async function (db) {
                     const response = await db.find({ selector });
 

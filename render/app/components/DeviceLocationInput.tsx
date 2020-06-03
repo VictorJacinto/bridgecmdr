@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { isNil } from "lodash";
+import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { BField, BInput, KnownColorModifiers } from "../../foundation/components/buefy-tsx";
 import { is, maybe, prop } from "../../foundation/validation/valid";
@@ -85,7 +86,7 @@ const DeviceLocationInput = tsx.component({
             this.$emit("input", value);
         },
     },
-    render() {
+    render(): VNode {
         const DeviceDropdown = simpleDropdown(this.devices, "path", "label");
 
         return (

@@ -1,3 +1,5 @@
+// TODO: https://github.com/typescript-eslint/typescript-eslint/issues/415
+
 module.exports = {
     "root": true,
     "env": {
@@ -39,7 +41,13 @@ module.exports = {
             "jsx": true
         }
     },
-    "ignorePatterns": ["build/*"],
+    "settings": {
+        "import/parsers": {
+            "@typescript-eslint/parser": [ ".ts", ".tsx" ],
+            "vue-eslint-parser": [ ".vue" ]
+        }
+    },
+    "ignorePatterns": [ "build/*", "*.packer.js" ],
     "rules": {
         // # Possible Errors
         "no-await-in-loop": "error",
@@ -209,6 +217,18 @@ module.exports = {
         }],
 
         // # Import
+        "import/no-absolute-path": "error",
+        "import/no-dynamic-require": "error",
+        "import/no-webpack-loader-syntax": "error",
+        "import/no-self-import": "error",
+        "import/no-useless-path-segments": "error",
+        "import/no-mutable-exports": "error",
+        "import/no-unused-modules": "error",
+        "import/no-commonjs": "error",
+        "import/no-amd": "error",
+        "import/newline-after-import": "error",
+        "import/no-named-default": "error",
+        "import/no-anonymous-default-export": "error",
         "import/first": "off",
         "import/order": ["error", {
             "alphabetize": {
@@ -235,6 +255,8 @@ module.exports = {
         }],
 
         // # Vue
+        "vue/no-unsupported-features": ["error", { "version": "^2.6.0" }],
+        "vue/require-name-property": "error",
         "vue/html-indent": ["error", 4],
         "vue/html-self-closing": "off",
         "vue/html-closing-bracket-newline": ["error", { "singleline": "never", "multiline": "never" }],

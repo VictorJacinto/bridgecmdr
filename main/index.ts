@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// eslint-disable-next-line import/default,import/order
+// eslint-disable-next-line import/default,import/order,import/newline-after-import
 import unhandled from "electron-unhandled";
 unhandled();
 

@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { BNavbar, BNavbarItem, BIcon } from "../../../foundation/components/buefy-tsx";
 import SvgIcon from "../../components/SvgIcon";
@@ -29,7 +30,7 @@ const SettingsPage = tsx.component({
             console.log(target);
         },
     },
-    render() {
+    render(): VNode {
         return (
             <div id="settings-page">
                 <BNavbar fixedTop type="is-primary" mobileBurger={false}>
@@ -47,7 +48,7 @@ const SettingsPage = tsx.component({
                         </template>
                         <template slot="default">
                             <p class="has-text-weight-semibold">General</p>
-                            <p>Change other miscellaneous settings.</p>
+                            <p class="has-text-light">Change other miscellaneous settings.</p>
                         </template>
                     </CardListEntry>
                     <CardListEntry to={{ name: "sources" }}>
@@ -56,7 +57,7 @@ const SettingsPage = tsx.component({
                         </template>
                         <template slot="default">
                             <p class="has-text-weight-semibold">Sources</p>
-                            <p>Add, edit, or remove sources.</p>
+                            <p class="has-text-light">Add, edit, or remove sources.</p>
                         </template>
                     </CardListEntry>
                     <CardListEntry to={{ name: "switches" }}>
@@ -65,7 +66,7 @@ const SettingsPage = tsx.component({
                         </template>
                         <template slot="default">
                             <p class="has-text-weight-semibold">Switches</p>
-                            <p>Add, edit, or remove switches and monitors.</p>
+                            <p class="has-text-light">Add, edit, or remove switches and monitors.</p>
                         </template>
                     </CardListEntry>
                 </CardList>

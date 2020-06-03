@@ -100,5 +100,6 @@ const switchEditor = identity(async () => {
 type PromiseResult<P> = P extends Promise<infer T> ? T : never;
 
 export type SwitchEditorConstructor = PromiseResult<ReturnType<typeof switchEditor>>;
+// noinspection JSUnusedGlobalSymbols
 export type SwitchEditor = InstanceType<SwitchEditorConstructor>;
 export default switchEditor;

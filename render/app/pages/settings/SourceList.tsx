@@ -17,18 +17,43 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { times } from "lodash";
+import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import { BIcon, BNavbar, BNavbarItem, BSkeleton } from "../../../foundation/components/buefy-tsx";
+import { BButton, BIcon, BNavbar, BNavbarItem, BSkeleton } from "../../../foundation/components/buefy-tsx";
 import CardList from "../../components/card-list/CardList";
 import CardListEntry from "../../components/card-list/CardListEntry";
-import { dataSource } from "../../components/data/DataSource";
+import dataSource from "../../components/data/DataSource";
+import ManagesSources from "../../concerns/manages-sources";
 import { Source } from "../../store/modules/sources";
 
 const DataSource = dataSource<Source>("sources");
 
-const SourceList = tsx.component({
+const SourceList = tsx.componentFactory.mixin(ManagesSources).create({
     name: "SourceList",
-    render() {
+    data: function () {
+        return {
+            icons: {} as Record<string, string>,
+        };
+    },
+    methods: {
+        onItemsChange(items: Source[]) {
+            this.revokeUrls();
+            for (const item of items) {
+                this.$set(this.icons, item._id, URL.createObjectURL(item.image));
+            }
+        },
+        revokeUrls() {
+            for (const url of Object.values(this.icons)) {
+                URL.revokeObjectURL(url);
+            }
+
+            this.icons = {};
+        },
+    },
+    beforeDestroy() {
+        this.revokeUrls();
+    },
+    render(): VNode {
         return (
             <div id="source-list">
                 <BNavbar fixedTop type="is-primary" mobileBurger={false}>
@@ -39,19 +64,21 @@ const SourceList = tsx.component({
                         <BNavbarItem tag="div">Sources</BNavbarItem>
                     </template>
                 </BNavbar>
-                <DataSource scopedSlots={{
+                <DataSource onChange={items => this.onItemsChange(items)} scopedSlots={{
                     default: ({ items, loading }) => (loading ? (
                         <CardList>{
                             times(3, () => (
                                 <CardListEntry>
                                     <template slot="image">
-                                        <BSkeleton/>
+                                        <figure class="image is-48x48">
+                                            <BSkeleton circle width="48px" height="48px"/>
+                                        </figure>
                                     </template>
                                     <template slot="default">
-                                        <BSkeleton count={2}/>
+                                        <BSkeleton height="1em" count={2}/>
                                     </template>
                                     <template slot="actions">
-                                        <BSkeleton/>
+                                        <BButton disabled={true} loading={true}/>
                                     </template>
                                 </CardListEntry>
                             ))
@@ -60,9 +87,14 @@ const SourceList = tsx.component({
                         <CardList>{
                             items.map(item => (
                                 <CardListEntry>
+                                    <template slot="image">
+                                        <figure class="image is-48x48">
+                                            <img src={this.icons[item._id]} class="is-rounded" alt="icon"/>
+                                        </figure>
+                                    </template>
                                     <template slot="default">
                                         <p class="has-text-weight-semibold">{item.title}</p>
-                                        <p>Stuff and things</p>
+                                        { /* TODO: Tie count? */ }
                                     </template>
                                 </CardListEntry>
                             ))

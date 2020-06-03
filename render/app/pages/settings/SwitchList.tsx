@@ -23,7 +23,7 @@ import { BButton, BIcon, BNavbar, BNavbarItem, BSkeleton } from "../../../founda
 import SvgIcon from "../../components/SvgIcon";
 import CardList from "../../components/card-list/CardList";
 import CardListEntry from "../../components/card-list/CardListEntry";
-import { dataSource } from "../../components/data/DataSource";
+import dataSource from "../../components/data/DataSource";
 import ManagesSwitches from "../../concerns/manages-switches";
 import { Switch } from "../../store/modules/switches";
 import Driver, { DeviceType } from "../../system/driver";
@@ -73,13 +73,15 @@ const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
                             times(3, () => (
                                 <CardListEntry>
                                     <template slot="image">
-                                        <BSkeleton/>
+                                        <figure class="image is-48x48">
+                                            <BSkeleton circle width="48px" height="48px"/>
+                                        </figure>
                                     </template>
                                     <template slot="default">
-                                        <BSkeleton count={2}/>
+                                        <BSkeleton height="1em" count={2}/>
                                     </template>
                                     <template slot="actions">
-                                        <BSkeleton/>
+                                        <BButton disabled={true} loading={true}/>
                                     </template>
                                 </CardListEntry>
                             ))
@@ -93,7 +95,7 @@ const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
                                     </template>
                                     <template slot="default">
                                         <p class="has-text-weight-semibold">{ item.title }</p>
-                                        <p>{ this.getDriverForSwitch(item) }</p>
+                                        <p class="has-text-light">{ this.getDriverForSwitch(item) }</p>
                                     </template>
                                     <template slot="actions">
                                         <BButton iconLeft="delete" type="is-danger" onClick={m.stop(() => this.removeSwitch(item))}/>

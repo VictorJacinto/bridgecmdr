@@ -20,15 +20,14 @@ import { identity } from "lodash";
 import { ReadonlyDeep } from "type-fest";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import { CombinedVueInstance } from "vue/types/vue";
 import { BButton, BField, BIcon } from "../../../foundation/components/buefy-tsx";
+import { normalizeChildren } from "../../../foundation/helpers/vue";
 import { mapActions, mapState } from "../../../foundation/helpers/vuex";
 import { is, prop } from "../../../foundation/validation/valid";
 import { RootState } from "../../store/root-state";
 import Model from "../../support/data/model";
 import { ModuleEx, StateEx } from "../../support/data/store";
 import { IDPattern } from "../../support/validation";
-import {normalizeChildren} from "../../../foundation/helpers/vue";
 
 type DataItemEvents<M extends Model> = {
     onInput(value: ReadonlyDeep<M>|null): void;
@@ -40,7 +39,7 @@ type DataItemSlots<M extends Model> = {
 
 type BaseModuleEx<M extends Model> = ModuleEx<M, RootState>;
 
-export const dataItem = identity(
+const dataItem = identity(
     <M extends Model>(namespace: string) =>
         tsx.componentFactoryOf<DataItemEvents<M>, DataItemSlots<M>>().create({
             name:  "DataItem",
@@ -88,7 +87,8 @@ export const dataItem = identity(
                             <div class="content has-text-danger has-text-centered">
                                 <BField><BIcon icon="emoticon-sad" size="is-large" type="is-danger"/></BField>
                                 <BField>There was an error finding {this.id}.</BField>
-                                <BField><BButton label="Try again" type="is-warning" onClick={() => this.refresh()}/></BField>
+                                <BField><BButton label="Try again" type="is-warning"
+                                    onClick={() => this.refresh()}/></BField>
                                 <BField>{this.error.message}</BField>
                             </div>
                         </RootTag>
@@ -102,19 +102,4 @@ export const dataItem = identity(
         }),
 );
 
-type DataItemProps = {
-    id?: string|undefined;
-    tag?: string|undefined;
-};
-
-type DataItemMethods = {
-    refresh(): Promise<void>;
-};
-
-type DataItemBase = CombinedVueInstance<Vue, unknown, DataItemMethods, unknown, DataItemProps>;
-
-export type DataItemConstructor<M extends Model> = tsx.TsxComponent<DataItemBase, DataItemProps, DataItemEvents<M>, DataItemSlots<M>>;
-
-type DataItem<M extends Model> = InstanceType<DataItemConstructor<M>>;
-// noinspection JSUnusedGlobalSymbols
-export default DataItem;
+export default dataItem;
