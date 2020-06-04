@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import { BButton, BField, BInput, BUpload } from "../../../foundation/components/buefy-tsx";
+import { BButton, BField, BIcon, BInput, BUpload } from "../../../foundation/components/buefy-tsx";
 import { ValidationObserver, ValidationProvider } from "../../../foundation/components/vee-validate-tsx";
 import { is, prop } from "../../../foundation/validation/valid";
 import { Source } from "../../store/modules/sources";
@@ -69,9 +69,14 @@ const SourceModal = tsx.component({
         return (
             <ValidationObserver tag="div" id="source-editor" class="modal-card" scopedSlots={{
                 default: ({ handleSubmit }) => [
-                    <header class="modal-card-head">
-                        <h1 class="modal-card-title">{this.title}</h1>
-                    </header>,
+                    <div class="navbar is-primary">
+                        <div class="navbar-brand">
+                            <a class="navbar-item" onClick={() => this.$modals.cancel()}>
+                                <BIcon icon="arrow-left"/>
+                            </a>
+                            <div class="navbar-item">{this.title}</div>
+                        </div>
+                    </div>,
                     <main class="modal-card-body">
                         <ValidationProvider name="title" rules="required" slim scopedSlots={{
                             default: ({ errors }) => (
@@ -86,27 +91,22 @@ const SourceModal = tsx.component({
                                     <BUpload v-model={this.item.image} dragDrop
                                         onInput={image => this.updateImage(image)}>{
                                             this.imageUrl ? (
-                                                <section class="section">
-                                                    <div class="content has-text-centered">
-                                                        <div class="is-flex is-justify-center">
-                                                            <figure class="image icon is-96x96 is-centered">
-                                                                <img src={this.imageUrl} class="has-background-dark"
-                                                                    alt="icon"/>
-                                                            </figure>
-                                                        </div>
-                                                        <p>Drop an image or tap to select</p>
-                                                    </div>
-                                                </section>
+                                                <div class="content has-text-centered">
+                                                    <p class="is-flex is-justify-center">
+                                                        <figure class="image icon preview is-96x96 is-centered">
+                                                            <img src={this.imageUrl} alt="icon"/>
+                                                        </figure>
+                                                    </p>
+                                                    <p>Drop an image or tap to select</p>
+                                                </div>
                                             ) : (
-                                                <section class="section">
-                                                    <div class="content has-text-centered">
-                                                        <p class="is-flex is-justify-center">
-                                                            <SvgIcon name="mdiUpload" class="is-centered"
-                                                                size="is-96x96"/>
-                                                        </p>
-                                                        <p>Drop an image or tap to select</p>
-                                                    </div>
-                                                </section>
+                                                <div class="content has-text-centered">
+                                                    <p class="is-flex is-justify-center">
+                                                        <SvgIcon name="mdiUpload" class="is-centered"
+                                                            size="is-96x96"/>
+                                                    </p>
+                                                    <p>Drop an image or tap to select</p>
+                                                </div>
                                             )
                                         }</BUpload>
                                 </BField>
@@ -114,8 +114,6 @@ const SourceModal = tsx.component({
                         }}/>
                     </main>,
                     <footer class="modal-card-foot">
-                        <BButton label="Cancel" type="is-dark"
-                            onClick={() => this.$modals.cancel() }/>
                         <BButton label={this.confirmText} type="is-primary"
                             onClick={() => handleSubmit(() => this.onSaveClicked()) }/>
                     </footer>,
@@ -125,6 +123,5 @@ const SourceModal = tsx.component({
     },
 });
 
-export type SourceModalConstructor = typeof SourceModal;
-type SourceModal = InstanceType<SourceModalConstructor>;
+type SourceModal = InstanceType<typeof SourceModal>;
 export default SourceModal;

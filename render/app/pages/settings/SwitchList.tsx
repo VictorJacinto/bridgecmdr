@@ -24,7 +24,8 @@ import SvgIcon from "../../components/SvgIcon";
 import CardList from "../../components/card-list/CardList";
 import CardListEntry from "../../components/card-list/CardListEntry";
 import dataSource from "../../components/data/DataSource";
-import ManagesSwitches from "../../concerns/manages-switches";
+import switchModal from "../../components/modals/SwitchModal";
+import dataManager from "../../concerns/data-manager";
 import { Switch } from "../../store/modules/switches";
 import Driver, { DeviceType } from "../../system/driver";
 
@@ -34,6 +35,12 @@ const iconMap = {
     [DeviceType.Switch]:  "mdiVideoSwitch",
     [DeviceType.Monitor]: "mdiMonitor",
 };
+
+const ManagesSwitches = dataManager<Switch>({
+    modalFactory: switchModal,
+    namespace:    "switches",
+    term:         "switch",
+});
 
 const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
     name:    "SwitchList",
@@ -89,16 +96,18 @@ const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
                     ) : (
                         <CardList>{
                             items.map(item => (
-                                <CardListEntry onClick={() => this.updateSwitch(item)}>
+                                <CardListEntry onClick={() => this.updateItem(item)}>
                                     <template slot="image">
-                                        <SvgIcon name={this.getIconForSwitch(item)} type="is-primary" size="is-48x48" inverted rounded/>
+                                        <SvgIcon name={this.getIconForSwitch(item)} type="is-primary" size="is-48x48"
+                                            inverted rounded/>
                                     </template>
                                     <template slot="default">
                                         <p class="has-text-weight-semibold">{ item.title }</p>
                                         <p class="has-text-light">{ this.getDriverForSwitch(item) }</p>
                                     </template>
                                     <template slot="actions">
-                                        <BButton class="card-action-item" iconLeft="delete" type="is-danger" onClick={m.stop(() => this.removeSwitch(item))}/>
+                                        <BButton class="card-action-item" iconLeft="delete" type="is-danger"
+                                            onClick={m.stop(() => this.removeItem(item))}/>
                                     </template>
                                 </CardListEntry>
                             ))
@@ -106,13 +115,12 @@ const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
                     )),
                 }}/>
                 <div class="fab-container is-right">
-                    <BButton class="fab-item" iconLeft="plus" type="is-primary" onClick={() => this.createSwitch()}/>
+                    <BButton class="fab-item" iconLeft="plus" type="is-primary" onClick={() => this.createItem()}/>
                 </div>
             </div>
         );
     },
 });
 
-export type SwitchListConstructor = typeof SwitchList;
-type SwitchList = InstanceType<SwitchListConstructor>;
+type SwitchList = InstanceType<typeof SwitchList>;
 export default SwitchList;

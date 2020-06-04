@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { identity } from "lodash";
 import * as tsx from "vue-tsx-support";
-import { BButton, BField, BInput } from "../../../foundation/components/buefy-tsx";
+import { BButton, BField, BIcon, BInput } from "../../../foundation/components/buefy-tsx";
 import { ValidationObserver, ValidationProvider } from "../../../foundation/components/vee-validate-tsx";
 import { is, prop } from "../../../foundation/validation/valid";
 import { Switch } from "../../store/modules/switches";
@@ -56,9 +56,14 @@ const switchModal = identity(async () => {
             return (
                 <ValidationObserver tag="div" id="switch-editor" class="modal-card" scopedSlots={{
                     default: ({ handleSubmit }) => [
-                        <header class="modal-card-head">
-                            <h1 class="modal-card-title">{this.title}</h1>
-                        </header>,
+                        <div class="navbar is-primary">
+                            <div class="navbar-brand">
+                                <a class="navbar-item" onClick={() => this.$modals.cancel()}>
+                                    <BIcon icon="arrow-left"/>
+                                </a>
+                                <div class="navbar-item">{this.title}</div>
+                            </div>
+                        </div>,
                         <main class="modal-card-body">
                             <ValidationProvider name="title" rules="required" slim scopedSlots={{
                                 default: ({ errors }) => (
@@ -84,8 +89,6 @@ const switchModal = identity(async () => {
                             }}/>
                         </main>,
                         <footer class="modal-card-foot">
-                            <BButton label="Cancel" type="is-dark"
-                                onClick={() => this.$modals.cancel() }/>
                             <BButton label={this.confirmText} type="is-primary"
                                 onClick={() => handleSubmit(() => this.onSaveClicked()) }/>
                         </footer>,
@@ -96,9 +99,4 @@ const switchModal = identity(async () => {
     });
 });
 
-type PromiseResult<P> = P extends Promise<infer T> ? T : never;
-
-export type SwitchModalConstructor = PromiseResult<ReturnType<typeof switchModal>>;
-// noinspection JSUnusedGlobalSymbols
-export type SwitchModal = InstanceType<SwitchModalConstructor>;
 export default switchModal;

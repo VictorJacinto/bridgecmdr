@@ -24,10 +24,16 @@ import { BButton, BIcon, BNavbar, BNavbarItem, BSkeleton } from "../../../founda
 import CardList from "../../components/card-list/CardList";
 import CardListEntry from "../../components/card-list/CardListEntry";
 import dataSource from "../../components/data/DataSource";
-import ManagesSources from "../../concerns/manages-sources";
+import SourceModal from "../../components/modals/SourceModal";
+import dataManager from "../../concerns/data-manager";
 import { Source } from "../../store/modules/sources";
 
 const DataSource = dataSource<Source>("sources");
+const ManagesSources = dataManager<Source>({
+    namespace: "sources",
+    modal:     SourceModal,
+    term:      "source",
+});
 
 const SourceList = tsx.componentFactory.mixin(ManagesSources).create({
     name: "SourceList",
@@ -100,8 +106,10 @@ const SourceList = tsx.componentFactory.mixin(ManagesSources).create({
                                         { /* TODO: Tie count? */ }
                                     </template>
                                     <template slot="actions">
-                                        <BButton class="card-action-item" iconLeft="pencil" type="is-primary" onClick={m.stop(() => this.showEditSourceModal(item))}/>
-                                        <BButton class="card-action-item" iconLeft="delete" type="is-danger"/>{/* TODO Delete logic */}
+                                        <BButton class="card-action-item" iconLeft="pencil" type="is-primary"
+                                            onClick={m.stop(() => this.updateItem(item))}/>
+                                        <BButton class="card-action-item" iconLeft="delete" type="is-danger"
+                                            onClick={m.stop(() => this.removeItem(item))}/>
                                     </template>
                                 </CardListEntry>
                             ))
@@ -109,13 +117,12 @@ const SourceList = tsx.componentFactory.mixin(ManagesSources).create({
                     )),
                 }}/>
                 <div class="fab-container is-right">
-                    <BButton class="fab-item" iconLeft="plus" type="is-primary" onClick={() => this.showAddSourceModal()}/>
+                    <BButton class="fab-item" iconLeft="plus" type="is-primary" onClick={() => this.createItem()}/>
                 </div>
             </div>
         );
     },
 });
 
-export type SourceListConstructor = typeof SourceList;
-type SourceList = InstanceType<SourceListConstructor>;
+type SourceList = InstanceType<typeof SourceList>;
 export default SourceList;

@@ -103,6 +103,5 @@ const DeviceLocationInput = tsx.component({
     },
 });
 
-export type DeviceLocationInputConstructor = typeof DeviceLocationInput;
-type DeviceLocationInput = InstanceType<DeviceLocationInputConstructor>;
+type DeviceLocationInput = InstanceType<typeof DeviceLocationInput>;
 export default DeviceLocationInput;

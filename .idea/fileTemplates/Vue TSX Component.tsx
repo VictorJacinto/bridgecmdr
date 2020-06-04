@@ -27,6 +27,5 @@ return (<div>#[[$END$]]#</div>);
 },
 });
 
-export type ${COMPONENT_NAME}Constructor = typeof ${COMPONENT_NAME};
-type ${COMPONENT_NAME} = InstanceType<${COMPONENT_NAME}Constructor>;
+type ${COMPONENT_NAME} = InstanceType<typeof ${COMPONENT_NAME}>;
 export default ${COMPONENT_NAME};

@@ -35,6 +35,5 @@ const DashboardPage = tsx.component({
     },
 });
 
-export type DashboardPageConstructor = typeof DashboardPage;
-type DashboardPage = InstanceType<DashboardPageConstructor>;
+type DashboardPage = InstanceType<typeof DashboardPage>;
 export default DashboardPage;

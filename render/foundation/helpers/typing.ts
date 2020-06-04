@@ -22,3 +22,5 @@ export const tuple = <T extends Lit[]>(...args: T): T => args;
 export type TupleToUnion<T> = T extends readonly [...unknown[]] ? T[number] : never;
 
 export type ElementType<A extends unknown[]> = A extends (infer E)[] ? E : never;
+
+export type PromiseResult<P> = P extends Promise<infer T> ? T : never;

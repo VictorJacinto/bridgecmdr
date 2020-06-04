@@ -33,7 +33,7 @@ const ManagesSwitches = Vue.extend({
             doUpdateSwitch: "update",
             doRemoveSwitch: "remove",
         }),
-        async showSwitchModal(item: Partial<Switch>): Promise<Switch|null> {
+        async showSwitchModal(item: Partial<Switch>) {
             // Serial device list required asynchronous loading, so a factory function is used.
             const editor = await switchModal();
 
@@ -44,17 +44,16 @@ const ManagesSwitches = Vue.extend({
                 customClass: "dialog-like",
             });
         },
-        showEditSwitchModal(item: Switch): Promise<Switch|null> {
+        showEditSwitchModal(item: Switch) {
             return this.showSwitchModal(item);
         },
-        showAddSwitchModal(): Promise<Switch|null> {
+        showAddSwitchModal() {
             return this.showSwitchModal(this.getEmpty());
         },
         async removeSwitch(item: Switch) {
             const remove = await this.$dialogs.confirm({
                 message:     "Do you to remove this switch?",
                 type:        "is-danger",
-                hasIcon:     true,
                 confirmText: "Remove",
                 focusOn:     "cancel",
             });
@@ -90,4 +89,5 @@ const ManagesSwitches = Vue.extend({
     },
 });
 
+type ManagesSwitches = InstanceType<typeof ManagesSwitches>;
 export default ManagesSwitches;

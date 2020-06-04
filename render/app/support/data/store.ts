@@ -3,6 +3,7 @@ import { ReadonlyDeep } from "type-fest";
 import { ActionContext,  Module, Store as StoreBase } from "vuex";
 import Database, { Document, GetDocument, Indices } from "./database";
 import Model from "./model";
+import {RootState} from "../../store/root-state";
 
 export interface StateEx<M extends Model> {
     items: ReadonlyDeep<M>[];
@@ -210,5 +211,7 @@ const Store = {
         };
     },
 };
+
+export type BaseModuleEx<M extends Model> = ModuleEx<M, RootState>;
 
 export default Store;

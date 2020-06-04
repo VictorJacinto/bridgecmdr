@@ -20,9 +20,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import Vue from "vue";
 
 const ${MIXIN_NAME} = Vue.extend({
-    name: "ManagesSources",
+    name: "${MIXIN_NAME}",
 });
 
-export type ${MIXIN_NAME}Constructor = typeof ${MIXIN_NAME};
-type ${MIXIN_NAME} = InstanceType<${MIXIN_NAME}Constructor>;
+type ${MIXIN_NAME} = InstanceType<typeof ${MIXIN_NAME};>;
 export default ${MIXIN_NAME};

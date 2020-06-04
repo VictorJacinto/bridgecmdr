@@ -90,6 +90,5 @@ const SvgIcon = tsx.component({
     },
 });
 
-export type SvgIconConstructor = typeof SvgIcon;
-type SvgIcon = InstanceType<SvgIconConstructor>;
+type SvgIcon = InstanceType<typeof SvgIcon>;
 export default SvgIcon;

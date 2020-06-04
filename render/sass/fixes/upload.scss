@@ -1,5 +1,6 @@
 .upload {
     .upload-draggable {
+        padding: $button-padding-vertical $button-padding-horizontal;
         border: 1px dashed $input-border-color;
         &:hover,
         &.is-hovered {

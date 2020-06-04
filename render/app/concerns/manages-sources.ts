@@ -25,15 +25,15 @@ import sources, { Source } from "../store/modules/sources";
 const ManagesSources = Vue.extend({
     name:    "ManagesSources",
     methods: {
-        ...mapGetters<typeof sources>()("switches", {
+        ...mapGetters<typeof sources>()("sources", {
             getEmpty: "empty",
         }),
-        ...mapActions<typeof sources>()("switches", {
+        ...mapActions<typeof sources>()("sources", {
             doAddSource:    "add",
             doUpdateSource: "update",
             doRemoveSource: "remove",
         }),
-        showSourceModal(item: Partial<Source>): Promise<Source|null> {
+        showSourceModal(item: Partial<Source>) {
             return this.$modals.open<Source>(SourceModal, {
                 props:       { item: clone(item) },
                 canCancel:   false,
@@ -41,15 +41,50 @@ const ManagesSources = Vue.extend({
                 customClass: "dialog-like",
             });
         },
-        showEditSourceModal(item: Source): Promise<Source|null> {
+        showEditSourceModal(item: Source) {
             return this.showSourceModal(item);
         },
-        showAddSourceModal(): Promise<Source|null> {
+        showAddSourceModal() {
             return this.showSourceModal(this.getEmpty());
+        },
+        async removeSource(item: Source) {
+            const remove = await this.$dialogs.confirm({
+                message:     "Do you to remove this source?",
+                type:        "is-danger",
+                confirmText: "Remove",
+                focusOn:     "cancel",
+            });
+
+            if (remove) {
+                try {
+                    await this.doRemoveSource(item._id);
+                } catch (error) {
+                    await this.$dialogs.error(error);
+                }
+            }
+        },
+        async updateSource(item: Source) {
+            const source = await this.showEditSourceModal(item);
+            if (source) {
+                try {
+                    await this.doUpdateSource(source);
+                } catch (error) {
+                    await this.$dialogs.error(error);
+                }
+            }
+        },
+        async createSource() {
+            const source = await this.showAddSourceModal();
+            if (source) {
+                try {
+                    await this.doAddSource(source);
+                } catch (error) {
+                    await this.$dialogs.error(error);
+                }
+            }
         },
     },
 });
 
-export type ManagesSourcesConstructor = typeof ManagesSources;
-type ManagesSources = InstanceType<ManagesSourcesConstructor>;
+type ManagesSources = InstanceType<typeof ManagesSources>;
 export default ManagesSources;

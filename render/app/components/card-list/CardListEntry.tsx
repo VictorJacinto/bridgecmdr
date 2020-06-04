@@ -82,6 +82,5 @@ const CardListEntry = tsx.componentFactoryOf<Events>().create({
     },
 });
 
-export type CardListEntryConstructor = typeof CardListEntry;
-type CardListEntry = InstanceType<CardListEntryConstructor>;
+type CardListEntry = InstanceType<typeof CardListEntry>;
 export default CardListEntry;

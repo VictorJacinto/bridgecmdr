@@ -24,9 +24,8 @@ import { BButton, BField, BIcon } from "../../../foundation/components/buefy-tsx
 import { normalizeChildren } from "../../../foundation/helpers/vue";
 import { mapActions, mapState } from "../../../foundation/helpers/vuex";
 import { is, prop } from "../../../foundation/validation/valid";
-import { RootState } from "../../store/root-state";
 import Model from "../../support/data/model";
-import { ModuleEx, StateEx } from "../../support/data/store";
+import { BaseModuleEx, StateEx } from "../../support/data/store";
 import { IDPattern } from "../../support/validation";
 
 type DataItemEvents<M extends Model> = {
@@ -36,8 +35,6 @@ type DataItemEvents<M extends Model> = {
 type DataItemSlots<M extends Model> = {
     default: { current: ReadonlyDeep<M>|null; loading: boolean };
 };
-
-type BaseModuleEx<M extends Model> = ModuleEx<M, RootState>;
 
 const dataItem = identity(
     <M extends Model>(namespace: string) =>

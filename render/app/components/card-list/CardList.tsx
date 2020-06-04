@@ -25,6 +25,5 @@ const CardList = tsx.component({
     },
 });
 
-export type CardListConstructor = typeof CardList;
-type CardList = InstanceType<CardListConstructor>;
+type CardList = InstanceType<typeof CardList>;
 export default CardList;

@@ -20,6 +20,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 @import "~bulma/sass/utilities/functions";
 @import "./functions";
 
+$family-sans-serif: "Spartan";
+
 // Black
 $black:     hsl(0, 0%, 0%);  // Black
 $black-bis: hsl(0, 0%, 13%); // Grey 900
@@ -107,27 +109,33 @@ $danger-invert: $red-invert;
 // Dark mode
 $light:              $grey-dark;
 $light-invert:       materialInvert($light);
-$dark:               $black-ter;
+$dark:               $black-bis;
 $dark-invert:        materialInvert($dark);
-$scheme-main:        $black;
-$scheme-main-bis:    $black-bis;
-$scheme-main-ter:    $black-ter;
+$scheme-main:        $black-bis;
+$scheme-main-bis:    $black-ter;
+$scheme-main-ter:    $grey-darker;
 $scheme-invert-ter:  $white-ter;
 $scheme-invert-bis:  $white-bis;
 $scheme-invert:      $white;
 $background:         $black-ter;
-$border:             $black-bis;
-$border-hover:       $black-ter;
-$border-light:       $black-ter;
-$border-light-hover: $grey-darker;
+$border:             $scheme-main-bis;
+$border-hover:       materialLighten($scheme-main-bis);
+$border-light:       $scheme-main-ter;
+$border-light-hover: materialLighten($scheme-main-bis);
 $text:               $grey-lighter;
 $text-invert:        materialInvert($text);
 $text-light:         $grey-light;
 $text-strong:        $grey-lightest;
 
+// Buttons
+$button-focus-color: $grey-lightest;
+$button-focus-border-color: $border-light;
+$button-focus-box-shadow-color: bulmaRgba($button-focus-border-color, 0.25);
+
 // Modals
-$modal-card-head-background-color: $border;
-$modal-card-body-background-color: $black;
+$modal-card-title-size: $size-6;
+$modal-card-head-background-color: $scheme-main-bis;
+$modal-card-body-background-color: $scheme-main;
 $modal-background-background-color: bulmaRgba($black, 0.75);
 $loading-background-legacy: $grey;
 $loading-background: bulmaRgba($black, 0.75);
@@ -135,7 +143,8 @@ $loading-background: bulmaRgba($black, 0.75);
 // Inputs
 $input-arrow: $primary;
 $input-border-color: $border;
-$input-focus-border-color: $primary-dark;
+$input-focus-border-color: $border-hover;
+$input-focus-box-shadow-color: bulmaRgba($input-focus-border-color, 0.25);
 $input-hover-border-color: $border-hover;
 $input-disabled-border-color: $border;
 $input-disabled-background-color: $border;

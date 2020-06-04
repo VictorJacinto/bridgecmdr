@@ -75,6 +75,5 @@ const SettingsPage = tsx.component({
     },
 });
 
-export type SettingsPageConstructor = typeof SettingsPage;
-type SettingsPage = InstanceType<SettingsPageConstructor>;
+type SettingsPage = InstanceType<typeof SettingsPage>;
 export default SettingsPage;
