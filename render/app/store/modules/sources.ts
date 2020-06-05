@@ -2,7 +2,7 @@ import { isNil, tap } from "lodash";
 import { ModuleState } from "../../../foundation/helpers/vuex";
 import { Document, ExistingDocument } from "../../support/data/database";
 import Model from "../../support/data/model";
-import Store from "../../support/data/store";
+import Module from "../../support/data/module";
 import { RootState } from "../root-state";
 
 export interface Source extends Model {
@@ -43,7 +43,7 @@ const translate = {
     },
 };
 
-const sources = Store.of<Source, RootState, SourceDocument>({
+const sources = Module.of<Source, RootState, SourceDocument>({
     name:  "sources",
     empty: () => ({
         _id:   undefined,

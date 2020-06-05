@@ -20,7 +20,7 @@ import { clone, identity, isNil } from "lodash";
 import Vue, { VueConstructor } from "vue";
 import { mapActions, mapGetters } from "../../foundation/helpers/vuex";
 import Model from "../support/data/model";
-import { BaseModuleEx } from "../support/data/store";
+import { BaseDataModule } from "../support/data/module";
 
 type DataManagerOptions = {
     namespace: string;
@@ -37,10 +37,10 @@ const dataManager = identity(<M extends Model>(options: DataManagerOptions) => {
     return Vue.extend({
         name:    "DataManager",
         methods: {
-            ...mapGetters<BaseModuleEx<M>>()(options.namespace, {
+            ...mapGetters<BaseDataModule<M>>()(options.namespace, {
                 getEmpty: "empty",
             }),
-            ...mapActions<BaseModuleEx<M>>()(options.namespace, {
+            ...mapActions<BaseDataModule<M>>()(options.namespace, {
                 doAdd:    "add",
                 doUpdate: "update",
                 doRemove: "remove",

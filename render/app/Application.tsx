@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// TODO: Replace Application.vue, by converting this to SFC (.vue).
+// TODO: Replace Application.vue.
 
 import VueRouter from "vue-router";
 import * as tsx from "vue-tsx-support";
@@ -36,6 +36,5 @@ const Application = tsx.component({
     store,
 });
 
-export type ApplicationConstructor = typeof Application;
-type Application = InstanceType<ApplicationConstructor>;
+type Application = InstanceType<typeof Application>;
 export default Application;

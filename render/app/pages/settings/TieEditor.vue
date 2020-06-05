@@ -74,7 +74,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     import mixins                                           from "vue-typed-mixins";
     import switches                                         from "../../../controllers/switches";
     import ties                                             from "../../../controllers/ties";
-    import DoesValidation                                   from "../../../foundation/concerns/does-valiadtion";
+    import DoesValidation                                   from "../../concerns/does-valiadtion";
     import withRefs                                         from "../../../foundation/concerns/with-refs";
     import Source                                           from "../../../models/source";
     import Switch                                           from "../../../models/switch";

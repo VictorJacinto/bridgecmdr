@@ -24,7 +24,7 @@ import { Validator } from "../core/validator";
 export default class EnumPredicate<E extends string|number|undefined, R> extends Predicate<E, R> {
     private readonly baseValidator: Validator<BaseType<E>>;
 
-    constructor(values: (number|string)[], required: R) {
+    constructor(values: readonly (number|string)[], required: R) {
         if (values.length === 0) {
             throw new Error("No values specified for Enum validation");
         }

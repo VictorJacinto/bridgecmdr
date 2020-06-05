@@ -25,7 +25,7 @@ import { normalizeChildren } from "../../../foundation/helpers/vue";
 import { mapActions, mapState } from "../../../foundation/helpers/vuex";
 import { is, maybe, prop } from "../../../foundation/validation/valid";
 import Model from "../../support/data/model";
-import { BaseModuleEx, StateEx } from "../../support/data/store";
+import { BaseDataModule, DataState } from "../../support/data/module";
 
 type DataSourceEvents<M extends Model> = {
     onChange(items: ReadonlyDeep<M>[]): void;
@@ -49,7 +49,7 @@ const dataSource = identity(
                 };
             },
             computed: {
-                ...mapState<StateEx<M>>()(namespace, ["items"]),
+                ...mapState<DataState<M>>()(namespace, ["items"]),
                 loading(): boolean {
                     return this.$data.$loadingWeight > 0;
                 },
@@ -63,7 +63,7 @@ const dataSource = identity(
                 },
             },
             methods: {
-                ...mapActions<BaseModuleEx<M>>()(namespace, {
+                ...mapActions<BaseDataModule<M>>()(namespace, {
                     getAll:   "all",
                     findSome: "find",
                 }),

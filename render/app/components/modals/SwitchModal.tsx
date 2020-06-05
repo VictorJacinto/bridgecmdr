@@ -23,7 +23,7 @@ import { ValidationObserver, ValidationProvider } from "../../../foundation/comp
 import { is, prop } from "../../../foundation/validation/valid";
 import { Switch } from "../../store/modules/switches";
 import { validationStatus } from "../../support/validation";
-import { makeSerialDeviceList } from "../../system/device";
+import { makeSerialPortList } from "../../system/device-uri";
 import Driver from "../../system/driver";
 import DeviceLocationInput from "../DeviceLocationInput";
 import simpleDropdown from "../SimpleDropdown";
@@ -32,7 +32,7 @@ const drivers = Driver.all();
 const DriverDropdown = simpleDropdown(drivers, "guid", "title");
 
 const switchModal = identity(async () => {
-    const ports = await makeSerialDeviceList();
+    const ports = await makeSerialPortList();
 
     return tsx.component({
         name:  "SwitchModal",
@@ -82,7 +82,7 @@ const switchModal = identity(async () => {
                             <ValidationProvider name="device" rules="required|location" slim scopedSlots={{
                                 default: ({ errors }) => /* TODO: The validator needs to better handle this */ (
                                     <BField label="Device" expanded {...validationStatus(errors)}>
-                                        <DeviceLocationInput v-model={this.item.path} devices={ports}
+                                        <DeviceLocationInput v-model={this.item.path} ports={ports}
                                             type={errors.length > 0 ? "is-danger" : undefined}/>
                                     </BField>
                                 ),

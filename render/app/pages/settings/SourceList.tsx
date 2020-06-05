@@ -27,6 +27,7 @@ import dataSource from "../../components/data/DataSource";
 import SourceModal from "../../components/modals/SourceModal";
 import dataManager from "../../concerns/data-manager";
 import { Source } from "../../store/modules/sources";
+import IconCache from "../../support/icon-cache";
 
 const DataSource = dataSource<Source>("sources");
 const ManagesSources = dataManager<Source>({
@@ -39,26 +40,11 @@ const SourceList = tsx.componentFactory.mixin(ManagesSources).create({
     name: "SourceList",
     data: function () {
         return {
-            icons: {} as Record<string, string>,
+            icons: new IconCache(),
         };
     },
-    methods: {
-        onItemsChange(items: Source[]) {
-            this.revokeUrls();
-            for (const item of items) {
-                this.$set(this.icons, item._id, URL.createObjectURL(item.image));
-            }
-        },
-        revokeUrls() {
-            for (const url of Object.values(this.icons)) {
-                URL.revokeObjectURL(url);
-            }
-
-            this.icons = {};
-        },
-    },
     beforeDestroy() {
-        this.revokeUrls();
+        this.icons.revoke();
     },
     render(): VNode {
         return (
@@ -71,7 +57,7 @@ const SourceList = tsx.componentFactory.mixin(ManagesSources).create({
                         <BNavbarItem tag="div">Sources</BNavbarItem>
                     </template>
                 </BNavbar>
-                <DataSource onChange={items => this.onItemsChange(items)} scopedSlots={{
+                <DataSource scopedSlots={{
                     default: ({ items, loading }) => (loading ? (
                         <CardList>{
                             times(3, () => (
@@ -97,7 +83,7 @@ const SourceList = tsx.componentFactory.mixin(ManagesSources).create({
                                 <CardListEntry>{/* TODO Tap logic */}
                                     <template slot="image">
                                         <figure class="image icon is-48x48">
-                                            <img src={this.icons[item._id]} class="is-rounded has-background-grey-light"
+                                            <img src={this.icons.get(item)} class="is-rounded has-background-grey-light"
                                                 alt="icon"/>
                                         </figure>
                                     </template>

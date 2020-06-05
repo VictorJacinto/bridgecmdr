@@ -18,10 +18,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { defaults } from "lodash";
 import Vue, { VueConstructor } from "vue";
-import { tuple, TupleToUnion } from "../../foundation/helpers/typing";
 
-export const CanCancelActions = tuple("escape", "outside", "x");
-export type CanCancelActions = TupleToUnion<typeof CanCancelActions>;
+export const CanCancelActions = [ "escape", "outside", "x" ] as const;
+export type CanCancelActions = typeof CanCancelActions[number];
 export type CanCancel = boolean | CanCancelActions[];
 
 export type ResolvedModalConfig = {

@@ -1,6 +1,6 @@
 import { ModuleState } from "../../../foundation/helpers/vuex";
 import Model from "../../support/data/model";
-import Store  from "../../support/data/store";
+import Module  from "../../support/data/module";
 import { RootState } from "../root-state";
 
 export interface TieOutput {
@@ -16,7 +16,7 @@ export interface Tie extends Model {
     outputChannels: TieOutput;
 }
 
-const ties = Store.of<Tie, RootState>({
+const ties = Module.of<Tie, RootState>({
     name:    "ties",
     indices: [
         { sourceId: ["sourceId"] },

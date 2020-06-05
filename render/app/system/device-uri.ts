@@ -19,16 +19,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { last, tail } from "lodash";
 import SerialPort from "serialport";
 
-export type SerialDevice = {
-    label: string;
-    path:  string;
-};
-
 export enum DeviceLocation {
     PATH = 0,
     PORT = 1,
     IP   = 2,
 }
+
+export type SerialPortEntry = {
+    label: string;
+    path:  string;
+};
 
 export function generateLabel(port: SerialPort.PortInfo): string {
     if (!port.pnpId) {
@@ -59,28 +59,29 @@ export function generateLabel(port: SerialPort.PortInfo): string {
     return labelParts.join("-").replace(/_/gu, " ");
 }
 
-export async function makeSerialDeviceList(): Promise<SerialDevice[]> {
-    const ports   = await SerialPort.list();
-    const devices = [] as SerialDevice[];
+export async function makeSerialPortList(): Promise<SerialPortEntry[]> {
+    const ports = await SerialPort.list();
+    const list = [] as SerialPortEntry[];
     for (const port of ports) {
-        const device = {} as SerialDevice;
         if (port.pnpId && port.pnpId.length) {
             // Use the `by-id` path from the PNP-ID.
-            device.label = generateLabel(port);
-            device.path  = `/dev/serial/by-id/${port.pnpId}`;
+            list.push({
+                label: generateLabel(port),
+                path:  `/dev/serial/by-id/${port.pnpId}`,
+            });
         } else {
             // Just use the port path for the label and path.
-            device.label = port.path;
-            device.path  = port.path;
+            list.push({
+                label: port.path,
+                path:  port.path,
+            });
         }
-
-        devices.push(device);
     }
 
-    return devices;
+    return list;
 }
 
-export function rebuildPath(location: DeviceLocation, path: string): string {
+export function rebuildUri(location: DeviceLocation, path: string): string {
     if (location === DeviceLocation.IP) {
         return `ip:${path}`;
     }
@@ -92,7 +93,7 @@ export function rebuildPath(location: DeviceLocation, path: string): string {
     return path;
 }
 
-export function getLocationFromPath(path: string): DeviceLocation {
+export function getLocationFromUri(path: string): DeviceLocation {
     if (path.startsWith("ip:")) {
         return DeviceLocation.IP;
     }
@@ -104,7 +105,7 @@ export function getLocationFromPath(path: string): DeviceLocation {
     return DeviceLocation.PATH;
 }
 
-export function getSubPathFromPath(path: string): string {
+export function getPathFromUri(path: string): string {
     if (path.startsWith("ip:")) {
         return path.substr(3);
     }

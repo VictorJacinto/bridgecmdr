@@ -83,7 +83,7 @@ export class PredicateSet<U extends undefined = never, R = true> {
         return new ErrorPredicate(type, this.required);
     }
 
-    enum<E extends number|string>(values: E[]): EnumPredicate<E|U, R> {
+    enum<E extends number|string>(values: readonly E[]): EnumPredicate<E|U, R> {
         return new EnumPredicate<E|U, R>(values, this.required);
     }
 

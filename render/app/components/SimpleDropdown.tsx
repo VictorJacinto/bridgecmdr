@@ -23,15 +23,14 @@ import {
     BAnyValue, BButton, BDropdown, BDropdownItem, BInput,
     KnownColorModifiers, PopupPositionModifiers, SizeModifiers,
 } from "../../foundation/components/buefy-tsx";
-import { tuple, TupleToUnion } from "../../foundation/helpers/typing";
 import { be, is, maybe, must, prop } from "../../foundation/validation/valid";
 
 type SimpleDropdownEvents<T> = { onInput: (value: T) => void };
 
 type SimpleDropdownItems = Record<string, BAnyValue>;
 
-const ArialRoles = tuple("menu", "list", "dialog");
-type ArialRoles = TupleToUnion<typeof ArialRoles>;
+export const DropdownArialRoles = [ "menu", "list", "dialog" ] as const;
+export type DropdownArialRoles = typeof DropdownArialRoles[number];
 
 const simpleDropdown = identity(<T extends SimpleDropdownItems, V extends keyof T, L extends keyof T>(
     options: T[], valueKey: V, labelKey: L) =>
@@ -45,7 +44,7 @@ const simpleDropdown = identity(<T extends SimpleDropdownItems, V extends keyof 
             position:    prop(is.enum(PopupPositionModifiers), "is-bottom-right"),
             animation:   prop(is.string.notEmpty, "fade"),
             mobileModal: prop(is.boolean, true),
-            ariaRole:    prop(maybe.enum(ArialRoles)),
+            ariaRole:    prop(maybe.enum(DropdownArialRoles)),
             scrollable:  prop(is.boolean, true),
             maxHeight:   prop(must(be.number.integer.positive, be.string.notEmpty), "260px"),
             // Button/Input

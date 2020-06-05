@@ -21,7 +21,7 @@ import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { BField, BInput, KnownColorModifiers } from "../../foundation/components/buefy-tsx";
 import { is, maybe, prop } from "../../foundation/validation/valid";
-import { DeviceLocation, getLocationFromPath, getSubPathFromPath, rebuildPath, SerialDevice } from "../system/device";
+import { DeviceLocation, getLocationFromUri, getPathFromUri, rebuildUri, SerialPortEntry } from "../system/device-uri";
 import simpleDropdown from "./SimpleDropdown";
 
 const locations = [
@@ -35,9 +35,9 @@ const LocationDropdown = simpleDropdown(locations, "location", "label");
 const DeviceLocationInput = tsx.component({
     name:  "DeviceLocationInput",
     props: {
-        value:   prop(maybe.string),
-        devices: prop(is.array.ofType(is.object<SerialDevice>())),
-        type:    prop(is.enum(KnownColorModifiers), "is-primary"),
+        value: prop(maybe.string),
+        ports: prop(is.array.ofType(is.object<SerialPortEntry>())),
+        type:  prop(is.enum(KnownColorModifiers), "is-primary"),
     },
     data: function () {
         return {
@@ -59,18 +59,18 @@ const DeviceLocationInput = tsx.component({
         },
         location: {
             get(): DeviceLocation|undefined {
-                return !isNil(this.innerValue) ? getLocationFromPath(this.innerValue) : undefined;
+                return !isNil(this.innerValue) ? getLocationFromUri(this.innerValue) : undefined;
             },
             set(value: DeviceLocation) {
-                this.updateValue(rebuildPath(value, this.path || ""));
+                this.updateValue(rebuildUri(value, this.path || ""));
             },
         },
         path: {
             get(): string|undefined {
-                return !isNil(this.innerValue) ? getSubPathFromPath(this.innerValue) : undefined;
+                return !isNil(this.innerValue) ? getPathFromUri(this.innerValue) : undefined;
             },
             set(value: string) {
-                this.updateValue(rebuildPath(this.location || DeviceLocation.PATH, value));
+                this.updateValue(rebuildUri(this.location || DeviceLocation.PATH, value));
             },
         },
 
@@ -87,7 +87,7 @@ const DeviceLocationInput = tsx.component({
         },
     },
     render(): VNode {
-        const DeviceDropdown = simpleDropdown(this.devices, "path", "label");
+        const DeviceDropdown = simpleDropdown(this.ports, "path", "label");
 
         return (
             <BField type={this.type !== "is-primary" ? this.type : undefined}>

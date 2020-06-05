@@ -25,7 +25,7 @@ import { normalizeChildren } from "../../../foundation/helpers/vue";
 import { mapActions, mapState } from "../../../foundation/helpers/vuex";
 import { is, prop } from "../../../foundation/validation/valid";
 import Model from "../../support/data/model";
-import { BaseModuleEx, StateEx } from "../../support/data/store";
+import { BaseDataModule, DataState } from "../../support/data/module";
 import { IDPattern } from "../../support/validation";
 
 type DataItemEvents<M extends Model> = {
@@ -50,7 +50,7 @@ const dataItem = identity(
                 };
             },
             computed: {
-                ...mapState<StateEx<M>>()(namespace, ["current"]),
+                ...mapState<DataState<M>>()(namespace, ["current"]),
                 loading(): boolean {
                     return this.$data.$loadingWeight > 0;
                 },
@@ -61,7 +61,7 @@ const dataItem = identity(
                 },
             },
             methods: {
-                ...mapActions<BaseModuleEx<M>>()(namespace, { getItem: "get" }),
+                ...mapActions<BaseDataModule<M>>()(namespace, { getItem: "get" }),
                 async refresh() {
                     try {
                         await this.getItem(this.id);

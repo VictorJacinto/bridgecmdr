@@ -16,11 +16,4 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-export type Lit = string | number | boolean | undefined | null | void | {};
-export const tuple = <T extends Lit[]>(...args: T): T => args;
-
-export type TupleToUnion<T> = T extends readonly [...unknown[]] ? T[number] : never;
-
-export type ElementType<A extends unknown[]> = A extends (infer E)[] ? E : never;
-
-export type PromiseResult<P> = P extends Promise<infer T> ? T : never;
+export type ElementType<A extends readonly unknown[]> = A extends (infer E)[] ? E : never;

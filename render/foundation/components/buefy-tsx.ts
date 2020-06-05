@@ -1,19 +1,6 @@
-/*
-BridgeCmdr - A/V switch and monitor controller
-Copyright (C) 2019-2020 Matthew Holder
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+/**
+Buefy TSX definitions - Matthew Holder
+@license MIT
 */
 
 import { ColorModifiers } from "buefy/types/helpers";
@@ -23,28 +10,27 @@ import * as tsx from "vue-tsx-support";
 import { EventHandler } from "vue-tsx-support/lib/modifiers";
 import { InputHTMLAttributes } from "vue-tsx-support/types/dom";
 import { CombinedVueInstance } from "vue/types/vue";
-import { tuple, TupleToUnion } from "../helpers/typing";
 
-export const KnownColorModifiers = tuple("is-white", "is-black", "is-light", "is-dark", "is-primary", "is-link", "is-info", "is-success", "is-warning", "is-danger");
-export type KnownColorModifiers = TupleToUnion<typeof KnownColorModifiers>;
+export const KnownColorModifiers = [ "is-white", "is-black", "is-light", "is-dark", "is-primary", "is-link", "is-info", "is-success", "is-warning", "is-danger" ] as const;
+export type KnownColorModifiers = typeof KnownColorModifiers[number];
 
-export const SizeModifiers = tuple("is-small", "is-medium", "is-large");
-export type SizeModifiers = TupleToUnion<typeof SizeModifiers>;
+export const SizeModifiers = [ "is-small", "is-medium", "is-large" ];
+export type SizeModifiers = typeof SizeModifiers[number];
 
-export const VerticalPositionModifiers = tuple("is-bottom", "is-top");
-export type VerticalPositionModifiers = TupleToUnion<typeof VerticalPositionModifiers>;
+export const VerticalPositionModifiers = [ "is-bottom", "is-top" ] as const;
+export type VerticalPositionModifiers = typeof VerticalPositionModifiers[number];
 
-export const HorizontalPositionModifiers = tuple("is-left", "is-right");
-export type HorizontalPositionModifiers = TupleToUnion<typeof HorizontalPositionModifiers>;
+export const HorizontalPositionModifiers = [ "is-left", "is-right" ] as const;
+export type HorizontalPositionModifiers = typeof HorizontalPositionModifiers[number];
 
-export const PopupPositionModifiers = tuple("is-top-right", "is-top-left", "is-bottom-left", "is-bottom-right");
-export type PopupPositionModifiers = TupleToUnion<typeof PopupPositionModifiers>;
+export const PopupPositionModifiers = [ "is-top-right", "is-top-left", "is-bottom-left", "is-bottom-right" ] as const;
+export type PopupPositionModifiers = typeof PopupPositionModifiers[number];
 
-export const GlobalPositions = tuple(...PopupPositionModifiers, ...VerticalPositionModifiers);
-export type GlobalPositions = TupleToUnion<typeof GlobalPositions>;
+export const GlobalPositions = [ ...PopupPositionModifiers, ...VerticalPositionModifiers ] as const;
+export type GlobalPositions = typeof GlobalPositions[number];
 
-export const AllPositions = tuple(...GlobalPositions, ...HorizontalPositionModifiers);
-export type AllPositions = TupleToUnion<typeof AllPositions>;
+export const AllPositions = [ ...GlobalPositions, ...HorizontalPositionModifiers ] as const;
+export type AllPositions = typeof AllPositions[number];
 
 type BFormElementProps = {
     disabled?: boolean;

@@ -1,29 +1,29 @@
 import { assign, findIndex, identity, iteratee, tap } from "lodash";
 import { ReadonlyDeep } from "type-fest";
-import { ActionContext,  Module, Store as StoreBase } from "vuex";
+import { ActionContext,  Module, Store } from "vuex";
+import { RootState } from "../../store/root-state";
 import Database, { Document, GetDocument, Indices } from "./database";
 import Model from "./model";
-import {RootState} from "../../store/root-state";
 
-export interface StateEx<M extends Model> {
+export interface DataState<M extends Model> {
     items: ReadonlyDeep<M>[];
     current: ReadonlyDeep<M>|null;
 }
 
-type Injectee<M extends Model, R extends object> = ActionContext<StateEx<M>, R>;
+type Injectee<M extends Model, R extends object> = ActionContext<DataState<M>, R>;
 
-export interface ModuleEx<M extends Model, R extends object> extends Module<StateEx<M>, R> {
+export interface DataModule<M extends Model, R extends object> extends Module<DataState<M>, R> {
     readonly namespaced: true;
-    state: StateEx<M>;
+    state: DataState<M>;
     readonly getters: {
         empty(): Partial<M>;
     };
     readonly mutations: {
-        refresh(state: StateEx<M>, items: ReadonlyDeep<M>[]): void;
-        show(state: StateEx<M>, current: ReadonlyDeep<M>|null): void;
-        append(state: StateEx<M>, item: ReadonlyDeep<M>): void;
-        replace(state: StateEx<M>, item: ReadonlyDeep<M>): void;
-        delete(state: StateEx<M>, id: string): void;
+        refresh(state: DataState<M>, items: ReadonlyDeep<M>[]): void;
+        show(state: DataState<M>, current: ReadonlyDeep<M>|null): void;
+        append(state: DataState<M>, item: ReadonlyDeep<M>): void;
+        replace(state: DataState<M>, item: ReadonlyDeep<M>): void;
+        delete(state: DataState<M>, id: string): void;
     };
     readonly actions: {
         compact(): Promise<void>;
@@ -36,51 +36,51 @@ export interface ModuleEx<M extends Model, R extends object> extends Module<Stat
     };
 }
 
-export type ActionContextEx<M extends Model, R extends object, Doc extends M | Document<object> = M> =
-    ActionContext<StateEx<M>, R> & { database: Database<Doc> };
+export type DataActionContext<M extends Model, R extends object, Doc extends M | Document<object> = M> =
+    ActionContext<DataState<M>, R> & { database: Database<Doc> };
 
-export type ActionHandlerEx<M extends Model, R extends object, Doc extends M | Document<object> = M> =
+export type DataActionHandler<M extends Model, R extends object, Doc extends M | Document<object> = M> =
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (this: StoreBase<R>, injectee: ActionContextEx<M, R, Doc>, payload?: any) => Promise<any>;
+    (this: Store<R>, injectee: DataActionContext<M, R, Doc>, payload?: any) => Promise<any>;
 
-export type ActionTreeEx<M extends Model, R extends object, Doc extends M | Document<object> = M> = Omit<{
-    [K in keyof ModuleEx<M, R>["actions"]]?: ActionHandlerEx<M, R, Doc>;
+export type DataActionTree<M extends Model, R extends object, Doc extends M | Document<object> = M> = Omit<{
+    [K in keyof DataModule<M, R>["actions"]]?: DataActionHandler<M, R, Doc>;
 }, "compact">;
 
-export interface ModuleOptionsEx<M extends Model, R extends object, Doc extends M | Document<object> = M> {
+export interface DataModuleOptions<M extends Model, R extends object, Doc extends M | Document<object> = M> {
     name: string;
     indices?: Indices[];
     empty: () => Partial<M>;
-    actions?: ActionTreeEx<M, R, Doc>;
+    actions?: DataActionTree<M, R, Doc>;
 }
 
-function replaceItem<M extends Model>(_state: StateEx<M>, item: ReadonlyDeep<M>): void {
+function replaceItem<M extends Model>(_state: DataState<M>, item: ReadonlyDeep<M>): void {
     const index = findIndex(_state.items, iteratee({ _id: item._id }));
     if (index !== -1) {
         _state.items.splice(index, 1, item);
     }
 }
 
-function removeItem<M extends Model>(_state: StateEx<M>, id: string): void {
+function removeItem<M extends Model>(_state: DataState<M>, id: string): void {
     const index = findIndex(_state.items, iteratee({ _id: id }));
     if (index !== -1) {
         _state.items.splice(index, 1);
     }
 }
 
-const Store = {
-    of<M extends Model, R extends object, Doc extends M | Document<object> = M>(options: ModuleOptionsEx<M, R, Doc>): ModuleEx<M, R> {
+const Module = {
+    of<M extends Model, R extends object, Doc extends M | Document<object> = M>(options: DataModuleOptions<M, R, Doc>): DataModule<M, R> {
         const database = Database.connect<Doc>(options.name, options.indices || []);
-        const state: StateEx<M> = {
+        const state: DataState<M> = {
             items:   [],
             current: null,
         };
 
-        const getters: ModuleEx<M, R>["getters"] = {
+        const getters: DataModule<M, R>["getters"] = {
             empty: options.empty,
         };
 
-        const mutations: ModuleEx<M, R>["mutations"] = {
+        const mutations: DataModule<M, R>["mutations"] = {
             /** Replaces the items in the store, refreshing the data. */
             refresh: (_state, items) => { _state.items = items },
 
@@ -97,7 +97,7 @@ const Store = {
             delete: (_state, id) => { removeItem(_state, id) },
         };
 
-        const actions: ModuleEx<M, R>["actions"] = {
+        const actions: DataModule<M, R>["actions"] = {
             /** Compacts the database. */
             compact: async () => {
                 const connection = await database;
@@ -161,8 +161,8 @@ const Store = {
             },
         };
 
-        const wrapOverride = identity(<H extends ActionHandlerEx<M, R, Doc>>(overrider: H) =>
-            async function (this: StoreBase<R>, injectee: Injectee<M, R>, payload?: unknown) {
+        const wrapOverride = identity(<H extends DataActionHandler<M, R, Doc>>(overrider: H) =>
+            async function (this: Store<R>, injectee: Injectee<M, R>, payload?: unknown) {
                 const connection = await database;
 
                 await overrider.call(this, assign(injectee, { database: connection }), payload);
@@ -188,17 +188,17 @@ const Store = {
 
             const add = options.actions.add;
             if (add) {
-                actions.find = wrapOverride(add);
+                actions.add = wrapOverride(add);
             }
 
             const update = options.actions.update;
             if (update) {
-                actions.find = wrapOverride(update);
+                actions.update = wrapOverride(update);
             }
 
             const remove = options.actions.remove;
             if (remove) {
-                actions.find = wrapOverride(remove);
+                actions.remove = wrapOverride(remove);
             }
         }
 
@@ -212,6 +212,6 @@ const Store = {
     },
 };
 
-export type BaseModuleEx<M extends Model> = ModuleEx<M, RootState>;
+export type BaseDataModule<M extends Model> = DataModule<M, RootState>;
 
-export default Store;
+export default Module;
