@@ -44,37 +44,57 @@ export function prop<T, R, D extends T>(predicate: BasePredicate<T, R>, $default
 }
 
 export class PredicateSet<U extends undefined = never, R = true> {
-    private readonly required: R;
+    constructor(private readonly required: R) {}
 
     // TODO: iterable, iterator, DataView, regular and clamped TypedArrays, promise.
 
-    readonly any: AnyPredicate;
-    readonly array: ArrayPredicate<unknown[]|U, R>;
-    readonly boolean: BooleanPredicate<boolean|U, R>;
-    readonly date: SimplePredicate<Date|U, R>;
-    readonly nan: SimplePredicate<number|U, R>;
-    readonly null: SimplePredicate<null|U, R>;
-    readonly nullOrUndefined: SimplePredicate<null|undefined, R>;
-    readonly number: NumberPredicate<number|U, R>;
-    readonly regExp: SimplePredicate<RegExp|U, R>;
-    readonly string: StringPredicate<string|U, R>;
-    readonly symbol: SimplePredicate<symbol|U, R>;
-    readonly undefined: SimplePredicate<undefined, R>;
+    // eslint-disable-next-line class-methods-use-this
+    get any(): AnyPredicate {
+        return new AnyPredicate();
+    }
 
-    constructor(required: R) {
-        this.required = required;
-        this.any = new AnyPredicate();
-        this.array = new ArrayPredicate<unknown[]|U, R>(required);
-        this.boolean = new BooleanPredicate<boolean|U, R>(required);
-        this.date = makeBasicTypePredicate(Date, required, isDate, "Expected a Date");
-        this.nan = makeBasicPredicate<number|U, R>(required, isNaN, "Expected NaN");
-        this.null = makeBasicPredicate<null|U, R>(required, isNull, "Expected null");
-        this.nullOrUndefined = makeBasicPredicate<null|undefined, R>(required, isNil, "Expected null or undefined");
-        this.number = new NumberPredicate<number|U, R>(required);
-        this.regExp = makeBasicTypePredicate<RegExp|U, R>(RegExp, required, isRegExp, "Expected a regular expression");
-        this.string = new StringPredicate<string|U, R>(required);
-        this.symbol = makeBasicTypePredicate<symbol|U, R>(Symbol as unknown as Constructor, required, isSymbol, "Expected a symbol");
-        this.undefined = makeBasicPredicate<undefined, R>(required, isUndefined, "Expected undefined");
+    get array(): ArrayPredicate<unknown[]|U, R> {
+        return new ArrayPredicate<unknown[]|U, R>(this.required);
+    }
+
+    get boolean(): BooleanPredicate<boolean|U, R> {
+        return new BooleanPredicate<boolean|U, R>(this.required);
+    }
+
+    get date(): SimplePredicate<Date|U, R> {
+        return makeBasicTypePredicate(Date, this.required, isDate, "Expected a Date");
+    }
+
+    get nan(): SimplePredicate<number|U, R> {
+        return makeBasicPredicate<number|U, R>(this.required, isNaN, "Expected NaN");
+    }
+
+    get null(): SimplePredicate<null|U, R> {
+        return makeBasicPredicate<null|U, R>(this.required, isNull, "Expected null");
+    }
+
+    get nullOrUndefined(): SimplePredicate<null|undefined, R> {
+        return makeBasicPredicate<null|undefined, R>(this.required, isNil, "Expected null or undefined");
+    }
+
+    get number(): NumberPredicate<number|U, R> {
+        return new NumberPredicate<number|U, R>(this.required);
+    }
+
+    get regExp(): SimplePredicate<RegExp|U, R> {
+        return makeBasicTypePredicate<RegExp|U, R>(RegExp, this.required, isRegExp, "Expected a regular expression");
+    }
+
+    get string(): StringPredicate<string|U, R> {
+        return new StringPredicate<string|U, R>(this.required);
+    }
+
+    get symbol(): SimplePredicate<symbol|U, R> {
+        return makeBasicTypePredicate<symbol|U, R>(Symbol as unknown as Constructor, this.required, isSymbol, "Expected a symbol");
+    }
+
+    get undefined(): SimplePredicate<undefined, R> {
+        return makeBasicPredicate<undefined, R>(this.required, isUndefined, "Expected undefined");
     }
 
     error(): ErrorPredicate<Error|U, R>;

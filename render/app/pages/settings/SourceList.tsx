@@ -80,7 +80,7 @@ const SourceList = tsx.componentFactory.mixin(ManagesSources).create({
                     ) : (
                         <CardList>{
                             items.map(item => (
-                                <CardListEntry>{/* TODO Tap logic */}
+                                <CardListEntry to={{ name: "source", params: { id: item._id } }}>
                                     <template slot="image">
                                         <figure class="image icon is-48x48">
                                             <img src={this.icons.get(item)} class="is-rounded has-background-grey-light"

@@ -77,6 +77,7 @@ const dataSource = identity(
 
                         this.error = null;
                     } catch (error) {
+                        console.error(error);
                         this.error = error;
                     }
 
@@ -91,13 +92,11 @@ const dataSource = identity(
 
                 if (this.error) {
                     return (
-                        <RootTag class="section">
-                            <div class="content has-text-danger has-text-centered">
-                                <BField><BIcon icon="emoticon-sad" size="is-large" type="is-danger"/></BField>
-                                <BField>There was an error loading.</BField>
-                                <BField><BButton label="Try again" type="is-warning" onClick={() => this.refresh()}/></BField>
-                                <BField>{this.error.message}</BField>
-                            </div>
+                        <RootTag class="section content has-text-danger has-text-centered">
+                            <BField><BIcon icon="emoticon-sad" size="is-large" type="is-danger"/></BField>
+                            <BField>There was an error loading.</BField>
+                            <BField><BButton label="Try again" type="is-warning" onClick={() => this.refresh()}/></BField>
+                            <BField>{this.error.message}</BField>
                         </RootTag>
                     );
                 }
@@ -109,16 +108,10 @@ const dataSource = identity(
                 }
 
                 return (
-                    <RootTag class="section">
-                        <div class="content has-text-centered">
-                            <BField><BIcon icon="set-none" size="is-large" type="is-danger"/></BField>
-                            <BField>There are no items.</BField>
-                            <BField><BButton label="Refresh" type="is-primary" onClick={() => this.refresh()}/></BField>
-                        </div>
-                        {
-                            /* Still need to render the slot in case there is an add button to start things along */
-                            normalizeChildren(this, "default", { items: this.items, loading: this.loading })
-                        }
+                    <RootTag class="section content has-text-centered">
+                        <BField><BIcon icon="set-none" size="is-large" type="is-danger"/></BField>
+                        <BField>There are no items.</BField>
+                        <BField><BButton label="Refresh" type="is-primary" onClick={() => this.refresh()}/></BField>
                     </RootTag>
                 );
             },

@@ -20,7 +20,6 @@ import { identity } from "lodash";
 import { ReadonlyDeep } from "type-fest";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import { BButton, BField, BIcon } from "../../../foundation/components/buefy-tsx";
 import { normalizeChildren } from "../../../foundation/helpers/vue";
 import { mapActions, mapState } from "../../../foundation/helpers/vuex";
 import { is, prop } from "../../../foundation/validation/valid";
@@ -33,7 +32,7 @@ type DataItemEvents<M extends Model> = {
 };
 
 type DataItemSlots<M extends Model> = {
-    default: { current: ReadonlyDeep<M>|null; loading: boolean };
+    default: { current: ReadonlyDeep<M>|null; error: Error|null; loading: boolean };
 };
 
 const dataItem = identity(
@@ -68,6 +67,7 @@ const dataItem = identity(
                         this.$emit("input", this.current);
                         this.error = null;
                     } catch (error) {
+                        console.error(error);
                         this.error = error;
                     }
                 },
@@ -78,22 +78,12 @@ const dataItem = identity(
             render(): VNode {
                 const RootTag = this.tag;
 
-                if (this.error) {
-                    return (
-                        <RootTag class="section">
-                            <div class="content has-text-danger has-text-centered">
-                                <BField><BIcon icon="emoticon-sad" size="is-large" type="is-danger"/></BField>
-                                <BField>There was an error finding {this.id}.</BField>
-                                <BField><BButton label="Try again" type="is-warning"
-                                    onClick={() => this.refresh()}/></BField>
-                                <BField>{this.error.message}</BField>
-                            </div>
-                        </RootTag>
-                    );
-                }
-
                 return (<RootTag>{
-                    normalizeChildren(this, "default", { current: this.current, loading: this.loading })
+                    normalizeChildren(this, "default", {
+                        current: this.current,
+                        error:   this.error,
+                        loading: this.loading,
+                    })
                 }</RootTag>);
             },
         }),
