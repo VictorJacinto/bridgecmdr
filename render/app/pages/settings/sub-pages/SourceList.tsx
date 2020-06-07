@@ -20,23 +20,16 @@ import { times } from "lodash";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { modifiers as m } from "vue-tsx-support/lib/modifiers";
-import { BButton, BIcon, BNavbar, BNavbarItem, BSkeleton } from "../../../foundation/components/buefy-tsx";
-import CardList from "../../components/card-list/CardList";
-import CardListEntry from "../../components/card-list/CardListEntry";
-import dataSource from "../../components/data/DataSource";
-import SourceModal from "../../components/modals/SourceModal";
-import dataManager from "../../concerns/data-manager";
-import { Source } from "../../store/modules/sources";
-import IconCache from "../../support/icon-cache";
+import { BButton, BField, BIcon, BSkeleton } from "../../../../foundation/components/buefy-tsx";
+import CardList from "../../../components/card-list/CardList";
+import CardListEntry from "../../../components/card-list/CardListEntry";
+import Sources from "../../../components/data/sources/Sources";
+import ManagesSources from "../../../concerns/managers/manages-sources";
+import UsesSettingsTitle from "../../../concerns/uses-settings-title";
+import IconCache from "../../../support/icon-cache";
 
-const DataSource = dataSource<Source>("sources");
-const ManagesSources = dataManager<Source>({
-    namespace: "sources",
-    modal:     SourceModal,
-    term:      "source",
-});
-
-const SourceList = tsx.componentFactory.mixin(ManagesSources).create({
+// @vue/component
+const SourceList = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSources).create({
     name: "SourceList",
     data: function () {
         return {
@@ -46,19 +39,16 @@ const SourceList = tsx.componentFactory.mixin(ManagesSources).create({
     beforeDestroy() {
         this.icons.revoke();
     },
+    mounted() {
+        this.$nextTick(() => {
+            this.setSettingsTitle("Sources");
+        });
+    },
     render(): VNode {
         return (
             <div id="source-list">
-                <BNavbar fixedTop type="is-primary" mobileBurger={false}>
-                    <template slot="brand">
-                        <BNavbarItem tag="router-link" to={{ name: "settings" }}>
-                            <BIcon icon="arrow-left"/>
-                        </BNavbarItem>
-                        <BNavbarItem tag="div">Sources</BNavbarItem>
-                    </template>
-                </BNavbar>
-                <DataSource scopedSlots={{
-                    default: ({ items, loading }) => (loading ? (
+                <Sources slim scopedSlots={{
+                    loading: () => (
                         <CardList>{
                             times(3, () => (
                                 <CardListEntry>
@@ -77,13 +67,20 @@ const SourceList = tsx.componentFactory.mixin(ManagesSources).create({
                                 </CardListEntry>
                             ))
                         }</CardList>
+                    ),
+                    default: ({ items: sources }) => (sources.length === 0 ? (
+                        <div class="section content has-text-centered">
+                            <BField><BIcon icon="set-none" size="is-large"/></BField>
+                            <BField>There are no sources</BField>
+                        </div>
                     ) : (
                         <CardList>{
-                            items.map(item => (
+                            sources.map(item => (
                                 <CardListEntry to={{ name: "source", params: { id: item._id } }}>
                                     <template slot="image">
                                         <figure class="image icon is-48x48">
-                                            <img src={this.icons.get(item)} class="is-rounded has-background-grey-light"
+                                            <img src={this.icons.get(item)}
+                                                class="is-rounded has-background-grey-light"
                                                 alt="icon"/>
                                         </figure>
                                     </template>
@@ -93,14 +90,22 @@ const SourceList = tsx.componentFactory.mixin(ManagesSources).create({
                                     </template>
                                     <template slot="actions">
                                         <BButton class="card-action-item" iconLeft="pencil" type="is-primary"
-                                            onClick={m.stop(() => this.updateItem(item))}/>
+                                            onClick={m.prevent(() => this.updateItem(item))}/>
                                         <BButton class="card-action-item" iconLeft="delete" type="is-danger"
-                                            onClick={m.stop(() => this.removeItem(item))}/>
+                                            onClick={m.prevent(() => this.removeItem(item))}/>
                                     </template>
                                 </CardListEntry>
                             ))
                         }</CardList>
                     )),
+                    error: ({ error, refresh }) => (
+                        <div class="section content has-text-danger has-text-centered">
+                            <BField><BIcon icon="emoticon-sad" size="is-large" type="is-danger"/></BField>
+                            <BField>There was an error loading the sources.</BField>
+                            <BField><BButton label="Try again" type="is-warning" onClick={refresh}/></BField>
+                            <BField>{error.message}</BField>
+                        </div>
+                    ),
                 }}/>
                 <div class="fab-container is-right">
                     <BButton class="fab-item" iconLeft="plus" type="is-primary" onClick={() => this.createItem()}/>

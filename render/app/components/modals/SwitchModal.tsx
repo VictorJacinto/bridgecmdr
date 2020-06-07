@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { identity } from "lodash";
+import { once } from "lodash";
 import * as tsx from "vue-tsx-support";
 import { BButton, BField, BIcon, BInput } from "../../../foundation/components/buefy-tsx";
 import { ValidationObserver, ValidationProvider } from "../../../foundation/components/vee-validate-tsx";
@@ -24,16 +24,16 @@ import { is, prop } from "../../../foundation/validation/valid";
 import { Switch } from "../../store/modules/switches";
 import { validationStatus } from "../../support/validation";
 import { makeSerialPortList } from "../../system/device-uri";
-import Driver from "../../system/driver";
+import Driver, { DriverDescriptor } from "../../system/driver";
 import DeviceLocationInput from "../DeviceLocationInput";
 import simpleDropdown from "../SimpleDropdown";
 
-const drivers = Driver.all();
-const DriverDropdown = simpleDropdown(drivers, "guid", "title");
+const DriverDropdown = simpleDropdown((about: DriverDescriptor) => [ about.title, about.guid ]);
 
-const switchModal = identity(async () => {
+const switchModal = once(async () => {
     const ports = await makeSerialPortList();
 
+    // @vue/component
     return tsx.component({
         name:  "SwitchModal",
         props: {
@@ -75,7 +75,8 @@ const switchModal = identity(async () => {
                             <ValidationProvider name="driver" rules="required" slim scopedSlots={{
                                 default: ({ errors }) => (
                                     <BField label="Driver" expanded {...validationStatus(errors)}>
-                                        <DriverDropdown v-model={this.item.driverId} tag="input" placeholder="Required" expanded/>
+                                        <DriverDropdown v-model={this.item.driverId} options={Driver.all()} tag="input"
+                                            placeholder="Required" expanded/>
                                     </BField>
                                 ),
                             }}/>

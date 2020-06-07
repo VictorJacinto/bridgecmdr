@@ -20,6 +20,7 @@ import { isNil } from "lodash";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { BField, BInput, KnownColorModifiers } from "../../foundation/components/buefy-tsx";
+import { ElementType } from "../../foundation/helpers/typing";
 import { is, maybe, prop } from "../../foundation/validation/valid";
 import { DeviceLocation, getLocationFromUri, getPathFromUri, rebuildUri, SerialPortEntry } from "../system/device-uri";
 import simpleDropdown from "./SimpleDropdown";
@@ -30,8 +31,12 @@ const locations = [
     { location: DeviceLocation.IP, label: "IP/Host" },
 ];
 
-const LocationDropdown = simpleDropdown(locations, "location", "label");
+type Location = ElementType<typeof locations>;
 
+const LocationDropdown = simpleDropdown((location: Location) => [ location.label, location.location ]);
+const DeviceDropdown = simpleDropdown((port: SerialPortEntry) => [ port.label, port.path ]);
+
+// @vue/component
 const DeviceLocationInput = tsx.component({
     name:  "DeviceLocationInput",
     props: {
@@ -87,13 +92,12 @@ const DeviceLocationInput = tsx.component({
         },
     },
     render(): VNode {
-        const DeviceDropdown = simpleDropdown(this.ports, "path", "label");
-
         return (
             <BField type={this.type !== "is-primary" ? this.type : undefined}>
-                <LocationDropdown v-model={this.location} type={this.type} class="control" placeholder="Required"/>
+                <LocationDropdown v-model={this.location} options={locations} type={this.type} class="control"
+                    placeholder="Required"/>
                 { this.location === DeviceLocation.PORT ? (
-                    <DeviceDropdown v-model={this.path} tag="input" class="control"
+                    <DeviceDropdown v-model={this.path} options={this.ports} tag="input" class="control"
                         placeholder={this.placeholder} expanded/>
                 ) : (
                     <BInput v-model={this.path} placeholder={this.placeholder} expanded/>

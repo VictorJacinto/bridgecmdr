@@ -18,6 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import * as tsx from "vue-tsx-support";
 
+// @vue/component
 const CardList = tsx.component({
     name: "CardList",
     render() {

@@ -25,6 +25,7 @@ import { is, maybe, prop } from "../../foundation/validation/valid";
 
 const icons = mdiPaths as Record<string, string>;
 
+// @vue/component
 const SvgIcon = tsx.component({
     name:  "SvgIcon",
     props: {

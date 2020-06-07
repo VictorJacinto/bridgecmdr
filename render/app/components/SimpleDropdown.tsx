@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { identity, toString } from "lodash";
+import { identity } from "lodash";
 import { PropOptions, VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import {
@@ -27,108 +27,112 @@ import { be, is, maybe, must, prop } from "../../foundation/validation/valid";
 
 type SimpleDropdownEvents<T> = { onInput: (value: T) => void };
 
-type SimpleDropdownItems = Record<string, BAnyValue>;
-
 export const DropdownArialRoles = [ "menu", "list", "dialog" ] as const;
 export type DropdownArialRoles = typeof DropdownArialRoles[number];
 
-const simpleDropdown = identity(<T extends SimpleDropdownItems, V extends keyof T, L extends keyof T>(
-    options: T[], valueKey: V, labelKey: L) =>
-    tsx.componentFactoryOf<SimpleDropdownEvents<T[V]>>().create({
-        name:  "SimpleDropdown",
-        props: {
-            value:       prop(is.any) as PropOptions<T[V]>,
-            placeholder: prop(is.string.notEmpty, "Select an item"),
-            tag:         prop(is.enum([ "button", "input" ]), "button"),
-            // Dropdown
-            position:    prop(is.enum(PopupPositionModifiers), "is-bottom-right"),
-            animation:   prop(is.string.notEmpty, "fade"),
-            mobileModal: prop(is.boolean, true),
-            ariaRole:    prop(maybe.enum(DropdownArialRoles)),
-            scrollable:  prop(is.boolean, true),
-            maxHeight:   prop(must(be.number.integer.positive, be.string.notEmpty), "260px"),
-            // Button/Input
-            type:        prop(maybe.enum(KnownColorModifiers)),
-            size:        prop(maybe.enum(SizeModifiers)),
-            loading:     prop(maybe.boolean),
-            inverted:    prop(maybe.boolean),
-            rounded:     prop(maybe.boolean),
-            outlined:    prop(maybe.boolean),
-            // Both
-            disabled:    prop(maybe.boolean),
-            expanded:    prop(maybe.boolean),
+const simpleDropdown = identity(
+    <T, V extends BAnyValue>(predicate: (option: T) => [ string, V ]) =>
+        // @vue/component
+        tsx.componentFactoryOf<SimpleDropdownEvents<V>>().create({
+            name:  "SimpleDropdown",
+            props: {
+                value:       prop(is.any) as PropOptions<BAnyValue>, // prop(is.any) as PropOptions<V>,
+                options:     prop(is.array.notEmpty), // prop(is.array.notEmpty.ofType<T>()),
+                placeholder: prop(is.string.notEmpty, "Select an item"),
+                tag:         prop(is.enum([ "button", "input" ]), "button"),
+                // Dropdown
+                position:    prop(is.enum(PopupPositionModifiers), "is-bottom-right"),
+                animation:   prop(is.string.notEmpty, "fade"),
+                mobileModal: prop(is.boolean, true),
+                ariaRole:    prop(maybe.enum(DropdownArialRoles)),
+                scrollable:  prop(is.boolean, true),
+                maxHeight:   prop(must(be.number.integer.positive, be.string.notEmpty), "260px"),
+                // Button/Input
+                type:        prop(maybe.enum(KnownColorModifiers)),
+                size:        prop(maybe.enum(SizeModifiers)),
+                loading:     prop(maybe.boolean),
+                inverted:    prop(maybe.boolean),
+                rounded:     prop(maybe.boolean),
+                outlined:    prop(maybe.boolean),
+                // Both
+                disabled:    prop(maybe.boolean),
+                expanded:    prop(maybe.boolean),
+            },
+            data: function () {
+                return {
+                    innerValue: this.value,
+                };
+            },
+            computed: {
+                label(): string|undefined {
+                    const result = this.options.find(option => predicate(option as T)[1] === this.innerValue) as
+                        T|undefined;
 
-        },
-        data: function () {
-            return {
-                innerValue: this.value,
-            };
-        },
-        computed: {
-            label(): string|undefined {
-                const result = options.find(option => option[valueKey] === this.innerValue);
+                    return result ? predicate(result)[0] : undefined;
+                },
+            },
+            watch: {
+                value(value) {
+                    this.innerValue = value;
+                },
+            },
+            methods: {
+                updateValue(value: V) {
+                    this.innerValue = value;
+                    this.$emit("input", value);
+                },
+            },
+            render(): VNode {
+                const makeOption = (option: T): VNode => {
+                    const entry = predicate(option);
 
-                return result ? toString(result[labelKey]) : undefined;
+                    return (<BDropdownItem value={entry[1]}>{ entry[0] }</BDropdownItem>);
+                };
+
+                return (
+                    <BDropdown
+                        onChange={(value: V) => this.updateValue(value)}
+                        value={this.innerValue}
+                        position={this.position}
+                        animation={this.animation}
+                        mobileModal={this.mobileModal}
+                        ariaRole={this.ariaRole}
+                        scrollable={this.scrollable}
+                        maxHeight={this.maxHeight}
+                        disabled={this.disabled}
+                        expanded={this.expanded}>
+                        <template slot="trigger">{
+                            this.tag === "button" ? (
+                                <BButton
+                                    label={this.label || this.placeholder}
+                                    type={this.type}
+                                    size={this.size}
+                                    loading={this.loading}
+                                    inverted={this.inverted}
+                                    rounded={this.rounded}
+                                    outlined={this.outlined}
+                                    disabled={this.disabled}
+                                    expanded={this.expanded}
+                                />
+                            ) : (
+                                <BInput
+                                    customClass="has-cursor-pointer"
+                                    iconRight="chevron-down"
+                                    value={this.label}
+                                    size={this.size}
+                                    loading={this.loading}
+                                    disabled={this.disabled}
+                                    expanded={this.expanded}
+                                    placeholder={this.placeholder}
+                                    readonly
+                                />
+                            )
+                        }</template>
+                        { this.options.map(option => makeOption(option as T)) }
+                    </BDropdown>
+                );
             },
-        },
-        watch: {
-            value(value) {
-                this.innerValue = value;
-            },
-        },
-        methods: {
-            updateValue(value: T[V]) {
-                this.innerValue = value;
-                this.$emit("input", value);
-            },
-        },
-        render(): VNode {
-            return (
-                <BDropdown
-                    onChange={(value: T[V]) => this.updateValue(value)}
-                    value={this.value}
-                    position={this.position}
-                    animation={this.animation}
-                    mobileModal={this.mobileModal}
-                    ariaRole={this.ariaRole}
-                    scrollable={this.scrollable}
-                    maxHeight={this.maxHeight}
-                    disabled={this.disabled}
-                    expanded={this.expanded}>
-                    <template slot="trigger">{
-                        this.tag === "button" ? (
-                            <BButton
-                                label={this.label || this.placeholder}
-                                type={this.type}
-                                size={this.size}
-                                loading={this.loading}
-                                inverted={this.inverted}
-                                rounded={this.rounded}
-                                outlined={this.outlined}
-                                disabled={this.disabled}
-                                expanded={this.expanded}
-                            />
-                        ) : (
-                            <BInput
-                                customClass="has-cursor-pointer"
-                                iconRight="chevron-down"
-                                value={this.label}
-                                size={this.size}
-                                loading={this.loading}
-                                disabled={this.disabled}
-                                expanded={this.expanded}
-                                placeholder={this.placeholder}
-                                readonly
-                            />
-                        )
-                    }</template>
-                    { options.map(option => (
-                        <BDropdownItem value={option[valueKey]}>{ option[labelKey] }</BDropdownItem>
-                    )) }
-                </BDropdown>
-            );
-        },
-    }),
+        }),
 );
 
 export default simpleDropdown;

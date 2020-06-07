@@ -1,19 +1,22 @@
 import { route } from "../foundation/helpers/routing";
 import DashboardPage from "./pages/DashboardPage";
-import SettingsPage from "./pages/settings/SettingsPage";
-import SourceList from "./pages/settings/SourceList";
-import SourcePage from "./pages/settings/SourcePage";
-import SwitchList from "./pages/settings/SwitchList";
+import SettingsFramePage from "./pages/settings/SettingsFramePage";
+import SettingsPage from "./pages/settings/sub-pages/SettingsPage";
+import SourceList from "./pages/settings/sub-pages/SourceList";
+import SwitchList from "./pages/settings/sub-pages/SwitchList";
+import SourcePage from "./pages/settings/sub-pages/source/SourcePage";
 
 const routes = [
     // Home
     route("home", "/", DashboardPage),
 
     // Settings
-    route("settings", "/settings", SettingsPage),
-    route("switches", "/settings/switches", SwitchList),
-    route("sources", "/settings/sources", SourceList),
-    route("source", "/settings/source/:id", SourcePage),
+    route(undefined, "/settings", SettingsFramePage, [
+        route("settings", "", SettingsPage),
+        route("switches", "switches", SwitchList),
+        route("sources", "sources", SourceList),
+        route("source", "source/:id", SourcePage),
+    ]),
 ];
 
 export default routes;

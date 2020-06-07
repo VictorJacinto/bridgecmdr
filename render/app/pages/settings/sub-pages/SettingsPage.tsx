@@ -18,13 +18,19 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import { BNavbar, BNavbarItem, BIcon } from "../../../foundation/components/buefy-tsx";
-import SvgIcon from "../../components/SvgIcon";
-import CardList from "../../components/card-list/CardList";
-import CardListEntry from "../../components/card-list/CardListEntry";
+import SvgIcon from "../../../components/SvgIcon";
+import CardList from "../../../components/card-list/CardList";
+import CardListEntry from "../../../components/card-list/CardListEntry";
+import UsesSettingsTitle from "../../../concerns/uses-settings-title";
 
-const SettingsPage = tsx.component({
-    name:    "SettingsPage",
+// @vue/component
+const SettingsPage = tsx.componentFactory.mixin(UsesSettingsTitle).create({
+    name: "SettingsPage",
+    mounted() {
+        this.$nextTick(() => {
+            this.setSettingsTitle("Settings");
+        });
+    },
     methods: {
         log(target: unknown): void {
             console.log(target);
@@ -33,14 +39,6 @@ const SettingsPage = tsx.component({
     render(): VNode {
         return (
             <div id="settings-page">
-                <BNavbar fixedTop type="is-primary" mobileBurger={false}>
-                    <template slot="brand">
-                        <BNavbarItem tag="router-link" to={{ name: "home" }}>
-                            <BIcon icon="arrow-left"/>
-                        </BNavbarItem>
-                        <BNavbarItem tag="div">Settings</BNavbarItem>
-                    </template>
-                </BNavbar>
                 <CardList>
                     <CardListEntry onClick={ () => this.log("general") }>
                         <template slot="image">

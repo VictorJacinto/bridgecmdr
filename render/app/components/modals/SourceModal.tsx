@@ -25,6 +25,7 @@ import { Source } from "../../store/modules/sources";
 import { validationStatus } from "../../support/validation";
 import SvgIcon from "../SvgIcon";
 
+// @vue/component
 const SourceModal = tsx.component({
     name:  "SourceModal",
     props: {
@@ -43,6 +44,11 @@ const SourceModal = tsx.component({
             return this.item._id === null ? "Create" : "Save";
         },
     },
+    beforeDestroy() {
+        if (this.imageUrl) {
+            URL.revokeObjectURL(this.imageUrl);
+        }
+    },
     methods: {
         updateImage(image: File|File[]) {
             if (this.imageUrl) {
@@ -59,11 +65,6 @@ const SourceModal = tsx.component({
         onSaveClicked() {
             this.$modals.confirm(this.item);
         },
-    },
-    beforeDestroy() {
-        if (this.imageUrl) {
-            URL.revokeObjectURL(this.imageUrl);
-        }
     },
     render(): VNode {
         return (

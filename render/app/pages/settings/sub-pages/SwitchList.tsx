@@ -19,31 +19,30 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { times } from "lodash";
 import * as tsx from "vue-tsx-support";
 import { modifiers as m } from "vue-tsx-support";
-import { BButton, BIcon, BNavbar, BNavbarItem, BSkeleton } from "../../../foundation/components/buefy-tsx";
-import SvgIcon from "../../components/SvgIcon";
-import CardList from "../../components/card-list/CardList";
-import CardListEntry from "../../components/card-list/CardListEntry";
-import dataSource from "../../components/data/DataSource";
-import switchModal from "../../components/modals/SwitchModal";
-import dataManager from "../../concerns/data-manager";
-import { Switch } from "../../store/modules/switches";
-import Driver, { DeviceType } from "../../system/driver";
+import { BButton, BField, BIcon, BSkeleton } from "../../../../foundation/components/buefy-tsx";
+import SvgIcon from "../../../components/SvgIcon";
+import CardList from "../../../components/card-list/CardList";
+import CardListEntry from "../../../components/card-list/CardListEntry";
+import Switches from "../../../components/data/sources/Switches";
+import ManagesSwitches from "../../../concerns/managers/manages-switches";
+import UsesSettingsTitle from "../../../concerns/uses-settings-title";
+import { Switch } from "../../../store/modules/switches";
+import Driver, { DeviceType } from "../../../system/driver";
 
 const drivers = Driver.all();
-const DataSource = dataSource<Switch>("switches");
 const iconMap = {
     [DeviceType.Switch]:  "mdiVideoSwitch",
     [DeviceType.Monitor]: "mdiMonitor",
 };
 
-const ManagesSwitches = dataManager<Switch>({
-    modalFactory: switchModal,
-    namespace:    "switches",
-    term:         "switch",
-});
-
-const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
-    name:    "SwitchList",
+// @vue/component
+const SwitchList = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSwitches).create({
+    name: "SwitchList",
+    mounted() {
+        this.$nextTick(() => {
+            this.setSettingsTitle("Switches");
+        });
+    },
     methods: {
         getIconForSwitch(item: Switch): string {
             const info = drivers.find(driver => driver.guid === item.driverId);
@@ -54,7 +53,7 @@ const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
 
             return "mdiHelp";
         },
-        getDriverForSwitch(item: Switch): string {
+        getDriverTitleForSwitch(item: Switch): string {
             const info = drivers.find(driver => driver.guid === item.driverId);
             if (info) {
                 return info.title;
@@ -66,16 +65,8 @@ const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
     render() {
         return (
             <div id="switch-list">
-                <BNavbar fixedTop type="is-primary" mobileBurger={false}>
-                    <template slot="brand">
-                        <BNavbarItem tag="router-link" to={{ name: "settings" }}>
-                            <BIcon icon="arrow-left"/>
-                        </BNavbarItem>
-                        <BNavbarItem tag="div">Switches</BNavbarItem>
-                    </template>
-                </BNavbar>
-                <DataSource scopedSlots={{
-                    default: ({ items, loading }) => (loading ? (
+                <Switches slim scopedSlots={{
+                    loading: () => (
                         <CardList>{
                             times(3, () => (
                                 <CardListEntry>
@@ -93,9 +84,15 @@ const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
                                 </CardListEntry>
                             ))
                         }</CardList>
+                    ),
+                    default: ({ items: switches }) => (switches.length === 0 ? (
+                        <div class="section content has-text-centered">
+                            <BField><BIcon icon="set-none" size="is-large"/></BField>
+                            <BField>There are no switches</BField>
+                        </div>
                     ) : (
                         <CardList>{
-                            items.map(item => (
+                            switches.map(item => (
                                 <CardListEntry onClick={() => this.updateItem(item)}>
                                     <template slot="image">
                                         <SvgIcon name={this.getIconForSwitch(item)} type="is-primary" size="is-48x48"
@@ -103,7 +100,7 @@ const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
                                     </template>
                                     <template slot="default">
                                         <p class="has-text-weight-semibold">{ item.title }</p>
-                                        <p class="has-text-light">{ this.getDriverForSwitch(item) }</p>
+                                        <p class="has-text-light">{ this.getDriverTitleForSwitch(item) }</p>
                                     </template>
                                     <template slot="actions">
                                         <BButton class="card-action-item" iconLeft="delete" type="is-danger"
@@ -113,6 +110,14 @@ const SwitchList = tsx.componentFactory.mixin(ManagesSwitches).create({
                             ))
                         }</CardList>
                     )),
+                    error: ({ error, refresh }) => (
+                        <div class="section content has-text-danger has-text-centered">
+                            <BField><BIcon icon="emoticon-sad" size="is-large" type="is-danger"/></BField>
+                            <BField>There was an error loading the switches.</BField>
+                            <BField><BButton label="Try again" type="is-warning" onClick={refresh}/></BField>
+                            <BField>{error.message}</BField>
+                        </div>
+                    ),
                 }}/>
                 <div class="fab-container is-right">
                     <BButton class="fab-item" iconLeft="plus" type="is-primary" onClick={() => this.createItem()}/>

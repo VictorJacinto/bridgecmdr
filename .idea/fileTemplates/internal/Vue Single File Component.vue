@@ -22,12 +22,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
 
-@Component
-export default class ${COMPONENT_NAME} extends Vue {
+const ${COMPONENT_NAME} = Vue.extend({
+name: "${COMPONENT_NAME}",
+});
 
-}
+type ${COMPONENT_NAME} = InstanceType<typeof ${COMPONENT_NAME}>;
+export default ${COMPONENT_NAME};
 </script>
 
 <style lang="scss" scoped>

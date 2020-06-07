@@ -1,4 +1,4 @@
-import Vuex, { StoreOptions } from "vuex";
+import Vuex  from "vuex";
 import { ModuleState } from "../../foundation/helpers/vuex";
 import sources from "./modules/sources";
 import switches from "./modules/switches";
@@ -7,16 +7,24 @@ import { RootState } from "./root-state";
 
 const isProduction = process.env.NODE_ENV === "production";
 
-const options: StoreOptions<RootState> = {
+export const rootModule = {
     strict:  isProduction,
     modules: {
         sources,
         switches,
         ties,
     },
+    state: () => ({
+        settingsTitle: "Settings",
+    } as RootState),
+    mutations: {
+        setSettingsTitle: (state: RootState, value: string) => {
+            state.settingsTitle = value;
+        },
+    },
 };
 
-const store = new Vuex.Store(options);
+const store = new Vuex.Store(rootModule);
 
 export default store;
 

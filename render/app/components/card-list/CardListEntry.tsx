@@ -27,6 +27,7 @@ interface Events {
     onClick: () => void;
 }
 
+// @vue/component
 const CardListEntry = tsx.componentFactoryOf<Events>().create({
     name:  "CardListEntry",
     props: {

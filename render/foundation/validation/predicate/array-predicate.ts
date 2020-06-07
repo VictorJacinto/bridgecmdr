@@ -20,6 +20,7 @@ import { every,isArray,some } from "lodash";
 import { BaseType } from "../core/core";
 import { BasePredicate } from "../core/predicate";
 import { makeInnerValidator, MessageGenerator, Validator } from "../core/validator";
+import AnyPredicate from "./any-predicate";
 import ArrayLikePredicate from "./array-like-predicate";
 
 type TypedArrayPredicate<A extends unknown[]|undefined, E, R> =
@@ -50,7 +51,9 @@ export default class ArrayPredicate<A extends unknown[]|undefined, R> extends Ar
             value => `Expected to not include some of ${items}, but received ${value}`);
     }
 
-    ofType<E>(predicate: BasePredicate<E, R>): TypedArrayPredicate<A, E, R> {
+    ofType<E>(): TypedArrayPredicate<A, E, R>;
+    ofType<E, ER>(predicate: BasePredicate<E, ER>): TypedArrayPredicate<A, E, R>;
+    ofType(predicate: BasePredicate = new AnyPredicate()): TypedArrayPredicate<A, unknown, R> {
         this.dontNegate("ofType");
 
         const nested = predicate.validators(true);
@@ -79,7 +82,7 @@ export default class ArrayPredicate<A extends unknown[]|undefined, R> extends Ar
             },
         });
 
-        return this as TypedArrayPredicate<A, E, R>;
+        return this as TypedArrayPredicate<A, unknown, R>;
     }
 
     // eslint-disable-next-line class-methods-use-this

@@ -22,26 +22,31 @@ import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { BButton, BField, BIcon } from "../../../foundation/components/buefy-tsx";
 import { normalizeChildren } from "../../../foundation/helpers/vue";
-import { mapActions, mapState } from "../../../foundation/helpers/vuex";
+import { mapModuleActions, mapModuleState } from "../../../foundation/helpers/vuex";
 import { is, maybe, prop } from "../../../foundation/validation/valid";
+import IndicatesLoading from "../../concerns/indicates-loading";
 import Model from "../../support/data/model";
-import { BaseDataModule, DataState } from "../../support/data/module";
+import { BaseDataModule } from "../../support/data/module";
 
 type DataSourceEvents<M extends Model> = {
     onChange(items: ReadonlyDeep<M>[]): void;
 };
 
 type DataSourceSlots<M extends Model> = {
-    default: { items: ReadonlyDeep<M>[]; loading: boolean };
+    loading?: { loading: true };
+    default: { items: ReadonlyDeep<M>[]; refresh: () => Promise<void> };
+    error?: { error: Error; refresh: () => Promise<void> };
 };
 
 const dataSource = identity(
-    <M extends Model>(namespace: string) =>
-        tsx.componentFactoryOf<DataSourceEvents<M>, DataSourceSlots<M>>().create({
+    <M extends Model>(namespace: string, module: BaseDataModule<M>) =>
+        // @vue/component
+        tsx.componentFactoryOf<DataSourceEvents<M>, DataSourceSlots<M>>().mixin(IndicatesLoading).create({
             name:  "DataSource",
             props: {
-                selector: prop(maybe.object<PouchDB.Find.FindRequest<M>>()),
+                selector: prop(maybe.object<PouchDB.Find.Selector>()),
                 tag:      prop(is.string.notEmpty, "div"),
+                slim:     Boolean,
             },
             data: function () {
                 return {
@@ -49,10 +54,7 @@ const dataSource = identity(
                 };
             },
             computed: {
-                ...mapState<DataState<M>>()(namespace, ["items"]),
-                loading(): boolean {
-                    return this.$data.$loadingWeight > 0;
-                },
+                ...mapModuleState(module, namespace, ["items"]),
             },
             watch: {
                 selector: {
@@ -62,17 +64,20 @@ const dataSource = identity(
                     },
                 },
             },
+            mounted() {
+                this.refresh();
+            },
             methods: {
-                ...mapActions<BaseDataModule<M>>()(namespace, {
+                ...mapModuleActions(module, namespace, {
                     getAll:   "all",
                     findSome: "find",
                 }),
                 async refresh() {
                     try {
                         if (this.selector) {
-                            await this.$loading.while(this.findSome(this.selector));
+                            await this.loadingWhile(this.findSome(this.selector));
                         } else {
-                            await this.$loading.while(this.getAll());
+                            await this.loadingWhile(this.getAll());
                         }
 
                         this.error = null;
@@ -84,36 +89,41 @@ const dataSource = identity(
                     this.$emit("change", this.items);
                 },
             },
-            mounted() {
-                this.refresh();
-            },
             render(): VNode {
                 const RootTag = this.tag;
 
+                if (this.loading) {
+                    // Short-circuit as loading, since is has priority.
+                    const children = normalizeChildren(this, "loading", { loading: true });
+
+                    return this.slim && children.length <= 1 ? children[0] : (<RootTag>{children}</RootTag>);
+                }
+
                 if (this.error) {
-                    return (
-                        <RootTag class="section content has-text-danger has-text-centered">
-                            <BField><BIcon icon="emoticon-sad" size="is-large" type="is-danger"/></BField>
-                            <BField>There was an error loading.</BField>
-                            <BField><BButton label="Try again" type="is-warning" onClick={() => this.refresh()}/></BField>
-                            <BField>{this.error.message}</BField>
-                        </RootTag>
-                    );
+                    const children = normalizeChildren(this, "error", {
+                        error:   this.error,
+                        refresh: () => this.refresh(),
+                    });
+                    if (children.length === 0) {
+                        return (
+                            <RootTag class="section content has-text-danger has-text-centered">
+                                <BField><BIcon icon="emoticon-sad" size="is-large" type="is-danger"/></BField>
+                                <BField>There was an error loading.</BField>
+                                <BField><BButton label="Try again" type="is-warning" onClick={() => this.refresh()}/></BField>
+                                <BField>{this.error.message}</BField>
+                            </RootTag>
+                        );
+                    }
+
+                    return this.slim && children.length <= 1 ? children[0] : (<RootTag>{children}</RootTag>);
                 }
 
-                if (this.loading || this.items.length > 0) {
-                    return (<RootTag>{
-                        normalizeChildren(this, "default", { items: this.items, loading: this.loading })
-                    }</RootTag>);
-                }
+                const children = normalizeChildren(this, "default", {
+                    items:   this.items,
+                    refresh: () => this.refresh(),
+                });
 
-                return (
-                    <RootTag class="section content has-text-centered">
-                        <BField><BIcon icon="set-none" size="is-large" type="is-danger"/></BField>
-                        <BField>There are no items.</BField>
-                        <BField><BButton label="Refresh" type="is-primary" onClick={() => this.refresh()}/></BField>
-                    </RootTag>
-                );
+                return this.slim && children.length <= 1 ? children[0] : (<RootTag>{children}</RootTag>);
             },
         }),
 );

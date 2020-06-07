@@ -23,10 +23,11 @@ import * as tsx from "vue-tsx-support";
 import routes from "./routes";
 import store from "./store/store";
 
+// @vue/component
 const Application = tsx.component({
     name: "Application",
     render() {
-        return (<transition mode="out-in"><router-view/></transition>);
+        return (<router-view/>);
     },
     router: new VueRouter({
         linkExactActiveClass: "is-active",

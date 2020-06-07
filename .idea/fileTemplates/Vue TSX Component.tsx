@@ -20,6 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 
+// @vue/component
 const ${COMPONENT_NAME} = tsx.component({
 name: "${COMPONENT_NAME}",
 render(): VNode {

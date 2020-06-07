@@ -1,4 +1,3 @@
-#set($MIXIN_NAME=${StringUtils.removeAndHump(${NAME}, "-")})
 /*
 BridgeCmdr - A/V switch and monitor controller
 Copyright (C) 2019-2020 Matthew Holder
@@ -17,11 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Vue from "vue";
+import ties from "../../../store/modules/ties";
+import dataSource from "../DataSource";
 
-const ${MIXIN_NAME} = Vue.extend({
-    name: "${MIXIN_NAME}",
-});
+const Ties = dataSource("ties", ties);
 
-type ${MIXIN_NAME} = InstanceType<typeof ${MIXIN_NAME}>;
-export default ${MIXIN_NAME};
+type Ties = InstanceType<typeof Ties>;
+export default Ties;

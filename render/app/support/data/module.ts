@@ -29,7 +29,7 @@ export interface DataModule<M extends Model, R extends object> extends Module<Da
         compact(): Promise<void>;
         all(injectee: Injectee<M, R>): Promise<void>;
         get(injectee: Injectee<M, R>, id: string): Promise<void>;
-        find(injectee: Injectee<M, R>, selector: PouchDB.Find.FindRequest<M>): Promise<void>;
+        find(injectee: Injectee<M, R>, selector: PouchDB.Find.Selector): Promise<void>;
         add(injectee: Injectee<M, R>, record: M): Promise<void>;
         update(injectee: Injectee<M, R>, record: M): Promise<void>;
         remove(injectee: Injectee<M, R>, id: string): Promise<void>;

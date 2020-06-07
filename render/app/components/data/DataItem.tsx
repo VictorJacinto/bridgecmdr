@@ -21,10 +21,11 @@ import { ReadonlyDeep } from "type-fest";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { normalizeChildren } from "../../../foundation/helpers/vue";
-import { mapActions, mapState } from "../../../foundation/helpers/vuex";
+import { mapModuleActions, mapModuleState } from "../../../foundation/helpers/vuex";
 import { is, prop } from "../../../foundation/validation/valid";
+import IndicatesLoading from "../../concerns/indicates-loading";
 import Model from "../../support/data/model";
-import { BaseDataModule, DataState } from "../../support/data/module";
+import { BaseDataModule } from "../../support/data/module";
 import { IDPattern } from "../../support/validation";
 
 type DataItemEvents<M extends Model> = {
@@ -32,16 +33,20 @@ type DataItemEvents<M extends Model> = {
 };
 
 type DataItemSlots<M extends Model> = {
-    default: { current: ReadonlyDeep<M>|null; error: Error|null; loading: boolean };
+    loading?: { loading: true };
+    default: { current: ReadonlyDeep<M>; refresh: () => Promise<void> };
+    error?: { error: Error; refresh: () => Promise<void> };
 };
 
 const dataItem = identity(
-    <M extends Model>(namespace: string) =>
-        tsx.componentFactoryOf<DataItemEvents<M>, DataItemSlots<M>>().create({
+    <M extends Model>(namespace: string, module: BaseDataModule<M>) =>
+        // @vue/component
+        tsx.componentFactoryOf<DataItemEvents<M>, DataItemSlots<M>>().mixin(IndicatesLoading).create({
             name:  "DataItem",
             props: {
-                id:  prop(is.string.matches(IDPattern)),
-                tag: prop(is.string.notEmpty, "div"),
+                id:   prop(is.string.matches(IDPattern)),
+                tag:  prop(is.string.notEmpty, "div"),
+                slim: Boolean,
             },
             data: function () {
                 return {
@@ -49,21 +54,21 @@ const dataItem = identity(
                 };
             },
             computed: {
-                ...mapState<DataState<M>>()(namespace, ["current"]),
-                loading(): boolean {
-                    return this.$data.$loadingWeight > 0;
-                },
+                ...mapModuleState(module, namespace, ["current"]),
             },
             watch: {
                 id() {
                     this.refresh();
                 },
             },
+            mounted() {
+                this.refresh();
+            },
             methods: {
-                ...mapActions<BaseDataModule<M>>()(namespace, { getItem: "get" }),
+                ...mapModuleActions(module, namespace, { getItem: "get" }),
                 async refresh() {
                     try {
-                        await this.getItem(this.id);
+                        await this.loadingWhile(this.getItem(this.id));
                         this.$emit("input", this.current);
                         this.error = null;
                     } catch (error) {
@@ -72,19 +77,39 @@ const dataItem = identity(
                     }
                 },
             },
-            mounted() {
-                this.refresh();
-            },
             render(): VNode {
                 const RootTag = this.tag;
+                const loading = (): VNode => {
+                    const children = normalizeChildren(this, "loading", { loading: true });
 
-                return (<RootTag>{
-                    normalizeChildren(this, "default", {
-                        current: this.current,
+                    return this.slim && children.length <= 1 ? children[0] : (<RootTag>{children}</RootTag>);
+                };
+
+                if (this.loading) {
+                    // Short-circuit as loading, since is has priority.
+                    return loading();
+                }
+
+                if (this.error) {
+                    const children = normalizeChildren(this, "error", {
                         error:   this.error,
-                        loading: this.loading,
-                    })
-                }</RootTag>);
+                        refresh: () => this.refresh(),
+                    });
+
+                    return this.slim && children.length <= 1 ? children[0] : (<RootTag>{children}</RootTag>);
+                }
+
+                if (this.current) {
+                    const children = normalizeChildren(this, "default", {
+                        current: this.current,
+                        refresh: () => this.refresh(),
+                    });
+
+                    return this.slim && children.length <= 1 ? children[0] : (<RootTag>{children}</RootTag>);
+                }
+
+                // Initial state, is loading.
+                return loading();
             },
         }),
 );

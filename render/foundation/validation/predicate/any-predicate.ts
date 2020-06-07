@@ -15,37 +15,30 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any, class-methods-use-this */
 
 import { PropOptions } from "vue";
 import { DefaultOf } from "../core/core";
 import { BasePredicate, IsPredicate } from "../core/predicate";
 import { Validator } from "../core/validator";
 
-export default class AnyPredicate implements BasePredicate<any, false> {
-    readonly "[unknown]": true;
-
-    // eslint-disable-next-line class-methods-use-this
+export default class AnyPredicate implements BasePredicate<any> {
     get [IsPredicate](): true {
         return true;
     }
 
-    // eslint-disable-next-line class-methods-use-this
     get type(): undefined {
         return undefined;
     }
 
-    // eslint-disable-next-line class-methods-use-this
     get required(): false {
         return false;
     }
 
-    // eslint-disable-next-line class-methods-use-this
     options($default?: DefaultOf<any>): PropOptions<any> {
         return { default: $default };
     }
 
-    // eslint-disable-next-line class-methods-use-this
     validators(_nested: boolean): Validator<any>[] {
         return [];
     }

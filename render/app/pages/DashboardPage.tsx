@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import * as tsx from "vue-tsx-support";
 import { BButton } from "../../foundation/components/buefy-tsx";
 
+// @vue/component
 const DashboardPage = tsx.component({
     name: "DashboardPage",
     render() {

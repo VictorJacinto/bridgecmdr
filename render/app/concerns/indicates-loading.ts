@@ -1,4 +1,3 @@
-#set($MIXIN_NAME=${StringUtils.removeAndHump(${NAME}, "-")})
 /*
 BridgeCmdr - A/V switch and monitor controller
 Copyright (C) 2019-2020 Matthew Holder
@@ -19,9 +18,29 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import Vue from "vue";
 
-const ${MIXIN_NAME} = Vue.extend({
-    name: "${MIXIN_NAME}",
+const IndicatesLoading = Vue.extend({
+    name: "IndicatesLoading",
+    data: function () {
+        return {
+            loadingWeight: 0,
+        };
+    },
+    computed: {
+        loading(): boolean {
+            return this.loadingWeight > 0;
+        },
+    },
+    methods: {
+        async loadingWhile<R>(operation: PromiseLike<R>) {
+            ++this.loadingWeight;
+            try {
+                return await operation;
+            } finally {
+                --this.loadingWeight;
+            }
+        },
+    },
 });
 
-type ${MIXIN_NAME} = InstanceType<typeof ${MIXIN_NAME}>;
-export default ${MIXIN_NAME};
+type IndicatesLoading = InstanceType<typeof IndicatesLoading>;
+export default IndicatesLoading;

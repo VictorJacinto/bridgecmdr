@@ -18,11 +18,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import Vue, { VNode } from "vue";
 
-type SlotOn<C extends Vue> = keyof C["$scopedSlots"];
+export type ScopedSlots<C extends Vue> = Required<C["$scopedSlots"]>;
+export type SlotNames<C extends Vue> = keyof ScopedSlots<C>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SlotProps<C extends Vue, S extends SlotOn<C>> = C["$scopedSlots"][S] extends (props: infer P) => any ? P : {};
+type SlotProps<C extends Vue, S extends SlotNames<C>> = ScopedSlots<C>[S] extends (props: infer P) => any ? P : {};
 
-export function normalizeChildren<C extends Vue, S extends SlotOn<C>>(component: C, slot: S, props: SlotProps<C, S>): VNode[] {
+export function normalizeChildren<C extends Vue, S extends SlotNames<C>>(component: C, slot: S, props: SlotProps<C, S>): VNode[] {
     const scopedSlot = component.$scopedSlots[slot as string];
     if (scopedSlot) {
         return scopedSlot(props) || [];
