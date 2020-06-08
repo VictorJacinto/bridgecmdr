@@ -16,15 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import switchModal from "../../components/modals/SwitchModal";
+import SwitchModal from "../../components/modals/SwitchModal";
 import switches from "../../store/modules/switches";
 import managerData from "../manager-data";
 
 const ManagesSwitches = managerData({
-    modalFactory: switchModal,
-    namespace:    "switches",
-    module:       switches,
-    term:         "switch",
+    namespace: "switches",
+    module:    switches,
+    modal:     SwitchModal,
+    term:      "switch",
 });
 
 type ManagesSwitches = InstanceType<typeof ManagesSwitches>;

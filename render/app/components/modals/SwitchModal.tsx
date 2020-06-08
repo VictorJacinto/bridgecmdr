@@ -16,88 +16,89 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { once } from "lodash";
 import * as tsx from "vue-tsx-support";
 import { BButton, BField, BIcon, BInput } from "../../../foundation/components/buefy-tsx";
 import { ValidationObserver, ValidationProvider } from "../../../foundation/components/vee-validate-tsx";
+import { mapModuleActions, mapModuleState } from "../../../foundation/helpers/vuex";
 import { is, prop } from "../../../foundation/validation/valid";
+import IndicatesLoading from "../../concerns/indicates-loading";
+import devices from "../../store/modules/devices";
 import { Switch } from "../../store/modules/switches";
 import { validationStatus } from "../../support/validation";
-import { makeSerialPortList } from "../../system/device-uri";
 import Driver, { DriverDescriptor } from "../../system/driver";
 import DeviceLocationInput from "../DeviceLocationInput";
 import simpleDropdown from "../SimpleDropdown";
 
 const DriverDropdown = simpleDropdown((about: DriverDescriptor) => [ about.title, about.guid ]);
 
-const switchModal = once(async () => {
-    const ports = await makeSerialPortList();
-
-    // @vue/component
-    return tsx.component({
-        name:  "SwitchModal",
-        props: {
-            item: prop(is.object<Partial<Switch>>()),
+const SwitchModal = tsx.componentFactory.mixin(IndicatesLoading).create({
+    name:  "SwitchModal",
+    props: {
+        item: prop(is.object<Partial<Switch>>()),
+    },
+    computed: {
+        ...mapModuleState(devices, "devices", ["ports"]),
+        title(): string {
+            return this.item._id === null ? "Add switch" : "Edit switch";
         },
-        computed: {
-            title(): string {
-                return this.item._id === null ? "Add switch" : "Edit switch";
-            },
-            confirmText(): string {
-                return this.item._id === null ? "Create" : "Save";
-            },
+        confirmText(): string {
+            return this.item._id === null ? "Create" : "Save";
         },
-        methods: {
-            onSaveClicked() {
-                this.$modals.confirm(this.item);
-            },
+    },
+    mounted() {
+        this.$nextTick(() => this.loadingWhile(this.getPorts()));
+    },
+    methods: {
+        ...mapModuleActions(devices, "devices", ["getPorts"]),
+        onSaveClicked() {
+            this.$modals.confirm(this.item);
         },
-        render() {
-            return (
-                <ValidationObserver tag="div" id="switch-editor" class="modal-card" scopedSlots={{
-                    default: ({ handleSubmit }) => [
-                        <div class="navbar is-primary">
-                            <div class="navbar-brand">
-                                <a class="navbar-item" onClick={() => this.$modals.cancel()}>
-                                    <BIcon icon="arrow-left"/>
-                                </a>
-                                <div class="navbar-item">{this.title}</div>
-                            </div>
-                        </div>,
-                        <main class="modal-card-body">
-                            <ValidationProvider name="title" rules="required" slim scopedSlots={{
-                                default: ({ errors }) => (
-                                    <BField label="Title" expanded {...validationStatus(errors)}>
-                                        <BInput v-model={this.item.title} placeholder="Required"/>
-                                    </BField>
-                                ),
-                            }}/>
-                            <ValidationProvider name="driver" rules="required" slim scopedSlots={{
-                                default: ({ errors }) => (
-                                    <BField label="Driver" expanded {...validationStatus(errors)}>
-                                        <DriverDropdown v-model={this.item.driverId} options={Driver.all()} tag="input"
-                                            placeholder="Required" expanded/>
-                                    </BField>
-                                ),
-                            }}/>
-                            <ValidationProvider name="device" rules="required|location" slim scopedSlots={{
-                                default: ({ errors }) => /* TODO: The validator needs to better handle this */ (
-                                    <BField label="Device" expanded {...validationStatus(errors)}>
-                                        <DeviceLocationInput v-model={this.item.path} ports={ports}
-                                            type={errors.length > 0 ? "is-danger" : undefined}/>
-                                    </BField>
-                                ),
-                            }}/>
-                        </main>,
-                        <footer class="modal-card-foot">
-                            <BButton label={this.confirmText} type="is-primary"
-                                onClick={() => handleSubmit(() => this.onSaveClicked()) }/>
-                        </footer>,
-                    ],
-                }}/>
-            );
-        },
-    });
+    },
+    render() {
+        return (
+            <ValidationObserver tag="div" id="switch-editor" class="modal-card" scopedSlots={{
+                default: ({ handleSubmit }) => [
+                    <div class="navbar is-primary">
+                        <div class="navbar-brand">
+                            <a class="navbar-item" onClick={() => this.$modals.cancel()}>
+                                <BIcon icon="arrow-left"/>
+                            </a>
+                            <div class="navbar-item">{this.title}</div>
+                        </div>
+                    </div>,
+                    <main class="modal-card-body">
+                        <ValidationProvider name="title" rules="required" slim scopedSlots={{
+                            default: ({ errors }) => (
+                                <BField label="Title" expanded {...validationStatus(errors)}>
+                                    <BInput v-model={this.item.title} placeholder="Required"/>
+                                </BField>
+                            ),
+                        }}/>
+                        <ValidationProvider name="driver" rules="required" slim scopedSlots={{
+                            default: ({ errors }) => (
+                                <BField label="Driver" expanded {...validationStatus(errors)}>
+                                    <DriverDropdown v-model={this.item.driverId} options={Driver.all()} tag="input"
+                                        placeholder="Required" expanded/>
+                                </BField>
+                            ),
+                        }}/>
+                        <ValidationProvider name="device" rules="required|location" slim scopedSlots={{
+                            default: ({ errors }) => /* TODO: The validator needs to better handle this */ (
+                                <BField label="Device" expanded {...validationStatus(errors)}>
+                                    <DeviceLocationInput v-model={this.item.path} ports={this.ports}
+                                        loading={this.loading} type={errors.length > 0 ? "is-danger" : undefined}/>
+                                </BField>
+                            ),
+                        }}/>
+                    </main>,
+                    <footer class="modal-card-foot">
+                        <BButton label={this.confirmText} type="is-primary"
+                            onClick={() => handleSubmit(() => this.onSaveClicked()) }/>
+                    </footer>,
+                ],
+            }}/>
+        );
+    },
 });
 
-export default switchModal;
+export default SwitchModal;

@@ -22,7 +22,8 @@ import * as tsx from "vue-tsx-support";
 import { BField, BInput, KnownColorModifiers } from "../../foundation/components/buefy-tsx";
 import { ElementType } from "../../foundation/helpers/typing";
 import { is, maybe, prop } from "../../foundation/validation/valid";
-import { DeviceLocation, getLocationFromUri, getPathFromUri, rebuildUri, SerialPortEntry } from "../system/device-uri";
+import { SerialPortEntry } from "../store/modules/devices";
+import { DeviceLocation, getLocationFromUri, getPathFromUri, rebuildUri } from "../system/device-uri";
 import simpleDropdown from "./SimpleDropdown";
 
 const locations = [
@@ -34,15 +35,16 @@ const locations = [
 type Location = ElementType<typeof locations>;
 
 const LocationDropdown = simpleDropdown((location: Location) => [ location.label, location.location ]);
-const DeviceDropdown = simpleDropdown((port: SerialPortEntry) => [ port.label, port.path ]);
+const DeviceDropdown = simpleDropdown((port: SerialPortEntry) => [ port.title, port.path ]);
 
 // @vue/component
 const DeviceLocationInput = tsx.component({
     name:  "DeviceLocationInput",
     props: {
-        value: prop(maybe.string),
-        ports: prop(is.array.ofType(is.object<SerialPortEntry>())),
-        type:  prop(is.enum(KnownColorModifiers), "is-primary"),
+        value:   prop(maybe.string),
+        ports:   prop(is.array.ofType(is.object<SerialPortEntry>())),
+        type:    prop(is.enum(KnownColorModifiers), "is-primary"),
+        loading: Boolean,
     },
     data: function () {
         return {
@@ -98,7 +100,7 @@ const DeviceLocationInput = tsx.component({
                     placeholder="Required"/>
                 { this.location === DeviceLocation.PORT ? (
                     <DeviceDropdown v-model={this.path} options={this.ports} tag="input" class="control"
-                        placeholder={this.placeholder} expanded/>
+                        placeholder={this.placeholder} loading={this.loading} expanded/>
                 ) : (
                     <BInput v-model={this.path} placeholder={this.placeholder} expanded/>
                 )}

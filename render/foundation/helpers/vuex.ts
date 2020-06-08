@@ -17,8 +17,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { identity } from "lodash";
 import { SetRequired } from "type-fest";
-import { ActionObject, Module, mapActions, mapMutations, mapGetters, mapState } from "vuex";
+import { Module, ActionObject, mapActions, mapMutations, mapGetters, mapState } from "vuex";
 
 // noinspection JSUnusedGlobalSymbols
 export type ModuleState<M extends Module<any, any>> = M extends Module<infer S, any> ? S : never;
@@ -28,7 +29,7 @@ export type ModuleRootState<M extends Module<any, any>> = M extends Module<any, 
 type AnyVuexModule = Module<any, any>;
 
 type ProperState<S> = S extends object ? S : never;
-type ResolvedState<M extends AnyVuexModule> =
+type ResolvedModuleState<M extends AnyVuexModule> =
     M extends { state: () => infer S } ? ProperState<S> :
     M extends { state: infer S } ? ProperState<S> :
     never;
@@ -49,17 +50,17 @@ type ResolvedStateMappings<S extends object, Map extends StateMapTargets<S>> =
     Map extends readonly (keyof S)[] ? { [K in Map[number]]: () => S[K] } :
     never;
 
-export function mapModuleState<M extends VuexModuleWithState, Targets extends StateMapTargets<ResolvedState<M>>>(
-    module: M, namespace: string, targets: Targets): ResolvedStateMappings<ResolvedState<M>, Targets>;
-export function mapModuleState<M extends VuexModuleWithState, Targets extends StateMapTargets<ResolvedState<M>>>(
-    module: M, targets: Targets): ResolvedStateMappings<ResolvedState<M>, Targets>;
+export function mapModuleState<M extends VuexModuleWithState, Targets extends StateMapTargets<ResolvedModuleState<M>>>(
+    _module: M, namespace: string, targets: Targets): ResolvedStateMappings<ResolvedModuleState<M>, Targets>;
+export function mapModuleState<M extends VuexModuleWithState, Targets extends StateMapTargets<ResolvedModuleState<M>>>(
+    _module: M, targets: Targets): ResolvedStateMappings<ResolvedModuleState<M>, Targets>;
 export function mapModuleState(_module: any, namespace: any, targets?: any): any {
     return mapState(namespace, targets);
 }
 
 type VuexModuleWithGetters = SetRequired<AnyVuexModule, "getters">;
 
-type GetterMapHandler<M extends VuexModuleWithGetters> = ((state: ResolvedState<M>) => any);
+type GetterMapHandler<M extends VuexModuleWithGetters> = ((state: ResolvedModuleState<M>) => any);
 type GetterMapTargets<M extends VuexModuleWithGetters> =
     readonly (keyof M["getters"])[]|
     Record<string, keyof M["getters"]>|
@@ -72,9 +73,9 @@ type ResolvedGetterMappings<M extends VuexModuleWithGetters, Map extends GetterM
     never;
 
 export function mapModuleGetters<M extends VuexModuleWithGetters, Targets extends GetterMapTargets<M>>(
-    module: M, namespace: string, targets: Targets): ResolvedGetterMappings<M, Targets>;
+    _module: M, namespace: string, targets: Targets): ResolvedGetterMappings<M, Targets>;
 export function mapModuleGetters<M extends VuexModuleWithGetters, Targets extends GetterMapTargets<M>>(
-    module: M, targets: Targets): ResolvedGetterMappings<M, Targets>;
+    _module: M, targets: Targets): ResolvedGetterMappings<M, Targets>;
 export function mapModuleGetters(_module: any, namespace: any, targets?: any): any {
     return mapGetters(namespace, targets);
 }
@@ -97,9 +98,9 @@ type ResolvedMutationMappings<M extends VuexModuleWithMutations, Map extends Mut
     never;
 
 export function mapModuleMutations<M extends VuexModuleWithMutations, Targets extends MutationMapTargets<M>>(
-    module: M, namespace: string, targets: Targets): ResolvedMutationMappings<M, Targets>;
+    _module: M, namespace: string, targets: Targets): ResolvedMutationMappings<M, Targets>;
 export function mapModuleMutations<M extends VuexModuleWithMutations, Targets extends MutationMapTargets<M>>(
-    module: M, targets: Targets): ResolvedMutationMappings<M, Targets>;
+    _module: M, targets: Targets): ResolvedMutationMappings<M, Targets>;
 export function mapModuleMutations(_module: any, namespace: any, targets?: any): any {
     return mapMutations(namespace, targets);
 }
@@ -130,9 +131,39 @@ type ResolvedActionMappings<M extends VuexModuleWithActions, Map extends ActionM
     never;
 
 export function mapModuleActions<M extends VuexModuleWithActions, Targets extends ActionMapTargets<M>>(
-    module: M, namespace: string, targets: Targets): ResolvedActionMappings<M, Targets>;
+    _module: M, namespace: string, targets: Targets): ResolvedActionMappings<M, Targets>;
 export function mapModuleActions<M extends VuexModuleWithActions, Targets extends ActionMapTargets<M>>(
-    module: M, targets: Targets): ResolvedActionMappings<M, Targets>;
+    _module: M, targets: Targets): ResolvedActionMappings<M, Targets>;
 export function mapModuleActions(_module: any, namespace: any, targets?: any): any {
     return mapActions(namespace, targets);
 }
+//
+// interface ModuleConfig<
+//     State extends object|(() => object),
+//     RootState extends object,
+//     Getters extends GetterTree<ResolvedState<State>, RootState>,
+//     Mutations extends MutationTree<ResolvedState<State>>,
+//     Actions extends ActionTree<ResolvedState<State>, RootState>,
+//     Modules extends ModuleTree<RootState>,
+// > {
+//     namespaced?: boolean;
+//     state: State;
+//     getters: Getters;
+//     mutations: Mutations;
+//     actions: Actions;
+//     modules?: Modules;
+// }
+//
+// export const storeModule = identity(<RootState extends object = object>() => ({
+//     make: identity(<
+//         State extends object|(() => object),
+//         Getters extends GetterTree<ResolvedState<State>, RootState>,
+//         Mutations extends MutationTree<ResolvedState<State>>,
+//         Actions extends ActionTree<ResolvedState<State>, RootState>,
+//         Modules extends ModuleTree<RootState>,
+//     >(config: ModuleConfig<State, RootState, Getters, Mutations, Actions, Modules>) => config),
+// }));
+
+export const storeModule = identity(<State extends object, RootState extends object = State>() => ({
+    make: identity(<M extends Module<State, RootState>>(config: M) => config),
+}));
