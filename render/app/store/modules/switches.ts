@@ -25,6 +25,8 @@ const switches = Module.of<Switch, RootState>({
             await dispatch("ties/find", { sourceId: id }, { root: true });
 
             await Promise.all(rootState.ties.items.map(item => dispatch("ties/remove", item._id, { root: true })));
+
+            return id;
         },
     },
 });

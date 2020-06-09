@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "module": "esnext",
-    "target": "esnext",
+    "target": "ES2019",
     "inlineSourceMap": true,
 
     "jsx": "preserve",

@@ -19,18 +19,19 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { times } from "lodash";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import Watcher from "../../../../../foundation/components/Watcher";
-import { BButton, BField, BIcon, BSkeleton } from "../../../../../foundation/components/buefy-tsx";
-import { is, prop } from "../../../../../foundation/validation/valid";
-import CardList from "../../../../components/card-list/CardList";
-import CardListEntry from "../../../../components/card-list/CardListEntry";
-import CurrentSource from "../../../../components/data/items/CurrentSource";
-import ManagesSources from "../../../../concerns/managers/manages-sources";
-import UsesSettingsTitle from "../../../../concerns/uses-settings-title";
-import { Source } from "../../../../store/modules/sources";
-import IconCache from "../../../../support/icon-cache";
-import { IDPattern } from "../../../../support/validation";
-import TieList from "./TieList";
+import { modifiers as m } from "vue-tsx-support/lib/modifiers";
+import Watcher from "../../../../../../foundation/components/Watcher";
+import { BButton, BField, BIcon, BSkeleton } from "../../../../../../foundation/components/buefy-tsx";
+import { is, prop } from "../../../../../../foundation/validation/valid";
+import CardList from "../../../../../components/card-list/CardList";
+import CardListEntry from "../../../../../components/card-list/CardListEntry";
+import CurrentSource from "../../../../../components/data/items/CurrentSource";
+import ManagesSources from "../../../../../concerns/managers/manages-sources";
+import UsesSettingsTitle from "../../../../../concerns/uses-settings-title";
+import { Source } from "../../../../../store/modules/sources";
+import IconCache from "../../../../../support/icon-cache";
+import { IDPattern } from "../../../../../support/validation";
+import TieList from "./parts/TieList";
 
 // @vue/component
 const SourcePage = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSources).create({
@@ -91,6 +92,10 @@ const SourcePage = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSo
                                 <template slot="default">
                                     <p class="has-text-weight-semibold">{source.title}</p>
                                     <p class="has-text-light">Source</p>
+                                </template>
+                                <template slot="actions">
+                                    <BButton class="card-action-item" iconLeft="pencil" type="is-primary"
+                                        onClick={m.prevent(() => this.updateItem(source))}/>
                                 </template>
                             </CardListEntry>
                             <TieList sourceId={source._id}/>

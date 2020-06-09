@@ -88,9 +88,7 @@ const managerData = identity(<M extends Model>(options: DataManagerOptions<M>) =
                 const item = await this.showEditModal(source);
                 if (item) {
                     try {
-                        await this.doUpdate(item);
-
-                        return item;
+                        return await this.doUpdate(item);
                     } catch (error) {
                         await this.$dialogs.error(error);
                     }
@@ -102,9 +100,7 @@ const managerData = identity(<M extends Model>(options: DataManagerOptions<M>) =
                 const item = await this.showAddModal();
                 if (item) {
                     try {
-                        await this.doAdd(item);
-
-                        return item;
+                        return await this.doAdd(item);
                     } catch (error) {
                         await this.$dialogs.error(error);
                     }

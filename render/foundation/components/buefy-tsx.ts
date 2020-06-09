@@ -14,7 +14,7 @@ import { CombinedVueInstance } from "vue/types/vue";
 export const KnownColorModifiers = [ "is-white", "is-black", "is-light", "is-dark", "is-primary", "is-link", "is-info", "is-success", "is-warning", "is-danger" ] as const;
 export type KnownColorModifiers = typeof KnownColorModifiers[number];
 
-export const SizeModifiers = [ "is-small", "is-medium", "is-large" ];
+export const SizeModifiers = [ "is-small", "is-medium", "is-large" ] as const;
 export type SizeModifiers = typeof SizeModifiers[number];
 
 export const VerticalPositionModifiers = [ "is-bottom", "is-top" ] as const;

@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { assign, findIndex, identity, iteratee, tap } from "lodash";
-import { ReadonlyDeep } from "type-fest";
+import { PromiseValue, ReadonlyDeep } from "type-fest";
 import { ActionContext,  Module, Store } from "vuex";
 import { RootState } from "../../store/root-state";
 import Database, { Document, GetDocument, Indices } from "./database";
@@ -30,21 +32,20 @@ export interface DataModule<M extends Model, R extends object> extends Module<Da
         all(injectee: Injectee<M, R>): Promise<void>;
         get(injectee: Injectee<M, R>, id: string): Promise<void>;
         find(injectee: Injectee<M, R>, selector: PouchDB.Find.Selector): Promise<void>;
-        add(injectee: Injectee<M, R>, record: M): Promise<void>;
-        update(injectee: Injectee<M, R>, record: M): Promise<void>;
-        remove(injectee: Injectee<M, R>, id: string): Promise<void>;
+        add(injectee: Injectee<M, R>, record: M): Promise<ReadonlyDeep<M>>;
+        update(injectee: Injectee<M, R>, record: M): Promise<ReadonlyDeep<M>>;
+        remove(injectee: Injectee<M, R>, id: string): Promise<string>;
     };
 }
 
 export type DataActionContext<M extends Model, R extends object, Doc extends M | Document<object> = M> =
     ActionContext<DataState<M>, R> & { database: Database<Doc> };
 
-export type DataActionHandler<M extends Model, R extends object, Doc extends M | Document<object> = M> =
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (this: Store<R>, injectee: DataActionContext<M, R, Doc>, payload?: any) => Promise<any>;
+export type DataActionHandler<M extends Model, R extends object, Doc extends M | Document<object> = M, P = any> =
+    (this: Store<R>, injectee: DataActionContext<M, R, Doc>, payload?: any) => Promise<P>;
 
 export type DataActionTree<M extends Model, R extends object, Doc extends M | Document<object> = M> = Omit<{
-    [K in keyof DataModule<M, R>["actions"]]?: DataActionHandler<M, R, Doc>;
+    [K in keyof DataModule<M, R>["actions"]]?: DataActionHandler<M, R, Doc, PromiseValue<ReturnType<DataModule<M, R>["actions"][K]>>>;
 }, "compact">;
 
 export interface DataModuleOptions<M extends Model, R extends object, Doc extends M | Document<object> = M> {
@@ -58,6 +59,11 @@ function replaceItem<M extends Model>(_state: DataState<M>, item: ReadonlyDeep<M
     const index = findIndex(_state.items, iteratee({ _id: item._id }));
     if (index !== -1) {
         _state.items.splice(index, 1, item);
+    }
+
+    // If the current item is also the item being update, replace it as well.
+    if (_state.current && _state.current._id === item._id) {
+        _state.current = item;
     }
 }
 
@@ -109,7 +115,6 @@ const Module = {
             all: async ({ commit }) => {
                 const connection = await database;
 
-                commit("refresh", []);
                 commit("refresh", await connection.all());
             },
 
@@ -117,7 +122,6 @@ const Module = {
             get: async ({ commit }, id) => {
                 const connection = await database;
 
-                commit("show", null);
                 commit("show", await connection.get(id));
             },
 
@@ -137,27 +141,32 @@ const Module = {
             /** Adds a new record to the database. */
             add: async ({ commit }, record) => {
                 const connection = await database;
+                const result = await connection.add(record as Doc);
+                commit("append", result);
 
-                commit("append", await connection.add(record as Doc));
+                return result as ReadonlyDeep<M>;
             },
 
             /** Updates a record in the database. */
             update: async ({ commit }, record) => {
                 const connection = await database;
                 const doc = await connection.get(record._id);
-
-                commit("replace", await connection.update(tap(record as GetDocument<Doc>, value => {
+                const result = await connection.update(tap(record as GetDocument<Doc>, value => {
                     value._rev = doc._rev;
-                })));
+                }));
+
+                commit("replace", result);
+
+                return result as ReadonlyDeep<M>;
             },
 
             /** Removes a record from the database. */
             remove: async ({ commit }, id) => {
                 const connection = await database;
-
                 await connection.remove(id);
-
                 commit("delete", id);
+
+                return id;
             },
         };
 
@@ -165,7 +174,7 @@ const Module = {
             async function (this: Store<R>, injectee: Injectee<M, R>, payload?: unknown) {
                 const connection = await database;
 
-                await overrider.call(this, assign(injectee, { database: connection }), payload);
+                return overrider.call(this, assign(injectee, { database: connection }), payload);
             },
         );
 

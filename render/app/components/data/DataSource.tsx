@@ -46,7 +46,7 @@ const dataSource = identity(
             props: {
                 selector: prop(maybe.object<PouchDB.Find.Selector>()),
                 tag:      prop(is.string.notEmpty, "div"),
-                slim:     Boolean,
+                slim:     prop(maybe.boolean),
             },
             data: function () {
                 return {

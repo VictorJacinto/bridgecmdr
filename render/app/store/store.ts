@@ -1,5 +1,5 @@
 import Vuex  from "vuex";
-import {ModuleState, storeModule} from "../../foundation/helpers/vuex";
+import { ModuleState, storeModule } from "../../foundation/helpers/vuex";
 import devices from "./modules/devices";
 import sources from "./modules/sources";
 import switches from "./modules/switches";

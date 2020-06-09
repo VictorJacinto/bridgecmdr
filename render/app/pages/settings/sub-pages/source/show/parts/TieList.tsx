@@ -19,15 +19,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { times } from "lodash";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import { BButton, BField, BIcon, BSkeleton } from "../../../../../foundation/components/buefy-tsx";
-import { mapModuleActions, mapModuleState } from "../../../../../foundation/helpers/vuex";
-import { is, prop } from "../../../../../foundation/validation/valid";
-import CardList from "../../../../components/card-list/CardList";
-import CardListEntry from "../../../../components/card-list/CardListEntry";
-import Ties from "../../../../components/data/sources/Ties";
-import ManagesTies from "../../../../concerns/managers/manages-ties";
-import switches from "../../../../store/modules/switches";
-import { IDPattern } from "../../../../support/validation";
+import { BButton, BField, BIcon, BSkeleton } from "../../../../../../../foundation/components/buefy-tsx";
+import { mapModuleActions, mapModuleState } from "../../../../../../../foundation/helpers/vuex";
+import { is, prop } from "../../../../../../../foundation/validation/valid";
+import CardList from "../../../../../../components/card-list/CardList";
+import CardListEntry from "../../../../../../components/card-list/CardListEntry";
+import Ties from "../../../../../../components/data/sources/Ties";
+import ManagesTies from "../../../../../../concerns/managers/manages-ties";
+import switches from "../../../../../../store/modules/switches";
+import { Tie } from "../../../../../../store/modules/ties";
+import { IDPattern } from "../../../../../../support/validation";
 
 // @vue/component
 const TieList = tsx.componentFactory.mixin(ManagesTies).create({
@@ -43,6 +44,9 @@ const TieList = tsx.componentFactory.mixin(ManagesTies).create({
     },
     methods: {
         ...mapModuleActions(switches, "switches", { refreshSwitches: "all" }),
+        onTieClicked(tie: Tie) {
+            this.showModal(tie);
+        },
     },
     render(): VNode {
         return (
@@ -70,7 +74,7 @@ const TieList = tsx.componentFactory.mixin(ManagesTies).create({
                 ) : (
                     <CardList>{
                         ties.map(tie => (
-                            <CardListEntry>
+                            <CardListEntry onClick={() => this.onTieClicked(tie)}>
                                 <p>{tie.inputChannel}</p>
                             </CardListEntry>
                         ))

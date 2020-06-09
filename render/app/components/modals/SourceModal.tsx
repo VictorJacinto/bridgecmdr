@@ -38,10 +38,10 @@ const SourceModal = tsx.component({
     },
     computed: {
         title(): string {
-            return this.item._id === null ? "Add source" : "Edit source";
+            return this.item._id ? "Add source" : "Edit source";
         },
         confirmText(): string {
-            return this.item._id === null ? "Create" : "Save";
+            return this.item._id ? "Create" : "Save";
         },
     },
     beforeDestroy() {

@@ -16,12 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Vue from "vue";
+import TieModal from "../../components/modals/TieModal";
 import ties from "../../store/modules/ties";
 import managerData from "../manager-data";
-
-// TODO: Replace
-const TieModal = Vue.extend();
 
 const ManagesTies = managerData({
     namespace: "ties",

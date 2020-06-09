@@ -39,10 +39,10 @@ const SwitchModal = tsx.componentFactory.mixin(IndicatesLoading).create({
     computed: {
         ...mapModuleState(devices, "devices", ["ports"]),
         title(): string {
-            return this.item._id === null ? "Add switch" : "Edit switch";
+            return this.item._id ? "Add switch" : "Edit switch";
         },
         confirmText(): string {
-            return this.item._id === null ? "Create" : "Save";
+            return this.item._id ? "Create" : "Save";
         },
     },
     mounted() {

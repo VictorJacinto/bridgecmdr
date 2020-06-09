@@ -22,7 +22,7 @@ import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { normalizeChildren } from "../../../foundation/helpers/vue";
 import { mapModuleActions, mapModuleState } from "../../../foundation/helpers/vuex";
-import { is, prop } from "../../../foundation/validation/valid";
+import { is, maybe, prop } from "../../../foundation/validation/valid";
 import IndicatesLoading from "../../concerns/indicates-loading";
 import Model from "../../support/data/model";
 import { BaseDataModule } from "../../support/data/module";
@@ -46,7 +46,7 @@ const dataItem = identity(
             props: {
                 id:   prop(is.string.matches(IDPattern)),
                 tag:  prop(is.string.notEmpty, "div"),
-                slim: Boolean,
+                slim: prop(maybe.boolean),
             },
             data: function () {
                 return {

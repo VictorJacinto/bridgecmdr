@@ -17,7 +17,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { PropOptions } from "vue";
 import * as tsx from "vue-tsx-support";
 import { is, prop } from "../validation/valid";
 
@@ -29,8 +28,7 @@ type WatcherEvents = {
 const Watcher = tsx.componentFactoryOf<WatcherEvents>().create({
     name:  "Watcher",
     props: {
-        // eslint-disable-next-line vue/require-default-prop,vue/require-prop-types
-        watching: { /* any */ } as PropOptions,
+        watching: prop(is.any),
         tag:      prop(is.string.notEmpty, "tag"),
     },
     watch: {

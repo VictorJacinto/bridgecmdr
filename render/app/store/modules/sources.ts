@@ -82,11 +82,15 @@ const sources = Module.of<Source, RootState, SourceDocument>({
                 image: record.image.name,
             }, record.image);
 
-            commit("append", {
+            const result = {
                 _id:   doc._id,
                 title: doc.title,
                 image: record.image,
-            });
+            };
+
+            commit("append", result);
+
+            return result;
         },
 
         update: async ({ commit, database }, record: Source) => {
@@ -96,12 +100,16 @@ const sources = Module.of<Source, RootState, SourceDocument>({
                 value.image = record.image.name;
             }), record.image);
 
-            commit("replace", {
+            const result = {
                 _rev:  doc._rev,
                 _id:   doc._id,
                 title: doc.title,
                 image: record.image,
-            });
+            };
+
+            commit("replace", result);
+
+            return result;
         },
 
         remove: async ({ commit, dispatch, rootState, database }, id: string) => {
@@ -111,6 +119,8 @@ const sources = Module.of<Source, RootState, SourceDocument>({
             await dispatch("ties/find", { switchId: id }, { root: true });
 
             await Promise.all(rootState.ties.items.map(item => dispatch("ties/remove", item._id, { root: true })));
+
+            return id;
         },
     },
 });

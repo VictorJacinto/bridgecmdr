@@ -37,7 +37,7 @@ const simpleDropdown = identity(
             name:  "SimpleDropdown",
             props: {
                 value:       prop(is.any) as PropOptions<BAnyValue>, // prop(is.any) as PropOptions<V>,
-                options:     prop(is.array.notEmpty), // prop(is.array.notEmpty.ofType<T>()),
+                options:     prop(is.array), // prop(is.array.ofType<T>()),
                 placeholder: prop(is.string.notEmpty, "Select an item"),
                 tag:         prop(is.enum([ "button", "input" ]), "button"),
                 // Dropdown

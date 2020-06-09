@@ -44,7 +44,7 @@ const DeviceLocationInput = tsx.component({
         value:   prop(maybe.string),
         ports:   prop(is.array.ofType(is.object<SerialPortEntry>())),
         type:    prop(is.enum(KnownColorModifiers), "is-primary"),
-        loading: Boolean,
+        loading: prop(maybe.boolean),
     },
     data: function () {
         return {

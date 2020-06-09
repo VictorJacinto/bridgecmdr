@@ -20,13 +20,13 @@ import { times } from "lodash";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { modifiers as m } from "vue-tsx-support/lib/modifiers";
-import { BButton, BField, BIcon, BSkeleton } from "../../../../foundation/components/buefy-tsx";
-import CardList from "../../../components/card-list/CardList";
-import CardListEntry from "../../../components/card-list/CardListEntry";
-import Sources from "../../../components/data/sources/Sources";
-import ManagesSources from "../../../concerns/managers/manages-sources";
-import UsesSettingsTitle from "../../../concerns/uses-settings-title";
-import IconCache from "../../../support/icon-cache";
+import { BButton, BField, BIcon, BSkeleton } from "../../../../../../foundation/components/buefy-tsx";
+import CardList from "../../../../../components/card-list/CardList";
+import CardListEntry from "../../../../../components/card-list/CardListEntry";
+import Sources from "../../../../../components/data/sources/Sources";
+import ManagesSources from "../../../../../concerns/managers/manages-sources";
+import UsesSettingsTitle from "../../../../../concerns/uses-settings-title";
+import IconCache from "../../../../../support/icon-cache";
 
 // @vue/component
 const SourceList = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSources).create({
@@ -43,6 +43,14 @@ const SourceList = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSo
         this.$nextTick(() => {
             this.setSettingsTitle("Sources");
         });
+    },
+    methods: {
+        async onAddClicked() {
+            const source = await this.createItem();
+            if (source) {
+                await this.$router.push({ name: "source", params: { id: source._id } });
+            }
+        },
     },
     render(): VNode {
         return (
@@ -61,7 +69,6 @@ const SourceList = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSo
                                         <BSkeleton height="1em" count={2}/>
                                     </template>
                                     <template slot="actions">
-                                        <BButton class="card-action-item" disabled loading/>
                                         <BButton class="card-action-item" disabled loading/>
                                     </template>
                                 </CardListEntry>
@@ -89,8 +96,6 @@ const SourceList = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSo
                                         { /* TODO: Tie count? */ }
                                     </template>
                                     <template slot="actions">
-                                        <BButton class="card-action-item" iconLeft="pencil" type="is-primary"
-                                            onClick={m.prevent(() => this.updateItem(item))}/>
                                         <BButton class="card-action-item" iconLeft="delete" type="is-danger"
                                             onClick={m.prevent(() => this.removeItem(item))}/>
                                     </template>
@@ -108,7 +113,7 @@ const SourceList = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSo
                     ),
                 }}/>
                 <div class="fab-container is-right">
-                    <BButton class="fab-item" iconLeft="plus" type="is-primary" onClick={() => this.createItem()}/>
+                    <BButton class="fab-item" iconLeft="plus" type="is-primary" onClick={() => this.onAddClicked()}/>
                 </div>
             </div>
         );

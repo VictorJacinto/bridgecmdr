@@ -33,8 +33,8 @@ const SvgIcon = tsx.component({
         name:     prop(maybe.string.notEmpty),
         size:     prop(is.enum(KnownIconsSizes), "is-48x48"),
         type:     prop(maybe.enum(KnownColorModifiers)),
-        rounded:  Boolean,
-        inverted: Boolean,
+        rounded:  prop(maybe.boolean),
+        inverted: prop(maybe.boolean),
     },
     computed: {
         pathData(): string {

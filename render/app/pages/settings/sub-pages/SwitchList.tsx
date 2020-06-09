@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { times } from "lodash";
 import * as tsx from "vue-tsx-support";
-import { modifiers as m } from "vue-tsx-support";
+import { modifiers as m } from "vue-tsx-support/lib/modifiers";
 import { BButton, BField, BIcon, BSkeleton } from "../../../../foundation/components/buefy-tsx";
 import SvgIcon from "../../../components/SvgIcon";
 import CardList from "../../../components/card-list/CardList";
