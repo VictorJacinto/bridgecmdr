@@ -11,6 +11,7 @@ export interface Switch extends Model {
 
 const switches = Module.of<Switch, RootState>({
     name:  "switches",
+    term:  () => "switch",
     empty: () => ({
         _id:      undefined,
         driverId: undefined,

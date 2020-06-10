@@ -3,8 +3,8 @@ import DashboardPage from "./pages/DashboardPage";
 import SettingsFramePage from "./pages/settings/SettingsFramePage";
 import SettingsPage from "./pages/settings/sub-pages/SettingsPage";
 import SwitchList from "./pages/settings/sub-pages/SwitchList";
-import SourceList from "./pages/settings/sub-pages/source/show/SourceList";
-import SourcePage from "./pages/settings/sub-pages/source/show/SourcePage";
+import SourceList from "./pages/settings/sub-pages/source/SourceList";
+import SourcePage from "./pages/settings/sub-pages/source/SourcePage";
 
 const routes = [
     // Home

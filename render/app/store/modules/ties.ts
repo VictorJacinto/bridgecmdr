@@ -30,6 +30,7 @@ const ties = Module.of<Tie, RootState, Tie, EmptyTie>({
         { sourceId: ["sourceId"] },
         { switchId: ["switchId"] },
     ],
+    term:  () => "tie",
     empty: () => ({
         _id:            undefined,
         sourceId:       undefined,

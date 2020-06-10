@@ -16,41 +16,34 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { identity, isNil } from "lodash";
+import { identity } from "lodash";
 import Vue, { VueConstructor } from "vue";
 import { mapModuleActions, mapModuleGetters } from "../../foundation/helpers/vuex";
 import Model from "../support/data/model";
 import { BaseDataModule } from "../support/data/module";
 
-type DataManagerOptions<M extends Model, D extends BaseDataModule<M>> = {
-    namespace: string;
-    module: D;
-    term: string;
-    modal?: VueConstructor;
-    modalFactory?: () => Promise<VueConstructor>;
-};
+type ModelType<D extends BaseDataModule<Model>> =
+    D extends BaseDataModule<infer M> ? M : never;
 
-const managerData = identity(<M extends Model, D extends BaseDataModule<M>>(options: DataManagerOptions<M, D>) => {
-    if (isNil(options.modal) && isNil(options.modalFactory)) {
-        throw new ReferenceError("No modal or modal factory specified");
-    } else if (!isNil(options.modal) && !isNil(options.modalFactory)) {
-        throw new ReferenceError("Only the modal or modal factory may be specified, but not both");
-    }
-
-    return Vue.extend({
-        name:    "ManagesData",
+const managerData = identity(<D extends BaseDataModule<M>, M extends Model = ModelType<D>>(
+    module: D, modal: VueConstructor) =>
+    Vue.extend({
+        name:     "ManagesData",
+        computed: {
+            ...mapModuleGetters(module, module.namespace, {
+                modelTerm: "term",
+            }),
+        },
         methods: {
-            ...mapModuleGetters(options.module, options.namespace, {
+            ...mapModuleGetters(module, module.namespace, {
                 getEmpty: "empty",
             }),
-            ...mapModuleActions(options.module, options.namespace, {
+            ...mapModuleActions(module, module.namespace, {
                 doAdd:    "add",
                 doUpdate: "update",
                 doRemove: "remove",
             }),
             async showModal(item: Partial<M>) {
-                const modal = options.modal || await (options.modalFactory as () => Promise<VueConstructor>)();
-
                 return this.$modals.open<M>(modal, {
                     props:       { item },
                     canCancel:   false,
@@ -61,12 +54,12 @@ const managerData = identity(<M extends Model, D extends BaseDataModule<M>>(opti
             showEditModal(item: M) {
                 return this.showModal(item);
             },
-            showAddModal() {
-                return this.showModal(this.getEmpty());
+            showAddModal(defaults: Partial<M> = {}) {
+                return this.showModal({ ...this.getEmpty(), ...defaults });
             },
             async removeItem(item: M) {
                 const remove = await this.$dialogs.confirm({
-                    message:     `Do you to remove this ${options.term}?`,
+                    message:     `Do you to remove this ${this.modelTerm}?`,
                     type:        "is-danger",
                     confirmText: "Remove",
                     focusOn:     "cancel",
@@ -96,8 +89,8 @@ const managerData = identity(<M extends Model, D extends BaseDataModule<M>>(opti
 
                 return null;
             },
-            async createItem() {
-                const item = await this.showAddModal();
+            async createItem(defaults: Partial<M> = {}) {
+                const item = await this.showAddModal(defaults);
                 if (item) {
                     try {
                         return await this.doAdd(item);
@@ -109,7 +102,6 @@ const managerData = identity(<M extends Model, D extends BaseDataModule<M>>(opti
                 return null;
             },
         },
-    });
-});
+    }));
 
 export default managerData;

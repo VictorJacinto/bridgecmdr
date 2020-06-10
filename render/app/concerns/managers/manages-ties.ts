@@ -20,12 +20,7 @@ import TieModal from "../../components/modals/TieModal";
 import ties from "../../store/modules/ties";
 import managerData from "../manager-data";
 
-const ManagesTies = managerData({
-    namespace: "ties",
-    module:    ties,
-    modal:     TieModal,
-    term:      "tie",
-});
+const ManagesTies = managerData(ties, TieModal);
 
 type ManagesTies = InstanceType<typeof ManagesTies>;
 export default ManagesTies;

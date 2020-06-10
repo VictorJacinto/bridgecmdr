@@ -20,13 +20,13 @@ import { times } from "lodash";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { modifiers as m } from "vue-tsx-support/lib/modifiers";
-import { BButton, BField, BIcon, BSkeleton } from "../../../../../../foundation/components/buefy-tsx";
-import CardList from "../../../../../components/card-list/CardList";
-import CardListEntry from "../../../../../components/card-list/CardListEntry";
-import Sources from "../../../../../components/data/sources/Sources";
-import ManagesSources from "../../../../../concerns/managers/manages-sources";
-import UsesSettingsTitle from "../../../../../concerns/uses-settings-title";
-import IconCache from "../../../../../support/icon-cache";
+import { BButton, BField, BIcon, BSkeleton } from "../../../../../foundation/components/buefy-tsx";
+import CardList from "../../../../components/card-list/CardList";
+import CardListEntry from "../../../../components/card-list/CardListEntry";
+import Sources from "../../../../components/data/sources/Sources";
+import ManagesSources from "../../../../concerns/managers/manages-sources";
+import UsesSettingsTitle from "../../../../concerns/uses-settings-title";
+import IconCache from "../../../../support/icon-cache";
 
 // @vue/component
 const SourceList = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSources).create({

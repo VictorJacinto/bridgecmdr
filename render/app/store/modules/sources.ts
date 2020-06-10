@@ -45,6 +45,7 @@ const translate = {
 
 const sources = Module.of<Source, RootState, SourceDocument>({
     name:  "sources",
+    term:  () => "source",
     empty: () => ({
         _id:   undefined,
         image: undefined,

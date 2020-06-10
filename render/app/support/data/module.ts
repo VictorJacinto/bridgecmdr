@@ -16,9 +16,11 @@ type Injectee<M extends Model, R extends object> = ActionContext<DataState<M>, R
 
 export interface DataModule<M extends Model, R extends object, Empty extends Partial<M>> extends Module<DataState<M>, R> {
     readonly namespaced: true;
+    readonly namespace: string;
     state: DataState<M>;
     readonly getters: {
         empty(): Empty;
+        term(): string;
     };
     readonly mutations: {
         refresh(state: DataState<M>, items: ReadonlyDeep<M>[]): void;
@@ -53,8 +55,10 @@ export type DataActionTree<M extends Model, R extends object, Doc extends ModelD
 
 export interface DataModuleOptions<M extends Model, R extends object, Doc extends ModelDocument<M>, Empty extends Partial<M>> {
     name: string;
+    namespace?: string;
     indices?: Indices[];
     empty: () => Empty;
+    term: () => string;
     actions?: DataActionTree<M, R, Doc, Empty>;
 }
 
@@ -89,6 +93,7 @@ const Module = {
 
         const getters: DataModule<M, R, Empty>["getters"] = {
             empty: options.empty,
+            term:  options.term,
         };
 
         const mutations: DataModule<M, R, Empty>["mutations"] = {
@@ -218,6 +223,7 @@ const Module = {
 
         return {
             namespaced: true,
+            namespace:  options.namespace || options.name,
             state,
             getters,
             mutations,

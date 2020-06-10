@@ -85,6 +85,12 @@ const TieModal = tsx.componentFactory.mixin(IndicatesLoading).create({
             // eslint-disable-next-line @typescript-eslint/camelcase
             return this.showAudioOutput ? { required: true, min_value: 1 } : {};
         },
+        videoOutputMinimal(): number {
+            return this.showVideoOutput ? 1 : 0;
+        },
+        audioOutputMinimal(): number {
+            return this.showAudioOutput ? 1 : 0;
+        },
     },
     mounted() {
         this.$nextTick(() => this.loadingWhile(this.getSwitches()));
@@ -125,13 +131,30 @@ const TieModal = tsx.componentFactory.mixin(IndicatesLoading).create({
                                 </BField>
                             ),
                         }}/>
-                        <ValidationProvider name={this.videoOutputName} rules={this.videoOutputRules} slim scopedSlots={{
-                            default: ({ errors }) => (
-                                <BField v-show={this.showVideoOutput} label={this.videoOutputLabel} {...validationStatus(errors)}>
-                                    <BField grouped><BNumberinput v-model={this.source.outputChannels.video} min={1}/></BField>
-                                </BField>
-                            ),
-                        }}/>
+                        <ValidationProvider name={this.videoOutputName} rules={this.videoOutputRules} slim
+                            scopedSlots={{
+                                default: ({ errors }) => (
+                                    <BField v-show={this.showVideoOutput} label={this.videoOutputLabel}
+                                        {...validationStatus(errors)}>
+                                        <BField grouped>
+                                            <BNumberinput v-model={this.source.outputChannels.video}
+                                                min={this.videoOutputMinimal}/>
+                                        </BField>
+                                    </BField>
+                                ),
+                            }}/>
+                        <ValidationProvider name="audio output channel" rules={this.audioOutputRules} slim
+                            scopedSlots={{
+                                default: ({ errors }) => (
+                                    <BField v-show={this.showAudioOutput} label="Audio output"
+                                        {...validationStatus(errors)}>
+                                        <BField grouped>
+                                            <BNumberinput v-model={this.source.outputChannels.audio}
+                                                min={this.audioOutputMinimal}/>
+                                        </BField>
+                                    </BField>
+                                ),
+                            }}/>
                     </main>,
                     <footer class="modal-card-foot">
                         <BButton label={this.confirmText} type="is-primary"

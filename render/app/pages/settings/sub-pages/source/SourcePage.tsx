@@ -16,21 +16,20 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { times } from "lodash";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { modifiers as m } from "vue-tsx-support/lib/modifiers";
-import Watcher from "../../../../../../foundation/components/Watcher";
-import { BButton, BField, BIcon, BSkeleton } from "../../../../../../foundation/components/buefy-tsx";
-import { is, prop } from "../../../../../../foundation/validation/valid";
-import CardList from "../../../../../components/card-list/CardList";
-import CardListEntry from "../../../../../components/card-list/CardListEntry";
-import CurrentSource from "../../../../../components/data/items/CurrentSource";
-import ManagesSources from "../../../../../concerns/managers/manages-sources";
-import UsesSettingsTitle from "../../../../../concerns/uses-settings-title";
-import { Source } from "../../../../../store/modules/sources";
-import IconCache from "../../../../../support/icon-cache";
-import { IDPattern } from "../../../../../support/validation";
+import Watcher from "../../../../../foundation/components/Watcher";
+import { BButton, BField, BIcon, BSkeleton } from "../../../../../foundation/components/buefy-tsx";
+import { is, prop } from "../../../../../foundation/validation/valid";
+import CardList from "../../../../components/card-list/CardList";
+import CardListEntry from "../../../../components/card-list/CardListEntry";
+import CurrentSource from "../../../../components/data/items/CurrentSource";
+import ManagesSources from "../../../../concerns/managers/manages-sources";
+import UsesSettingsTitle from "../../../../concerns/uses-settings-title";
+import { Source } from "../../../../store/modules/sources";
+import IconCache from "../../../../support/icon-cache";
+import { IDPattern } from "../../../../support/validation";
 import TieList from "./parts/TieList";
 
 // @vue/component
@@ -62,21 +61,20 @@ const SourcePage = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSo
                     loading: ({ loading }) => [
                         <Watcher watching={loading} onChange={() => this.onLoading()}/>,
                         <CardList>{
-                            times(3, () => (
-                                <CardListEntry>
-                                    <template slot="image">
-                                        <figure class="image is-48x48">
-                                            <BSkeleton circle width="48px" height="48px"/>
-                                        </figure>
-                                    </template>
-                                    <template slot="default">
-                                        <BSkeleton height="1em" count={2}/>
-                                    </template>
-                                    <template slot="actions">
-                                        <BButton class="card-action-item" disabled loading/>
-                                    </template>
-                                </CardListEntry>
-                            ))
+                            <CardListEntry>
+                                <template slot="image">
+                                    <figure class="image is-48x48">
+                                        <BSkeleton circle width="48px" height="48px"/>
+                                    </figure>
+                                </template>
+                                <template slot="default">
+                                    <BSkeleton height="1.25rem" count={1}/>
+                                    <BSkeleton height="1.25rem" count={1}/>
+                                </template>
+                                <template slot="actions">
+                                    <BButton class="card-action-item" size="is-medium" disabled loading/>
+                                </template>
+                            </CardListEntry>
                         }</CardList>,
                     ],
                     default: ({ current: source }) => [
@@ -90,12 +88,12 @@ const SourcePage = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSo
                                     </figure>
                                 </template>
                                 <template slot="default">
-                                    <p class="has-text-weight-semibold">{source.title}</p>
+                                    <p class="has-text-weight-semibold is-size-5">{source.title}</p>
                                     <p class="has-text-light">Source</p>
                                 </template>
                                 <template slot="actions">
                                     <BButton class="card-action-item" iconLeft="pencil" type="is-primary"
-                                        onClick={m.prevent(() => this.updateItem(source))}/>
+                                        size="is-medium" onClick={m.prevent(() => this.updateItem(source))}/>
                                 </template>
                             </CardListEntry>
                             <TieList sourceId={source._id}/>
