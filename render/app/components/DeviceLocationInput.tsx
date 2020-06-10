@@ -96,10 +96,10 @@ const DeviceLocationInput = tsx.component({
     render(): VNode {
         return (
             <BField type={this.type !== "is-primary" ? this.type : undefined}>
-                <LocationDropdown v-model={this.location} options={locations} type={this.type} class="control"
-                    placeholder="Required"/>
+                <LocationDropdown v-model={this.location} options={locations} type={this.type} trigger="button"
+                    class="control" placeholder="Required"/>
                 { this.location === DeviceLocation.PORT ? (
-                    <DeviceDropdown v-model={this.path} options={this.ports} tag="input" class="control"
+                    <DeviceDropdown v-model={this.path} options={this.ports} class="control"
                         placeholder={this.placeholder} loading={this.loading} expanded/>
                 ) : (
                     <BInput v-model={this.path} placeholder={this.placeholder} expanded/>

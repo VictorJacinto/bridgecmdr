@@ -16,37 +16,47 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { cloneDeep } from "lodash";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import { BButton, BIcon } from "../../../foundation/components/buefy-tsx";
-import { ValidationObserver } from "../../../foundation/components/vee-validate-tsx";
+import { BButton, BField, BIcon, BNumberinput } from "../../../foundation/components/buefy-tsx";
+import { ValidationObserver, ValidationProvider } from "../../../foundation/components/vee-validate-tsx";
 import { mapModuleActions, mapModuleState } from "../../../foundation/helpers/vuex";
 import { is, prop } from "../../../foundation/validation/valid";
 import IndicatesLoading from "../../concerns/indicates-loading";
 import switches, { Switch } from "../../store/modules/switches";
-import { Tie } from "../../store/modules/ties";
+import { EmptyTie } from "../../store/modules/ties";
+import { validationStatus } from "../../support/validation";
 import Driver, { DriverCapabilities, DriverDescriptor } from "../../system/driver";
+import simpleDropdown from "../SimpleDropdown";
 
 const drivers = Driver.all();
+
+const SwitchDropdown = simpleDropdown((option: Switch) => [ option.title, option._id ]);
 
 // @vue/component
 const TieModal = tsx.componentFactory.mixin(IndicatesLoading).create({
     name:  "TieModal",
     props: {
-        item: prop(is.object<Partial<Tie>>()),
+        item: prop(is.object<EmptyTie>()),
+    },
+    data: function () {
+        return {
+            source: cloneDeep(this.item),
+        };
     },
     computed: {
         ...mapModuleState(switches, "switches", {
             switches: "items",
         }),
         title(): string {
-            return this.item._id ? "Edit tie" : "New tie";
+            return this.source._id ? "Edit tie" : "New tie";
         },
         confirmText(): string {
-            return this.item._id ? "Create" : "Save";
+            return this.source._id ? "Save" : "Create";
         },
         switcher(): Switch|undefined {
-            return this.switches.find(row => row._id === this.item.switchId);
+            return this.switches.find(row => row._id === this.source.switchId);
         },
         driver(): DriverDescriptor|undefined {
             return drivers.find(row => row.guid === this.switcher?.driverId);
@@ -84,7 +94,7 @@ const TieModal = tsx.componentFactory.mixin(IndicatesLoading).create({
             getSwitches: "all",
         }),
         onSaveClicked() {
-            this.$modals.confirm(this.item);
+            this.$modals.confirm(this.source);
         },
     },
     render(): VNode {
@@ -100,11 +110,28 @@ const TieModal = tsx.componentFactory.mixin(IndicatesLoading).create({
                         </div>
                     </div>,
                     <main class="modal-card-body content">
-                        <ul>{
-                            this.switches.map($witch => (
-                                <li>{$witch.title}</li>
-                            ))
-                        }</ul>
+                        <ValidationProvider name="switch" rules="required" slim scopedSlots={{
+                            default: ({ errors }) => (
+                                <BField label="Switch" expanded {...validationStatus(errors)}>
+                                    <SwitchDropdown v-model={this.source.switchId} options={this.switches}
+                                        loading={this.loading} expanded/>
+                                </BField>
+                            ),
+                        }}/>
+                        <ValidationProvider name="input channel" rules="required" slim scopedSlots={{
+                            default: ({ errors }) => (
+                                <BField label="Input" {...validationStatus(errors)}>
+                                    <BField grouped><BNumberinput v-model={this.source.inputChannel} min={1}/></BField>
+                                </BField>
+                            ),
+                        }}/>
+                        <ValidationProvider name={this.videoOutputName} rules={this.videoOutputRules} slim scopedSlots={{
+                            default: ({ errors }) => (
+                                <BField v-show={this.showVideoOutput} label={this.videoOutputLabel} {...validationStatus(errors)}>
+                                    <BField grouped><BNumberinput v-model={this.source.outputChannels.video} min={1}/></BField>
+                                </BField>
+                            ),
+                        }}/>
                     </main>,
                     <footer class="modal-card-foot">
                         <BButton label={this.confirmText} type="is-primary"

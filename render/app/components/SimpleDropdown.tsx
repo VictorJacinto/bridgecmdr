@@ -39,7 +39,7 @@ const simpleDropdown = identity(
                 value:       prop(is.any) as PropOptions<BAnyValue>, // prop(is.any) as PropOptions<V>,
                 options:     prop(is.array), // prop(is.array.ofType<T>()),
                 placeholder: prop(is.string.notEmpty, "Select an item"),
-                tag:         prop(is.enum([ "button", "input" ]), "button"),
+                trigger:     prop(is.enum([ "button", "input" ]), "input"),
                 // Dropdown
                 position:    prop(is.enum(PopupPositionModifiers), "is-bottom-right"),
                 animation:   prop(is.string.notEmpty, "fade"),
@@ -102,7 +102,7 @@ const simpleDropdown = identity(
                         disabled={this.disabled}
                         expanded={this.expanded}>
                         <template slot="trigger">{
-                            this.tag === "button" ? (
+                            this.trigger === "button" ? (
                                 <BButton
                                     label={this.label || this.placeholder}
                                     type={this.type}

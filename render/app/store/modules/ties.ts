@@ -8,7 +8,15 @@ export interface TieOutput {
     audio: number;
 }
 
-export interface Tie extends Model {
+export interface EmptyTie extends Partial<Model> {
+    _id?: string;
+    sourceId?: string;
+    switchId?: string;
+    inputChannel: number;
+    outputChannels: TieOutput;
+}
+
+export interface Tie extends EmptyTie {
     _id: string;
     sourceId: string;
     switchId: string;
@@ -16,7 +24,7 @@ export interface Tie extends Model {
     outputChannels: TieOutput;
 }
 
-const ties = Module.of<Tie, RootState>({
+const ties = Module.of<Tie, RootState, Tie, EmptyTie>({
     name:    "ties",
     indices: [
         { sourceId: ["sourceId"] },

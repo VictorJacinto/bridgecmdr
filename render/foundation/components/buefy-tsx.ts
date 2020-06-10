@@ -441,7 +441,7 @@ type BNumberinputProps = BFormElementProps & {
     editable?: boolean;
     controls?: boolean;
     controlsRounded?: boolean;
-    controlsPosition?: string;
+    controlsPosition?: "compact"|undefined;
 };
 
 type BNumberinputEvents = BFormElementEvents & {

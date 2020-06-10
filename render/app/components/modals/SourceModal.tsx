@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { cloneDeep } from "lodash";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { BButton, BField, BIcon, BInput, BUpload } from "../../../foundation/components/buefy-tsx";
@@ -33,15 +34,16 @@ const SourceModal = tsx.component({
     },
     data: function () {
         return {
+            source:   cloneDeep(this.item),
             imageUrl: this.item.image ? URL.createObjectURL(this.item.image) : null,
         };
     },
     computed: {
         title(): string {
-            return this.item._id ? "Add source" : "Edit source";
+            return this.source._id ? "Edit source" : "Add source";
         },
         confirmText(): string {
-            return this.item._id ? "Create" : "Save";
+            return this.source._id ? "Save" : "Create";
         },
     },
     beforeDestroy() {
@@ -63,7 +65,7 @@ const SourceModal = tsx.component({
             this.imageUrl = URL.createObjectURL(image);
         },
         onSaveClicked() {
-            this.$modals.confirm(this.item);
+            this.$modals.confirm(this.source);
         },
     },
     render(): VNode {
@@ -82,14 +84,14 @@ const SourceModal = tsx.component({
                         <ValidationProvider name="title" rules="required" slim scopedSlots={{
                             default: ({ errors }) => (
                                 <BField label="Title" expanded {...validationStatus(errors)}>
-                                    <BInput v-model={this.item.title} placeholder="Required"/>
+                                    <BInput v-model={this.source.title} placeholder="Required"/>
                                 </BField>
                             ),
                         }}/>
                         <ValidationProvider name="file" rules="required" slim scopedSlots={{
                             default: ({ errors }) => (
                                 <BField label="Icon" expanded {...validationStatus(errors)}>
-                                    <BUpload v-model={this.item.image} dragDrop
+                                    <BUpload v-model={this.source.image} dragDrop
                                         onInput={image => this.updateImage(image)}>{
                                             this.imageUrl ? (
                                                 <div class="content has-text-centered">

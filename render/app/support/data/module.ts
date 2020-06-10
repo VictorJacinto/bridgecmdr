@@ -14,11 +14,11 @@ export interface DataState<M extends Model> {
 
 type Injectee<M extends Model, R extends object> = ActionContext<DataState<M>, R>;
 
-export interface DataModule<M extends Model, R extends object> extends Module<DataState<M>, R> {
+export interface DataModule<M extends Model, R extends object, Empty extends Partial<M>> extends Module<DataState<M>, R> {
     readonly namespaced: true;
     state: DataState<M>;
     readonly getters: {
-        empty(): Partial<M>;
+        empty(): Empty;
     };
     readonly mutations: {
         refresh(state: DataState<M>, items: ReadonlyDeep<M>[]): void;
@@ -38,21 +38,24 @@ export interface DataModule<M extends Model, R extends object> extends Module<Da
     };
 }
 
-export type DataActionContext<M extends Model, R extends object, Doc extends M | Document<object> = M> =
+type ModelDocument<M extends Model> = M | Document<object>;
+
+export type DataActionContext<M extends Model, R extends object, Doc extends ModelDocument<M>> =
     ActionContext<DataState<M>, R> & { database: Database<Doc> };
 
-export type DataActionHandler<M extends Model, R extends object, Doc extends M | Document<object> = M, P = any> =
+export type DataActionHandler<M extends Model, R extends object, Doc extends ModelDocument<M>, P = any> =
     (this: Store<R>, injectee: DataActionContext<M, R, Doc>, payload?: any) => Promise<P>;
 
-export type DataActionTree<M extends Model, R extends object, Doc extends M | Document<object> = M> = Omit<{
-    [K in keyof DataModule<M, R>["actions"]]?: DataActionHandler<M, R, Doc, PromiseValue<ReturnType<DataModule<M, R>["actions"][K]>>>;
-}, "compact">;
+export type DataActionTree<M extends Model, R extends object, Doc extends ModelDocument<M>, Empty extends Partial<M>> =
+    Omit<{
+        [K in keyof DataModule<M, R, Empty>["actions"]]?: DataActionHandler<M, R, Doc, PromiseValue<ReturnType<DataModule<M, R, Empty>["actions"][K]>>>;
+    }, "compact">;
 
-export interface DataModuleOptions<M extends Model, R extends object, Doc extends M | Document<object> = M> {
+export interface DataModuleOptions<M extends Model, R extends object, Doc extends ModelDocument<M>, Empty extends Partial<M>> {
     name: string;
     indices?: Indices[];
-    empty: () => Partial<M>;
-    actions?: DataActionTree<M, R, Doc>;
+    empty: () => Empty;
+    actions?: DataActionTree<M, R, Doc, Empty>;
 }
 
 function replaceItem<M extends Model>(_state: DataState<M>, item: ReadonlyDeep<M>): void {
@@ -75,18 +78,20 @@ function removeItem<M extends Model>(_state: DataState<M>, id: string): void {
 }
 
 const Module = {
-    of<M extends Model, R extends object, Doc extends M | Document<object> = M>(options: DataModuleOptions<M, R, Doc>): DataModule<M, R> {
+    of<M extends Model, R extends object, Doc extends ModelDocument<M> = M, Empty extends Partial<M> = Partial<M>>(
+        options: DataModuleOptions<M, R, Doc, Empty>,
+    ): DataModule<M, R, Empty> {
         const database = Database.connect<Doc>(options.name, options.indices || []);
         const state: DataState<M> = {
             items:   [],
             current: null,
         };
 
-        const getters: DataModule<M, R>["getters"] = {
+        const getters: DataModule<M, R, Empty>["getters"] = {
             empty: options.empty,
         };
 
-        const mutations: DataModule<M, R>["mutations"] = {
+        const mutations: DataModule<M, R, Empty>["mutations"] = {
             /** Replaces the items in the store, refreshing the data. */
             refresh: (_state, items) => { _state.items = items },
 
@@ -103,7 +108,7 @@ const Module = {
             delete: (_state, id) => { removeItem(_state, id) },
         };
 
-        const actions: DataModule<M, R>["actions"] = {
+        const actions: DataModule<M, R, Empty>["actions"] = {
             /** Compacts the database. */
             compact: async () => {
                 const connection = await database;
@@ -221,6 +226,6 @@ const Module = {
     },
 };
 
-export type BaseDataModule<M extends Model> = DataModule<M, RootState>;
+export type BaseDataModule<M extends Model> = DataModule<M, RootState, Partial<M>>;
 
 export default Module;

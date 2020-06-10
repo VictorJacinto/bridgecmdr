@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { cloneDeep } from "lodash";
 import * as tsx from "vue-tsx-support";
 import { BButton, BField, BIcon, BInput } from "../../../foundation/components/buefy-tsx";
 import { ValidationObserver, ValidationProvider } from "../../../foundation/components/vee-validate-tsx";
@@ -36,13 +37,18 @@ const SwitchModal = tsx.componentFactory.mixin(IndicatesLoading).create({
     props: {
         item: prop(is.object<Partial<Switch>>()),
     },
+    data: function () {
+        return {
+            source: cloneDeep(this.item),
+        };
+    },
     computed: {
         ...mapModuleState(devices, "devices", ["ports"]),
         title(): string {
-            return this.item._id ? "Add switch" : "Edit switch";
+            return this.source._id ? "Edit switch" : "Add switch";
         },
         confirmText(): string {
-            return this.item._id ? "Create" : "Save";
+            return this.source._id ? "Save" : "Create";
         },
     },
     mounted() {
@@ -51,7 +57,7 @@ const SwitchModal = tsx.componentFactory.mixin(IndicatesLoading).create({
     methods: {
         ...mapModuleActions(devices, "devices", ["getPorts"]),
         onSaveClicked() {
-            this.$modals.confirm(this.item);
+            this.$modals.confirm(this.source);
         },
     },
     render() {
@@ -70,14 +76,14 @@ const SwitchModal = tsx.componentFactory.mixin(IndicatesLoading).create({
                         <ValidationProvider name="title" rules="required" slim scopedSlots={{
                             default: ({ errors }) => (
                                 <BField label="Title" expanded {...validationStatus(errors)}>
-                                    <BInput v-model={this.item.title} placeholder="Required"/>
+                                    <BInput v-model={this.source.title} placeholder="Required"/>
                                 </BField>
                             ),
                         }}/>
                         <ValidationProvider name="driver" rules="required" slim scopedSlots={{
                             default: ({ errors }) => (
                                 <BField label="Driver" expanded {...validationStatus(errors)}>
-                                    <DriverDropdown v-model={this.item.driverId} options={Driver.all()} tag="input"
+                                    <DriverDropdown v-model={this.source.driverId} options={Driver.all()}
                                         placeholder="Required" expanded/>
                                 </BField>
                             ),
@@ -85,7 +91,7 @@ const SwitchModal = tsx.componentFactory.mixin(IndicatesLoading).create({
                         <ValidationProvider name="device" rules="required|location" slim scopedSlots={{
                             default: ({ errors }) => /* TODO: The validator needs to better handle this */ (
                                 <BField label="Device" expanded {...validationStatus(errors)}>
-                                    <DeviceLocationInput v-model={this.item.path} ports={this.ports}
+                                    <DeviceLocationInput v-model={this.source.path} ports={this.ports}
                                         loading={this.loading} type={errors.length > 0 ? "is-danger" : undefined}/>
                                 </BField>
                             ),

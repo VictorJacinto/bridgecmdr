@@ -16,21 +16,21 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { clone, identity, isNil } from "lodash";
+import { identity, isNil } from "lodash";
 import Vue, { VueConstructor } from "vue";
 import { mapModuleActions, mapModuleGetters } from "../../foundation/helpers/vuex";
 import Model from "../support/data/model";
 import { BaseDataModule } from "../support/data/module";
 
-type DataManagerOptions<M extends Model> = {
+type DataManagerOptions<M extends Model, D extends BaseDataModule<M>> = {
     namespace: string;
-    module: BaseDataModule<M>;
+    module: D;
     term: string;
     modal?: VueConstructor;
     modalFactory?: () => Promise<VueConstructor>;
 };
 
-const managerData = identity(<M extends Model>(options: DataManagerOptions<M>) => {
+const managerData = identity(<M extends Model, D extends BaseDataModule<M>>(options: DataManagerOptions<M, D>) => {
     if (isNil(options.modal) && isNil(options.modalFactory)) {
         throw new ReferenceError("No modal or modal factory specified");
     } else if (!isNil(options.modal) && !isNil(options.modalFactory)) {
@@ -52,7 +52,7 @@ const managerData = identity(<M extends Model>(options: DataManagerOptions<M>) =
                 const modal = options.modal || await (options.modalFactory as () => Promise<VueConstructor>)();
 
                 return this.$modals.open<M>(modal, {
-                    props:       { item: clone(item) },
+                    props:       { item },
                     canCancel:   false,
                     fullScreen:  true,
                     customClass: "dialog-like",
