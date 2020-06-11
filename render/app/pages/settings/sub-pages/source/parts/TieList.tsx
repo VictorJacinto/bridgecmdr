@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { times } from "lodash";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
+import { modifiers as m } from "vue-tsx-support/lib/modifiers";
 import { BButton, BField, BIcon, BSkeleton } from "../../../../../../foundation/components/buefy-tsx";
 import { mapModuleActions, mapModuleState } from "../../../../../../foundation/helpers/vuex";
 import { is, prop } from "../../../../../../foundation/validation/valid";
@@ -79,7 +80,6 @@ const TieList = tsx.componentFactory.mixin(ManagesTies).create({
                                     </template>
                                     <template slot="actions">
                                         <BButton class="card-action-item" disabled loading/>
-                                        <BButton class="card-action-item" disabled loading/>
                                     </template>
                                 </CardListEntry>
                             ))
@@ -94,21 +94,27 @@ const TieList = tsx.componentFactory.mixin(ManagesTies).create({
                         <CardList>{
                             ties.map(tie => (
                                 <CardListEntry onClick={() => this.updateItem(tie)}>
-                                    <p class="has-text-weight-semibold">{this.getSwitchName(tie)}</p>
-                                    <p class="has-text-light">{[
-                                        (<BIcon icon="import" size="is-small"/>),
-                                        ` ${tie.inputChannel} `,
-                                        tie.outputChannels.video > 0 ? [
-                                            (<BIcon icon="export" size="is-small"/>),
-                                            ` ${tie.outputChannels.video} `,
-                                        ] : undefined,
-                                        tie.outputChannels.audio > 0 ? [
-                                            (<BIcon icon="volume-medium" size="is-small"/>),
-                                            ` ${tie.outputChannels.audio} `,
-                                        ] : undefined,
-                                        (<BIcon icon="cog" size="is-small"/>),
-                                        ` ${this.getDriver(tie)}`,
-                                    ]}</p>
+                                    <template slot="default">
+                                        <p class="has-text-weight-semibold">{this.getSwitchName(tie)}</p>
+                                        <p class="has-text-light">{[
+                                            (<BIcon icon="import" size="is-small"/>),
+                                            ` ${tie.inputChannel} `,
+                                            tie.outputChannels.video > 0 ? [
+                                                (<BIcon icon="export" size="is-small"/>),
+                                                ` ${tie.outputChannels.video} `,
+                                            ] : undefined,
+                                            tie.outputChannels.audio > 0 ? [
+                                                (<BIcon icon="volume-medium" size="is-small"/>),
+                                                ` ${tie.outputChannels.audio} `,
+                                            ] : undefined,
+                                            (<BIcon icon="cog" size="is-small"/>),
+                                            ` ${this.getDriver(tie)}`,
+                                        ]}</p>
+                                    </template>
+                                    <template slot="actions">
+                                        <BButton class="card-action-item" iconLeft="delete" type="is-danger"
+                                            onClick={m.stop(() => this.removeItem(tie))}/>
+                                    </template>
                                 </CardListEntry>
                             ))
                         }</CardList>

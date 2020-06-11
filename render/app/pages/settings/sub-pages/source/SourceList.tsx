@@ -21,30 +21,37 @@ import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { modifiers as m } from "vue-tsx-support/lib/modifiers";
 import { BButton, BField, BIcon, BSkeleton } from "../../../../../foundation/components/buefy-tsx";
+import { mapModuleActions, mapModuleState } from "../../../../../foundation/helpers/vuex";
 import CardList from "../../../../components/card-list/CardList";
 import CardListEntry from "../../../../components/card-list/CardListEntry";
 import Sources from "../../../../components/data/sources/Sources";
+import HasIcons from "../../../../concerns/has-icons";
 import ManagesSources from "../../../../concerns/managers/manages-sources";
 import UsesSettingsTitle from "../../../../concerns/uses-settings-title";
-import IconCache from "../../../../support/icon-cache";
+import { Source } from "../../../../store/modules/sources";
+import ties from "../../../../store/modules/ties";
 
 // @vue/component
-const SourceList = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSources).create({
-    name: "SourceList",
-    data: function () {
-        return {
-            icons: new IconCache(),
-        };
-    },
-    beforeDestroy() {
-        this.icons.revoke();
+const SourceList = tsx.componentFactory.mixin(HasIcons).mixin(UsesSettingsTitle).mixin(ManagesSources).create({
+    name:     "SourceList",
+    computed: {
+        ...mapModuleState(ties, "ties", {
+            ties: "items",
+        }),
     },
     mounted() {
-        this.$nextTick(() => {
-            this.setSettingsTitle("Sources");
-        });
+        this.refreshTies();
+        this.setSettingsTitle("Sources");
     },
     methods: {
+        ...mapModuleActions(ties, "ties", {
+            refreshTies: "all",
+        }),
+        getSwitchCount(source: Source) {
+            const result = this.ties.reduce((count, tie) => (tie.sourceId === source._id ? count + 1 : count), 0);
+
+            return result !== 1 ? `Uses ${result} switches or monitors` : "Uses one switch or monitor";
+        },
         async onAddClicked() {
             const source = await this.createItem();
             if (source) {
@@ -82,22 +89,22 @@ const SourceList = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSo
                         </div>
                     ) : (
                         <CardList>{
-                            sources.map(item => (
-                                <CardListEntry to={{ name: "source", params: { id: item._id } }}>
+                            sources.map(source => (
+                                <CardListEntry to={{ name: "source", params: { id: source._id } }}>
                                     <template slot="image">
                                         <figure class="image icon is-48x48">
-                                            <img src={this.icons.get(item)}
+                                            <img src={this.icons.get(source)}
                                                 class="is-rounded has-background-grey-light"
                                                 alt="icon"/>
                                         </figure>
                                     </template>
                                     <template slot="default">
-                                        <p class="has-text-weight-semibold">{item.title}</p>
-                                        { /* TODO: Tie count? */ }
+                                        <p class="has-text-weight-semibold">{source.title}</p>
+                                        <p class="has-text-light">{this.getSwitchCount(source)}</p>
                                     </template>
                                     <template slot="actions">
                                         <BButton class="card-action-item" iconLeft="delete" type="is-danger"
-                                            onClick={m.prevent(() => this.removeItem(item))}/>
+                                            onClick={m.prevent(() => this.removeItem(source))}/>
                                     </template>
                                 </CardListEntry>
                             ))

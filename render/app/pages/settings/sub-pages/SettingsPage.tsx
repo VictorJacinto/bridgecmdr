@@ -27,9 +27,7 @@ import UsesSettingsTitle from "../../../concerns/uses-settings-title";
 const SettingsPage = tsx.componentFactory.mixin(UsesSettingsTitle).create({
     name: "SettingsPage",
     mounted() {
-        this.$nextTick(() => {
-            this.setSettingsTitle("Settings");
-        });
+        this.setSettingsTitle("Settings");
     },
     methods: {
         log(target: unknown): void {

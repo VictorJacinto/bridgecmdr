@@ -25,23 +25,18 @@ import { is, prop } from "../../../../../foundation/validation/valid";
 import CardList from "../../../../components/card-list/CardList";
 import CardListEntry from "../../../../components/card-list/CardListEntry";
 import CurrentSource from "../../../../components/data/items/CurrentSource";
+import HasIcons from "../../../../concerns/has-icons";
 import ManagesSources from "../../../../concerns/managers/manages-sources";
 import UsesSettingsTitle from "../../../../concerns/uses-settings-title";
 import { Source } from "../../../../store/modules/sources";
-import IconCache from "../../../../support/icon-cache";
 import { IDPattern } from "../../../../support/validation";
 import TieList from "./parts/TieList";
 
 // @vue/component
-const SourcePage = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSources).create({
+const SourcePage = tsx.componentFactory.mixin(HasIcons).mixin(UsesSettingsTitle).mixin(ManagesSources).create({
     name:  "SourcePage",
     props: {
         id: prop(is.string.matches(IDPattern)),
-    },
-    data: function () {
-        return {
-            icons: new IconCache(),
-        };
     },
     methods: {
         onLoading() {

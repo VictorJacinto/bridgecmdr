@@ -39,9 +39,7 @@ const iconMap = {
 const SwitchList = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSwitches).create({
     name: "SwitchList",
     mounted() {
-        this.$nextTick(() => {
-            this.setSettingsTitle("Switches");
-        });
+        this.setSettingsTitle("Switches");
     },
     methods: {
         getIconForSwitch(item: Switch): string {
@@ -92,19 +90,19 @@ const SwitchList = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSw
                         </div>
                     ) : (
                         <CardList>{
-                            switches.map(item => (
-                                <CardListEntry onClick={() => this.updateItem(item)}>
+                            switches.map(switch_ => (
+                                <CardListEntry onClick={() => this.updateItem(switch_)}>
                                     <template slot="image">
-                                        <SvgIcon name={this.getIconForSwitch(item)} type="is-primary" size="is-48x48"
+                                        <SvgIcon name={this.getIconForSwitch(switch_)} type="is-primary" size="is-48x48"
                                             inverted rounded/>
                                     </template>
                                     <template slot="default">
-                                        <p class="has-text-weight-semibold">{ item.title }</p>
-                                        <p class="has-text-light">{ this.getDriverTitleForSwitch(item) }</p>
+                                        <p class="has-text-weight-semibold">{ switch_.title }</p>
+                                        <p class="has-text-light">{ this.getDriverTitleForSwitch(switch_) }</p>
                                     </template>
                                     <template slot="actions">
                                         <BButton class="card-action-item" iconLeft="delete" type="is-danger"
-                                            onClick={m.stop(() => this.removeItem(item))}/>
+                                            onClick={m.stop(() => this.removeItem(switch_))}/>
                                     </template>
                                 </CardListEntry>
                             ))

@@ -5,8 +5,7 @@
     <scripts>
       <script value="prod" />
     </scripts>
-    <node-interpreter value="node" />
-    <package-manager value="npm" />
+    <node-interpreter value="project" />
     <envs />
     <method v="2" />
   </configuration>
