@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import * as tsx from "vue-tsx-support";
+import packageInfo from "../../../package.json";
 import { BButton } from "../../foundation/components/buefy-tsx";
 import { mapModuleActions, mapModuleState } from "../../foundation/helpers/vuex";
 import HasIcons from "../concerns/has-icons";
@@ -71,6 +72,7 @@ const DashboardPage = tsx.componentFactory.mixin(HasIcons).create({
                 }</div>
                 Dashboard
                 <div id="dashboard-action-buttons" class="fab-container is-right">
+                    <span class="is-inline-block pt-4">{packageInfo.productName} {packageInfo.version}</span>
                     <BButton class="fab-item" iconLeft="power" size="is-medium" type="is-danger"/>
                     <BButton class="fab-item" iconLeft="wrench" size="is-medium" type="is-link"
                         onClick={() => this.$router.push({ name: "settings" })}/>
