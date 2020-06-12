@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { cloneDeep } from "lodash";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import { BButton, BField, BIcon, BInput, BUpload } from "../../../foundation/components/buefy-tsx";
+import { BField, BIcon, BInput, BUpload } from "../../../foundation/components/buefy-tsx";
 import { ValidationObserver, ValidationProvider } from "../../../foundation/components/vee-validate-tsx";
 import { is, prop } from "../../../foundation/validation/valid";
 import { Source } from "../../store/modules/sources";
@@ -79,6 +79,11 @@ const SourceModal = tsx.component({
                             </a>
                             <div class="navbar-item">{this.title}</div>
                         </div>
+                        <div class="navbar-menu">
+                            <div class="navbar-end">
+                                <a class="navbar-item" onClick={() => handleSubmit(() => this.onSaveClicked())}>Save</a>
+                            </div>
+                        </div>
                     </div>,
                     <main class="modal-card-body">
                         <ValidationProvider name="title" rules="required" slim scopedSlots={{
@@ -116,10 +121,6 @@ const SourceModal = tsx.component({
                             ),
                         }}/>
                     </main>,
-                    <footer class="modal-card-foot">
-                        <BButton label={this.confirmText} type="is-primary"
-                            onClick={() => handleSubmit(() => this.onSaveClicked()) }/>
-                    </footer>,
                 ],
             }}/>
         );

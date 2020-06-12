@@ -120,7 +120,8 @@ const SourceList = tsx.componentFactory.mixin(HasIcons).mixin(UsesSettingsTitle)
                     ),
                 }}/>
                 <div class="fab-container is-right">
-                    <BButton class="fab-item" iconLeft="plus" type="is-primary" onClick={() => this.onAddClicked()}/>
+                    <BButton class="fab-item" iconLeft="plus" size="is-medium" type="is-primary"
+                        onClick={() => this.onAddClicked()}/>
                 </div>
             </div>
         );

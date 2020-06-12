@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { cloneDeep } from "lodash";
 import * as tsx from "vue-tsx-support";
-import { BButton, BField, BIcon, BInput } from "../../../foundation/components/buefy-tsx";
+import { BField, BIcon, BInput } from "../../../foundation/components/buefy-tsx";
 import { ValidationObserver, ValidationProvider } from "../../../foundation/components/vee-validate-tsx";
 import { mapModuleActions, mapModuleState } from "../../../foundation/helpers/vuex";
 import { is, prop } from "../../../foundation/validation/valid";
@@ -45,7 +45,7 @@ const SwitchModal = tsx.componentFactory.mixin(IndicatesLoading).create({
     computed: {
         ...mapModuleState(devices, "devices", ["ports"]),
         title(): string {
-            return this.source._id ? "Edit switch" : "Add switch";
+            return this.source._id ? "Edit switch or monitor" : "Add switch or monitor";
         },
         confirmText(): string {
             return this.source._id ? "Save" : "Create";
@@ -70,6 +70,11 @@ const SwitchModal = tsx.componentFactory.mixin(IndicatesLoading).create({
                                 <BIcon icon="arrow-left"/>
                             </a>
                             <div class="navbar-item">{this.title}</div>
+                        </div>
+                        <div class="navbar-menu">
+                            <div class="navbar-end">
+                                <a class="navbar-item" onClick={() => handleSubmit(() => this.onSaveClicked())}>Save</a>
+                            </div>
                         </div>
                     </div>,
                     <main class="modal-card-body">
@@ -97,10 +102,6 @@ const SwitchModal = tsx.componentFactory.mixin(IndicatesLoading).create({
                             ),
                         }}/>
                     </main>,
-                    <footer class="modal-card-foot">
-                        <BButton label={this.confirmText} type="is-primary"
-                            onClick={() => handleSubmit(() => this.onSaveClicked()) }/>
-                    </footer>,
                 ],
             }}/>
         );

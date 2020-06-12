@@ -39,7 +39,7 @@ const iconMap = {
 const SwitchList = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSwitches).create({
     name: "SwitchList",
     mounted() {
-        this.setSettingsTitle("Switches");
+        this.setSettingsTitle("Switches & monitors");
     },
     methods: {
         getIconForSwitch(item: Switch): string {
@@ -118,7 +118,8 @@ const SwitchList = tsx.componentFactory.mixin(UsesSettingsTitle).mixin(ManagesSw
                     ),
                 }}/>
                 <div class="fab-container is-right">
-                    <BButton class="fab-item" iconLeft="plus" type="is-primary" onClick={() => this.createItem()}/>
+                    <BButton class="fab-item" iconLeft="plus" size="is-medium" type="is-primary"
+                        onClick={() => this.createItem()}/>
                 </div>
             </div>
         );

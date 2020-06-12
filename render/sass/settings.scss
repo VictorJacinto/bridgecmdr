@@ -127,6 +127,9 @@ $text-invert:        materialInvert($text);
 $text-light:         $grey-light;
 $text-strong:        $grey-lightest;
 
+// Breakpoints:
+$navbar-breakpoint: $tablet;
+
 // Buttons
 $button-focus-color: $grey-lightest;
 $button-focus-border-color: $border-light;

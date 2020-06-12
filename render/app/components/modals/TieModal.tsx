@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { cloneDeep } from "lodash";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import { BButton, BField, BIcon, BNumberinput } from "../../../foundation/components/buefy-tsx";
+import { BField, BIcon, BNumberinput } from "../../../foundation/components/buefy-tsx";
 import { ValidationObserver, ValidationProvider } from "../../../foundation/components/vee-validate-tsx";
 import { mapModuleActions, mapModuleState } from "../../../foundation/helpers/vuex";
 import { is, prop } from "../../../foundation/validation/valid";
@@ -114,11 +114,16 @@ const TieModal = tsx.componentFactory.mixin(IndicatesLoading).create({
                             </a>
                             <div class="navbar-item">{this.title}</div>
                         </div>
+                        <div class="navbar-menu">
+                            <div class="navbar-end">
+                                <a class="navbar-item" onClick={() => handleSubmit(() => this.onSaveClicked())}>Save</a>
+                            </div>
+                        </div>
                     </div>,
-                    <main class="modal-card-body content">
+                    <main class="modal-card-body">
                         <ValidationProvider name="switch" rules="required" slim scopedSlots={{
                             default: ({ errors }) => (
-                                <BField label="Switch" expanded {...validationStatus(errors)}>
+                                <BField label="Switch or monitor" expanded {...validationStatus(errors)}>
                                     <SwitchDropdown v-model={this.source.switchId} options={this.switches}
                                         loading={this.loading} expanded/>
                                 </BField>
@@ -156,10 +161,6 @@ const TieModal = tsx.componentFactory.mixin(IndicatesLoading).create({
                                 ),
                             }}/>
                     </main>,
-                    <footer class="modal-card-foot">
-                        <BButton label={this.confirmText} type="is-primary"
-                            onClick={() => handleSubmit(() => this.onSaveClicked()) }/>
-                    </footer>,
                 ],
             }}/>
         );

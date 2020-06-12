@@ -61,7 +61,7 @@ const SettingsPage = tsx.componentFactory.mixin(UsesSettingsTitle).create({
                             <SvgIcon name="mdiVideoSwitch" type="is-link" size="is-48x48" inverted rounded/>
                         </template>
                         <template slot="default">
-                            <p class="has-text-weight-semibold">Switches</p>
+                            <p class="has-text-weight-semibold">Switches & monitors</p>
                             <p class="has-text-light">Add, edit, or remove switches and monitors.</p>
                         </template>
                     </CardListEntry>

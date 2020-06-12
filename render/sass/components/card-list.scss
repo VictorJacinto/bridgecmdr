@@ -1,5 +1,7 @@
 
 .card-list {
+    padding-bottom: 2rem;
+
     a.card {
         // Have card anchors/links to card as normal cards would, but with a link pointer cursor.
         cursor: pointer;
@@ -17,3 +19,6 @@
     }
 }
 
+.modal .card-list {
+    padding-bottom: 0;
+}

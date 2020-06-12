@@ -129,7 +129,7 @@ const TieList = tsx.componentFactory.mixin(ManagesTies).create({
                     ),
                 }}/>
                 <div class="fab-container is-right">
-                    <BButton class="fab-item" iconLeft="plus" type="is-primary"
+                    <BButton class="fab-item" iconLeft="plus" size="is-medium" type="is-primary"
                         onClick={() => this.createItem({ sourceId: this.sourceId })}/>
                 </div>
             </div>

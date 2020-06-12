@@ -18,17 +18,61 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import * as tsx from "vue-tsx-support";
 import { BButton } from "../../foundation/components/buefy-tsx";
+import { mapModuleActions, mapModuleState } from "../../foundation/helpers/vuex";
+import HasIcons from "../concerns/has-icons";
+import sources from "../store/modules/sources";
+import switches from "../store/modules/switches";
+import ties from "../store/modules/ties";
 
 // @vue/component
-const DashboardPage = tsx.component({
-    name: "DashboardPage",
+const DashboardPage = tsx.componentFactory.mixin(HasIcons).create({
+    name:     "DashboardPage",
+    computed: {
+        ...mapModuleState(switches, "switches", {
+            switches: "items",
+        }),
+        ...mapModuleState(sources, "sources", {
+            sources: "items",
+        }),
+        ...mapModuleState(ties, "ties", {
+            ties: "items",
+        }),
+    },
+    mounted() {
+        this.$nextTick(() => this.$loading.while(this.refresh()));
+    },
+    methods: {
+        ...mapModuleActions(switches, "switches", {
+            refreshSwitches: "all",
+        }),
+        ...mapModuleActions(sources, "sources", {
+            refreshSources: "all",
+        }),
+        ...mapModuleActions(ties, "ties", {
+            refreshTies: "all",
+        }),
+        async refresh() {
+            await this.refreshTies();
+            await this.refreshSwitches();
+            await this.refreshSources();
+        },
+    },
     render() {
         return (
             <div id="dashboard-page">
+                <div class="dashboard">{
+                    this.sources.map(source => (
+                        <button class="button is-light">
+                            <figure class="image icon is-128x128">
+                                <img src={this.icons.get(source)}/>
+                            </figure>
+                        </button>
+                    ))
+                }</div>
                 Dashboard
                 <div id="dashboard-action-buttons" class="fab-container is-right">
-                    <BButton class="fab-item" iconLeft="power" type="is-danger"/>
-                    <BButton class="fab-item" iconLeft="wrench" type="is-link"
+                    <BButton class="fab-item" iconLeft="power" size="is-medium" type="is-danger"/>
+                    <BButton class="fab-item" iconLeft="wrench" size="is-medium" type="is-link"
                         onClick={() => this.$router.push({ name: "settings" })}/>
                 </div>
             </div>
