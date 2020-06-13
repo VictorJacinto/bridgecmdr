@@ -19,58 +19,24 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import * as tsx from "vue-tsx-support";
 import packageInfo from "../../../package.json";
 import { BButton } from "../../foundation/components/buefy-tsx";
-import { mapModuleActions, mapModuleState } from "../../foundation/helpers/vuex";
+import CallsDevices from "../concerns/calls-devices";
 import HasIcons from "../concerns/has-icons";
-import sources from "../store/modules/sources";
-import switches from "../store/modules/switches";
-import ties from "../store/modules/ties";
 
 // @vue/component
-const DashboardPage = tsx.componentFactory.mixin(HasIcons).create({
-    name:     "DashboardPage",
-    computed: {
-        ...mapModuleState(switches, "switches", {
-            switches: "items",
-        }),
-        ...mapModuleState(sources, "sources", {
-            sources: "items",
-        }),
-        ...mapModuleState(ties, "ties", {
-            ties: "items",
-        }),
-    },
-    mounted() {
-        this.$nextTick(() => this.$loading.while(this.refresh()));
-    },
-    methods: {
-        ...mapModuleActions(switches, "switches", {
-            refreshSwitches: "all",
-        }),
-        ...mapModuleActions(sources, "sources", {
-            refreshSources: "all",
-        }),
-        ...mapModuleActions(ties, "ties", {
-            refreshTies: "all",
-        }),
-        async refresh() {
-            await this.refreshTies();
-            await this.refreshSwitches();
-            await this.refreshSources();
-        },
-    },
+const DashboardPage = tsx.componentFactory.mixin(CallsDevices).mixin(HasIcons).create({
+    name: "DashboardPage",
     render() {
         return (
             <div id="dashboard-page">
                 <div class="dashboard">{
-                    this.sources.map(source => (
-                        <button class="button is-light">
+                    this.devices.map(device => (
+                        <button class="button is-light" title={device.source.title} onClick={() => this.select(device)}>
                             <figure class="image icon is-128x128">
-                                <img src={this.icons.get(source)}/>
+                                <img src={this.icons.get(device.source)} alt=""/>
                             </figure>
                         </button>
                     ))
                 }</div>
-                Dashboard
                 <div id="dashboard-action-buttons" class="fab-container is-right">
                     <span class="is-inline-block pt-4">{packageInfo.productName} {packageInfo.version}</span>
                     <BButton class="fab-item" iconLeft="power" size="is-medium" type="is-danger"/>

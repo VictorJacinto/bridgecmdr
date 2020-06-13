@@ -56,6 +56,8 @@ function $dialogs(this: Vue): Dialogs {
                 onCancel:  () => { resolve() },
             });
 
+            config.message = config.message.replace(/(?:\r?\n|\r\n?)/gu, "<br/>");
+
             this.$buefy.dialog.alert(config);
         }),
         confirm: options => new Promise<boolean>(resolve => {
