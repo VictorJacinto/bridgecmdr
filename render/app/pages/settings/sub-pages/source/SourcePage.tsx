@@ -25,7 +25,7 @@ import { is, prop } from "../../../../../foundation/validation/valid";
 import CardList from "../../../../components/card-list/CardList";
 import CardListEntry from "../../../../components/card-list/CardListEntry";
 import CurrentSource from "../../../../components/data/items/CurrentSource";
-import HasIcons from "../../../../concerns/has-icons";
+import HasImages from "../../../../concerns/has-images";
 import ManagesSources from "../../../../concerns/managers/manages-sources";
 import UsesSettingsTitle from "../../../../concerns/uses-settings-title";
 import { Source } from "../../../../store/modules/sources";
@@ -33,7 +33,7 @@ import { IDPattern } from "../../../../support/validation";
 import TieList from "./parts/TieList";
 
 // @vue/component
-const SourcePage = tsx.componentFactory.mixin(HasIcons).mixin(UsesSettingsTitle).mixin(ManagesSources).create({
+const SourcePage = tsx.componentFactory.mixin(HasImages).mixin(UsesSettingsTitle).mixin(ManagesSources).create({
     name:  "SourcePage",
     props: {
         id: prop(is.string.matches(IDPattern)),
@@ -78,7 +78,7 @@ const SourcePage = tsx.componentFactory.mixin(HasIcons).mixin(UsesSettingsTitle)
                             <CardListEntry>
                                 <template slot="image">
                                     <figure class="image icon is-48x48">
-                                        <img src={this.icons.get(source)} class="is-rounded has-background-grey-light"
+                                        <img src={this.images.get(source)} class="is-rounded has-background-grey-light"
                                             alt="icon"/>
                                     </figure>
                                 </template>

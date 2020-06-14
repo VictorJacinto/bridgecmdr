@@ -19,12 +19,49 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import * as tsx from "vue-tsx-support";
 import packageInfo from "../../../package.json";
 import { BButton } from "../../foundation/components/buefy-tsx";
-import CallsDevices from "../concerns/calls-devices";
-import HasIcons from "../concerns/has-icons";
+import { mapModuleActions, mapModuleState } from "../../foundation/helpers/vuex";
+import DoesFirstRun from "../concerns/does-application-post-boot";
+import HasImages from "../concerns/has-images";
+import devices from "../store/modules/devices";
+import { signalShutdown } from "../support/dbus";
 
 // @vue/component
-const DashboardPage = tsx.componentFactory.mixin(CallsDevices).mixin(HasIcons).create({
-    name: "DashboardPage",
+const DashboardPage = tsx.componentFactory.mixin(DoesFirstRun).mixin(HasImages).create({
+    name:     "DashboardPage",
+    computed: {
+        ...mapModuleState(devices, "devices", ["devices"]),
+    },
+    mounted() {
+        this.$nextTick(async () => {
+            await this.doFirstRun();
+
+            // TODO: await this.powerOn(); // if the user wants this
+
+            try {
+                await this.$loading.while(this.refresh());
+            } catch (error) {
+                await this.$dialogs.error(error);
+            }
+        });
+    },
+    methods: {
+        ...mapModuleActions(devices, "devices", [ "refresh", "select", "powerOn", "powerOff" ]),
+        async onPowerOffClicked() {
+            try {
+                await this.powerOff();
+
+                if (process.env.NODE_ENV === "production") {
+                    try {
+                        await signalShutdown();
+                    } catch (error) {
+                        await this.$dialogs.error(error);
+                    }
+                }
+            } finally {
+                window.close();
+            }
+        },
+    },
     render() {
         return (
             <div id="dashboard-page">
@@ -32,14 +69,15 @@ const DashboardPage = tsx.componentFactory.mixin(CallsDevices).mixin(HasIcons).c
                     this.devices.map(device => (
                         <button class="button is-light" title={device.source.title} onClick={() => this.select(device)}>
                             <figure class="image icon is-128x128">
-                                <img src={this.icons.get(device.source)} alt=""/>
+                                <img src={this.images.get(device.source)} alt=""/>
                             </figure>
                         </button>
                     ))
                 }</div>
                 <div id="dashboard-action-buttons" class="fab-container is-right">
                     <span class="is-inline-block pt-4">{packageInfo.productName} {packageInfo.version}</span>
-                    <BButton class="fab-item" iconLeft="power" size="is-medium" type="is-danger"/>
+                    <BButton class="fab-item" iconLeft="power" size="is-medium" type="is-danger"
+                        onClick={() => this.onPowerOffClicked()}/>
                     <BButton class="fab-item" iconLeft="wrench" size="is-medium" type="is-link"
                         onClick={() => this.$router.push({ name: "settings" })}/>
                 </div>

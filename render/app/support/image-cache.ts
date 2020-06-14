@@ -24,7 +24,7 @@ type IconData = {
     url: string;
 };
 
-export default class IconCache {
+export default class ImageCache {
     readonly cache = new Map<string, IconData>();
 
     constructor() {

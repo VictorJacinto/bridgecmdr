@@ -16,11 +16,20 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Vue, { VueConstructor } from "vue";
+import Vue from "vue";
+import ImageCache from "../support/image-cache";
 
-type BaseReferenceMap = { [key: string]: unknown };
-type ExtendedConstructor<R extends BaseReferenceMap> = VueConstructor<Vue & { $refs: R }>;
+const HasImages = Vue.extend({
+    name: "HasImages",
+    data: function () {
+        return {
+            images: new ImageCache(),
+        };
+    },
+    beforeDestroy() {
+        this.images.revoke();
+    },
+});
 
-export default function withRefs<R extends BaseReferenceMap>(): ExtendedConstructor<R> {
-    return Vue.extend();
-}
+type HasImages = InstanceType<typeof HasImages>;
+export default HasImages;

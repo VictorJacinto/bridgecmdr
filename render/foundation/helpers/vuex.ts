@@ -82,19 +82,29 @@ export function mapModuleGetters(_module: any, namespace: any, targets?: any): a
 
 type VuexModuleWithMutations = SetRequired<AnyVuexModule, "mutations">;
 
+type Commit<M extends VuexModuleWithMutations> = (type: keyof M["mutations"], payload?: any) => void;
+type InlineMutation<F extends Function, M extends VuexModuleWithMutations> =
+    F extends (commit: Commit<M>) => void ? () => void :
+    F extends (commit: Commit<M>, payload: infer P) => void ? (payload: P) => void :
+    never;
+
+type MutationMapHandler<M extends VuexModuleWithMutations> = (commit: Commit<M>, payload?: any) => void;
+
 type MutationMapTargets<M extends VuexModuleWithMutations> =
     readonly (keyof M["mutations"])[]|
-    Record<string, keyof M["mutations"]>;
+    Record<string, keyof M["mutations"]>|
+    Record<string, MutationMapHandler<M>>;
 
-type InlineMutation<F extends (...args: any) => any> =
+type DefinedMutation<F extends (...args: any) => any> =
     F extends () => void ? () => void :
     F extends (injectee: any) => void ? () => void :
     F extends (injectee: any, payload: infer P) => void ? (payload: P) => void :
     never;
 
 type ResolvedMutationMappings<M extends VuexModuleWithMutations, Map extends MutationMapTargets<M>> =
-    Map extends Record<string, keyof M["mutations"]> ? { [P in keyof Map]: InlineMutation<M["mutations"][Map[P]]> } :
-    Map extends readonly (keyof M["mutations"])[] ? { [K in Map[number]]: InlineMutation<M["mutations"][K]> } :
+    Map extends Record<string, MutationMapHandler<M>> ? { [P in keyof Map]: InlineMutation<Map[P], M> } :
+    Map extends Record<string, keyof M["mutations"]> ? { [P in keyof Map]: DefinedMutation<M["mutations"][Map[P]]> } :
+    Map extends readonly (keyof M["mutations"])[] ? { [K in Map[number]]: DefinedMutation<M["mutations"][K]> } :
     never;
 
 export function mapModuleMutations<M extends VuexModuleWithMutations, Targets extends MutationMapTargets<M>>(
@@ -107,11 +117,20 @@ export function mapModuleMutations(_module: any, namespace: any, targets?: any):
 
 type VuexModuleWithActions = SetRequired<AnyVuexModule, "actions">;
 
+type Dispatch<M extends VuexModuleWithActions> = (type: keyof M["actions"], payload?: any) => void;
+type InlineAction<F extends Function, M extends VuexModuleWithActions> =
+    F extends (dispatch: Dispatch<M>) => void ? () => void :
+    F extends (dispatch: Dispatch<M>, payload: infer P) => void ? (payload: P) => void :
+    never;
+
+type ActionMapHandler<M extends VuexModuleWithActions> = (dispatch: Dispatch<M>, payload?: any) => void;
+
 type ActionMapTargets<M extends VuexModuleWithActions> =
     readonly (keyof M["actions"])[]|
-    Record<string, keyof M["actions"]>;
+    Record<string, keyof M["actions"]>|
+    Record<string, ActionMapHandler<M>>;
 
-type InlineActionable<F extends (...args: any) => any> =
+type DefinedActionable<F extends (...args: any) => any> =
     F extends () => Promise<infer R> ? () => Promise<R> :
     F extends () => infer R ? () => Promise<R> :
     F extends (injectee: any) => Promise<infer R> ? () => Promise<R> :
@@ -121,11 +140,12 @@ type InlineActionable<F extends (...args: any) => any> =
     never;
 
 type Actionable<H> =
-    H extends (...args: any) => any ? InlineActionable<H> :
-    H extends ActionObject<any, any> ? InlineActionable<H["handler"]> :
+    H extends (...args: any) => any ? DefinedActionable<H> :
+    H extends ActionObject<any, any> ? DefinedActionable<H["handler"]> :
     never;
 
 type ResolvedActionMappings<M extends VuexModuleWithActions, Map extends ActionMapTargets<M>> =
+    Map extends Record<string, ActionMapHandler<M>> ? { [P in keyof Map]: InlineAction<Map[P], M> } :
     Map extends Record<string, keyof M["actions"]> ? { [P in keyof Map]: Actionable<M["actions"][Map[P]]> } :
     Map extends readonly (keyof M["actions"])[] ? { [K in Map[number]]: Actionable<M["actions"][K]> } :
     never;
@@ -137,32 +157,6 @@ export function mapModuleActions<M extends VuexModuleWithActions, Targets extend
 export function mapModuleActions(_module: any, namespace: any, targets?: any): any {
     return mapActions(namespace, targets);
 }
-//
-// interface ModuleConfig<
-//     State extends object|(() => object),
-//     RootState extends object,
-//     Getters extends GetterTree<ResolvedState<State>, RootState>,
-//     Mutations extends MutationTree<ResolvedState<State>>,
-//     Actions extends ActionTree<ResolvedState<State>, RootState>,
-//     Modules extends ModuleTree<RootState>,
-// > {
-//     namespaced?: boolean;
-//     state: State;
-//     getters: Getters;
-//     mutations: Mutations;
-//     actions: Actions;
-//     modules?: Modules;
-// }
-//
-// export const storeModule = identity(<RootState extends object = object>() => ({
-//     make: identity(<
-//         State extends object|(() => object),
-//         Getters extends GetterTree<ResolvedState<State>, RootState>,
-//         Mutations extends MutationTree<ResolvedState<State>>,
-//         Actions extends ActionTree<ResolvedState<State>, RootState>,
-//         Modules extends ModuleTree<RootState>,
-//     >(config: ModuleConfig<State, RootState, Getters, Mutations, Actions, Modules>) => config),
-// }));
 
 export const storeModule = identity(<State extends object, RootState extends object = State>() => ({
     make: identity(<M extends Module<State, RootState>>(config: M) => config),

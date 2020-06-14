@@ -25,14 +25,14 @@ import { mapModuleActions, mapModuleState } from "../../../../../foundation/help
 import CardList from "../../../../components/card-list/CardList";
 import CardListEntry from "../../../../components/card-list/CardListEntry";
 import Sources from "../../../../components/data/sources/Sources";
-import HasIcons from "../../../../concerns/has-icons";
+import HasImages from "../../../../concerns/has-images";
 import ManagesSources from "../../../../concerns/managers/manages-sources";
 import UsesSettingsTitle from "../../../../concerns/uses-settings-title";
 import { Source } from "../../../../store/modules/sources";
 import ties from "../../../../store/modules/ties";
 
 // @vue/component
-const SourceList = tsx.componentFactory.mixin(HasIcons).mixin(UsesSettingsTitle).mixin(ManagesSources).create({
+const SourceList = tsx.componentFactory.mixin(HasImages).mixin(UsesSettingsTitle).mixin(ManagesSources).create({
     name:     "SourceList",
     computed: {
         ...mapModuleState(ties, "ties", {
@@ -93,7 +93,7 @@ const SourceList = tsx.componentFactory.mixin(HasIcons).mixin(UsesSettingsTitle)
                                 <CardListEntry to={{ name: "source", params: { id: source._id } }}>
                                     <template slot="image">
                                         <figure class="image icon is-48x48">
-                                            <img src={this.icons.get(source)}
+                                            <img src={this.images.get(source)}
                                                 class="is-rounded has-background-grey-light"
                                                 alt="icon"/>
                                         </figure>

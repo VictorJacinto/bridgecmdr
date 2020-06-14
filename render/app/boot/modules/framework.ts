@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import "vue-tsx-support/enable-check";
 import Buefy from "buefy";
 import { toString } from "lodash";
-import { configure, localize, extend, ValidationObserver, ValidationProvider } from "vee-validate";
+import { configure, localize, extend } from "vee-validate";
 import en from "vee-validate/dist/locale/en.json";
 import * as rules from "vee-validate/dist/rules";
 import Vue  from "vue";
@@ -42,9 +42,6 @@ Vue.use(Loading);
  | ---------------------------------------------------------------------------------------------------------------------
 */
 
-
-Vue.component("ValidationProvider", ValidationProvider);
-Vue.component("ValidationObserver", ValidationObserver);
 for (const [ rule, validators ] of Object.entries(rules)) {
     extend(rule, { ...validators });
 }
