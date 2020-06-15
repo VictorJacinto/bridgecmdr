@@ -16,11 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { promises as fs } from "fs";
-import path from "path";
 import Vue from "vue";
-import xdgBasedir from "xdg-basedir";
-import { mapModuleMutations, mapModuleState } from "../../foundation/helpers/vuex";
+import { mapModuleActions, mapModuleMutations, mapModuleState } from "../../foundation/helpers/vuex";
+import autoStart from "../store/modules/auto-start";
 import session from "../store/modules/session";
 import settings from "../store/modules/settings";
 
@@ -43,42 +41,27 @@ const DoesFirstRun = Vue.extend({
                 set: (commit, value: number) => commit("set", [ "doneFirstRun", value ]),
             }),
         },
+        ...mapModuleState(autoStart, "autoStart", {
+            autoStart: "active",
+        }),
     },
     methods: {
+        ...mapModuleActions(autoStart, "autoStart", [ "checkAutoStartState", "enableAutoStart" ]),
         async doFirstRun() {
-            const configDir = xdgBasedir.config;
             if (!this.attemptedFirstRun) {
                 if (this.doneFirstRun < 1) {
                     // 1. Auto-start file creation.
-                    if (configDir) {
-                        const autoStartDir = path.resolve(configDir, "autostart");
-                        await fs.mkdir(autoStartDir, { recursive: true });
+                    const willAutoStart = await this.checkAutoStartState();
+                    if (!willAutoStart) {
+                        const createAutoStart = await this.$dialogs.confirm({
+                            message: "Do you want BridgeCmdr to start on boot?",
+                        });
 
-                        const autoStartFile = "org.sleepingcats.BridgeCmdr.desktop";
-                        const autoStartPath = path.resolve(autoStartDir, autoStartFile);
-
-                        const autoStartExists = await fs.stat(autoStartPath).
-                            then(stat => stat.isFile()).catch(() => false);
-                        if (!autoStartExists) {
-                            const createAutoStart = await this.$dialogs.confirm({
-                                message: "Do you want BridgeCmdr to start on boot?",
-                            });
-
-                            if (createAutoStart) {
-                                const needsExecProxy = process.execPath.endsWith("electron");
-                                const exec = needsExecProxy ?
-                                    path.resolve(window.__dirname, "../../bridgecmdr") :
-                                    "bridgecmdr";
-                                try {
-                                    const entry = await fs.open(autoStartPath, "w", 0o644);
-                                    await entry.write("[Desktop Entry]\n");
-                                    await entry.write("Name=BridgeCmdr\n");
-                                    await entry.write(`Exec=${exec}\n`);
-                                    await entry.write("NoDisplay=true\n");
-                                    await entry.write("Terminal=false\n");
-                                } catch (error) {
-                                    await this.$dialogs.error(error);
-                                }
+                        if (createAutoStart) {
+                            try {
+                                await this.enableAutoStart();
+                            } catch (error) {
+                                await this.$dialogs.error(error);
                             }
                         }
                     }

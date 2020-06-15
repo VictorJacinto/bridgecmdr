@@ -20,7 +20,7 @@ import { identity } from "lodash";
 import { ReadonlyDeep } from "type-fest";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import { normalizeChildren } from "../../../foundation/helpers/vue";
+import { normalizeScopedSlot } from "../../../foundation/helpers/vue";
 import { mapModuleActions, mapModuleState } from "../../../foundation/helpers/vuex";
 import { is, maybe, prop } from "../../../foundation/validation/valid";
 import IndicatesLoading from "../../concerns/indicates-loading";
@@ -80,7 +80,7 @@ const dataItem = identity(
             render(): VNode {
                 const RootTag = this.tag;
                 const loading = (): VNode => {
-                    const children = normalizeChildren(this, "loading", { loading: true });
+                    const children = normalizeScopedSlot(this, "loading", { loading: true }, []);
 
                     return this.slim && children.length <= 1 ? children[0] : (<RootTag>{children}</RootTag>);
                 };
@@ -91,19 +91,19 @@ const dataItem = identity(
                 }
 
                 if (this.error) {
-                    const children = normalizeChildren(this, "error", {
+                    const children = normalizeScopedSlot(this, "error", {
                         error:   this.error,
                         refresh: () => this.refresh(),
-                    });
+                    }, []);
 
                     return this.slim && children.length <= 1 ? children[0] : (<RootTag>{children}</RootTag>);
                 }
 
                 if (this.current) {
-                    const children = normalizeChildren(this, "default", {
+                    const children = normalizeScopedSlot(this, "default", {
                         current: this.current,
                         refresh: () => this.refresh(),
-                    });
+                    }, []);
 
                     return this.slim && children.length <= 1 ? children[0] : (<RootTag>{children}</RootTag>);
                 }

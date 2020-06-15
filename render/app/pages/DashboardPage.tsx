@@ -20,7 +20,7 @@ import * as tsx from "vue-tsx-support";
 import packageInfo from "../../../package.json";
 import { BButton } from "../../foundation/components/buefy-tsx";
 import { mapModuleActions, mapModuleState } from "../../foundation/helpers/vuex";
-import DoesFirstRun from "../concerns/does-application-post-boot";
+import DoesFirstRun from "../concerns/does-first-run";
 import HasImages from "../concerns/has-images";
 import devices from "../store/modules/devices";
 import { signalShutdown } from "../support/dbus";

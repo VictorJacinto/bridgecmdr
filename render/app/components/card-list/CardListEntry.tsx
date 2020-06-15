@@ -21,6 +21,7 @@ import { VNode } from "vue";
 import { Location } from "vue-router";
 import * as tsx from "vue-tsx-support";
 import { EventHandler } from "vue-tsx-support/lib/modifiers";
+import { normalizeSlot } from "../../../foundation/helpers/vue";
 import { is, maybe, prop } from "../../../foundation/validation/valid";
 
 interface Events {
@@ -62,24 +63,23 @@ const CardListEntry = tsx.componentFactoryOf<Events>().create({
     render(): VNode {
         const RootTag = this.tag;
         const href = this.to ? undefined : this.href;
+        const content = normalizeSlot(this, "content", (
+            <div class="card-content">
+                <article class="media">
+                    <figure v-show={this.hasImageSlot} class="media-left">
+                        { this.$slots.image }
+                    </figure>
+                    <div class="media-content">
+                        { this.$slots.default }
+                    </div>
+                    <div v-show={this.hasActionsSlot} class="media-right">
+                        { this.$slots.actions }
+                    </div>
+                </article>
+            </div>
+        ));
 
-        return (
-            <RootTag onClick={this.click} class={this.classes} to={this.to} href={href}>
-                <div class="card-content">
-                    <article class="media">
-                        <figure v-show={this.hasImageSlot} class="media-left">
-                            { this.$slots.image }
-                        </figure>
-                        <div class="media-content">
-                            { this.$slots.default }
-                        </div>
-                        <div v-show={this.hasActionsSlot} class="media-right">
-                            { this.$slots.actions }
-                        </div>
-                    </article>
-                </div>
-            </RootTag>
-        );
+        return (<RootTag onClick={this.click} class={this.classes} to={this.to} href={href}>{content}</RootTag>);
     },
 });
 

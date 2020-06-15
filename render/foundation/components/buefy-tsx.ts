@@ -514,8 +514,8 @@ type BSwitchProps = {
     value?: BAnyValue|Date;
     nativeValue?: BAnyValue|Date;
     disabled?: boolean;
-    type?: string;
-    passiveType?: string;
+    type?: ColorModifiers;
+    passiveType?: ColorModifiers;
     name?: string;
     required?: boolean;
     size?: string;

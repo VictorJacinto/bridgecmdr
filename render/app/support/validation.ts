@@ -40,9 +40,8 @@ export function unvalidated(): BFieldMessageProps {
 export function validationStatus(errors: string[]): BFieldMessageProps {
     return {
         props: {
-            "message":     errors.length > 0 ? errors[0] : "",
-            "customClass": errors.length > 0 ? "has-text-danger" : undefined,
-            "type":        errors.length > 0 ? "is-danger" : undefined,
+            "message": errors.length > 0 ? errors[0] : "",
+            "type":    errors.length > 0 ? "is-danger" : undefined,
         },
     };
 }

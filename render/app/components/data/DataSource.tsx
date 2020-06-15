@@ -21,7 +21,7 @@ import { ReadonlyDeep } from "type-fest";
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { BButton, BField, BIcon } from "../../../foundation/components/buefy-tsx";
-import { normalizeChildren } from "../../../foundation/helpers/vue";
+import { normalizeScopedSlot } from "../../../foundation/helpers/vue";
 import { mapModuleActions, mapModuleState } from "../../../foundation/helpers/vuex";
 import { is, maybe, prop } from "../../../foundation/validation/valid";
 import IndicatesLoading from "../../concerns/indicates-loading";
@@ -94,16 +94,16 @@ const dataSource = identity(
 
                 if (this.loading) {
                     // Short-circuit as loading, since is has priority.
-                    const children = normalizeChildren(this, "loading", { loading: true });
+                    const children = normalizeScopedSlot(this, "loading", { loading: true }, []);
 
                     return this.slim && children.length <= 1 ? children[0] : (<RootTag>{children}</RootTag>);
                 }
 
                 if (this.error) {
-                    const children = normalizeChildren(this, "error", {
+                    const children = normalizeScopedSlot(this, "error", {
                         error:   this.error,
                         refresh: () => this.refresh(),
-                    });
+                    }, []);
                     if (children.length === 0) {
                         return (
                             <RootTag class="section content has-text-danger has-text-centered">
@@ -118,10 +118,10 @@ const dataSource = identity(
                     return this.slim && children.length <= 1 ? children[0] : (<RootTag>{children}</RootTag>);
                 }
 
-                const children = normalizeChildren(this, "default", {
+                const children = normalizeScopedSlot(this, "default", {
                     items:   this.items,
                     refresh: () => this.refresh(),
-                });
+                }, []);
 
                 return this.slim && children.length <= 1 ? children[0] : (<RootTag>{children}</RootTag>);
             },

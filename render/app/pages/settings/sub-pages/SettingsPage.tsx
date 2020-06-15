@@ -38,7 +38,7 @@ const SettingsPage = tsx.componentFactory.mixin(UsesSettingsTitle).create({
         return (
             <div id="settings-page">
                 <CardList>
-                    <CardListEntry onClick={ () => this.log("general") }>
+                    <CardListEntry to={{ name: "settings/general" }}>
                         <template slot="image">
                             <SvgIcon name="mdiCogs" type="is-link" size="is-48x48" inverted rounded/>
                         </template>

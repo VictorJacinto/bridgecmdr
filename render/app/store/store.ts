@@ -1,5 +1,6 @@
 import Vuex  from "vuex";
 import { ModuleState, storeModule } from "../../foundation/helpers/vuex";
+import autoStart from "./modules/auto-start";
 import devices from "./modules/devices";
 import session from "./modules/session";
 import settings from "./modules/settings";
@@ -12,6 +13,7 @@ const isProduction = process.env.NODE_ENV === "production";
 
 export const rootModule = storeModule<RootState>().make({
     modules: {
+        autoStart,
         devices,
         session,
         settings,
@@ -35,6 +37,7 @@ export default store;
 
 declare module "./root-state" {
     interface RootState {
+        readonly autoStart: ModuleState<typeof autoStart>;
         readonly devices: ModuleState<typeof devices>;
         readonly settings: ModuleState<typeof settings>;
         readonly sources: ModuleState<typeof sources>;

@@ -23,9 +23,12 @@ import {
     BAnyValue, BButton, BDropdown, BDropdownItem, BInput,
     KnownColorModifiers, PopupPositionModifiers, SizeModifiers,
 } from "../../foundation/components/buefy-tsx";
+import { normalizeScopedSlot } from "../../foundation/helpers/vue";
 import { be, is, maybe, must, prop } from "../../foundation/validation/valid";
 
 type SimpleDropdownEvents<T> = { onInput: (value: T) => void };
+
+type SimpleDropdownSlots = { default: { label: string } };
 
 export const DropdownArialRoles = [ "menu", "list", "dialog" ] as const;
 export type DropdownArialRoles = typeof DropdownArialRoles[number];
@@ -33,7 +36,7 @@ export type DropdownArialRoles = typeof DropdownArialRoles[number];
 const simpleDropdown = identity(
     <T, V extends BAnyValue>(predicate: (option: T) => [ string, V ]) =>
         // @vue/component
-        tsx.componentFactoryOf<SimpleDropdownEvents<V>>().create({
+        tsx.componentFactoryOf<SimpleDropdownEvents<V>, SimpleDropdownSlots>().create({
             name:  "SimpleDropdown",
             props: {
                 value:       prop(is.any) as PropOptions<BAnyValue>, // prop(is.any) as PropOptions<V>,
@@ -89,6 +92,34 @@ const simpleDropdown = identity(
                     return (<BDropdownItem value={entry[1]}>{ entry[0] }</BDropdownItem>);
                 };
 
+                const trigger = normalizeScopedSlot(this, "default", { label: this.label || this.placeholder },
+                    this.trigger === "button" ? (
+                        <BButton
+                            label={this.label || this.placeholder}
+                            type={this.type}
+                            size={this.size}
+                            loading={this.loading}
+                            inverted={this.inverted}
+                            rounded={this.rounded}
+                            outlined={this.outlined}
+                            disabled={this.disabled}
+                            expanded={this.expanded}
+                        />
+                    ) : (
+                        <BInput
+                            customClass="has-cursor-pointer"
+                            iconRight="chevron-down"
+                            value={this.label}
+                            size={this.size}
+                            loading={this.loading}
+                            disabled={this.disabled}
+                            expanded={this.expanded}
+                            placeholder={this.placeholder}
+                            readonly
+                        />
+                    ),
+                );
+
                 return (
                     <BDropdown
                         onChange={(value: V) => this.updateValue(value)}
@@ -101,33 +132,7 @@ const simpleDropdown = identity(
                         maxHeight={this.maxHeight}
                         disabled={this.disabled}
                         expanded={this.expanded}>
-                        <template slot="trigger">{
-                            this.trigger === "button" ? (
-                                <BButton
-                                    label={this.label || this.placeholder}
-                                    type={this.type}
-                                    size={this.size}
-                                    loading={this.loading}
-                                    inverted={this.inverted}
-                                    rounded={this.rounded}
-                                    outlined={this.outlined}
-                                    disabled={this.disabled}
-                                    expanded={this.expanded}
-                                />
-                            ) : (
-                                <BInput
-                                    customClass="has-cursor-pointer"
-                                    iconRight="chevron-down"
-                                    value={this.label}
-                                    size={this.size}
-                                    loading={this.loading}
-                                    disabled={this.disabled}
-                                    expanded={this.expanded}
-                                    placeholder={this.placeholder}
-                                    readonly
-                                />
-                            )
-                        }</template>
+                        <template slot="trigger">{trigger}</template>
                         { this.options.map(option => makeOption(option as T)) }
                     </BDropdown>
                 );

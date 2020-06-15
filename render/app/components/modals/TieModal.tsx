@@ -129,10 +129,11 @@ const TieModal = tsx.componentFactory.mixin(IndicatesLoading).create({
                                 </BField>
                             ),
                         }}/>
-                        <ValidationProvider name="input channel" rules="required" slim scopedSlots={{
+                        <ValidationProvider name="input channel" rules="required|min_value:1" slim scopedSlots={{
                             default: ({ errors }) => (
                                 <BField label="Input" {...validationStatus(errors)}>
-                                    <BField grouped><BNumberinput v-model={this.source.inputChannel} min={1}/></BField>
+                                    <BNumberinput v-model={this.source.inputChannel} min={1} useHtml5Validation={false}
+                                        controlsPosition="compact"/>
                                 </BField>
                             ),
                         }}/>
@@ -141,10 +142,9 @@ const TieModal = tsx.componentFactory.mixin(IndicatesLoading).create({
                                 default: ({ errors }) => (
                                     <BField v-show={this.showVideoOutput} label={this.videoOutputLabel}
                                         {...validationStatus(errors)}>
-                                        <BField grouped>
-                                            <BNumberinput v-model={this.source.outputChannels.video}
-                                                min={this.videoOutputMinimal}/>
-                                        </BField>
+                                        <BNumberinput v-model={this.source.outputChannels.video}
+                                            useHtml5Validation={false} min={this.videoOutputMinimal}
+                                            controlsPosition="compact"/>
                                     </BField>
                                 ),
                             }}/>
@@ -153,10 +153,9 @@ const TieModal = tsx.componentFactory.mixin(IndicatesLoading).create({
                                 default: ({ errors }) => (
                                     <BField v-show={this.showAudioOutput} label="Audio output"
                                         {...validationStatus(errors)}>
-                                        <BField grouped>
-                                            <BNumberinput v-model={this.source.outputChannels.audio}
-                                                min={this.audioOutputMinimal}/>
-                                        </BField>
+                                        <BNumberinput v-model={this.source.outputChannels.audio}
+                                            useHtml5Validation={false} min={this.audioOutputMinimal}
+                                            controlsPosition="compact"/>
                                     </BField>
                                 ),
                             }}/>
