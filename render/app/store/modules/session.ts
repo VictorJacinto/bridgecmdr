@@ -17,18 +17,18 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { get, set } from "lodash";
-import { storeModule } from "../../../foundation/helpers/vuex";
+import { mapModuleMutations, mapModuleState, storeModule } from "../../../foundation/helpers/vuex";
 import { RootState } from "../root-state";
 
 type SessionState = {
-    attemptedFirstRun: boolean;
+    hasDoneStartup: boolean;
 };
 
 const session = storeModule<SessionState, RootState>().make({
     state: () => {
         // Default session state.
         const state = {
-            attemptedFirstRun: false,
+            hasDoneStartup: false,
         };
 
         for (const [ path, setting ] of Object.entries(window.sessionStorage)) {
@@ -52,5 +52,16 @@ const session = storeModule<SessionState, RootState>().make({
     },
     namespaced: true,
 });
+
+export function mapSession<T>(path: string): { get(): T; set(value: T): void } {
+    return {
+        ...mapModuleState(session, "session", {
+            get: state => get(state, path) as T,
+        }),
+        ...mapModuleMutations(session, "session", {
+            set: (commit, value: T) => commit("set", [ path, value ]),
+        }),
+    };
+}
 
 export default session;

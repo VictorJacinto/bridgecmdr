@@ -21,27 +21,37 @@ import packageInfo from "../../../package.json";
 import { BButton } from "../../foundation/components/buefy-tsx";
 import { mapModuleActions, mapModuleState } from "../../foundation/helpers/vuex";
 import DoesFirstRun from "../concerns/does-first-run";
+import DoesStartup from "../concerns/does-startup";
 import HasImages from "../concerns/has-images";
 import devices from "../store/modules/devices";
+import settings from "../store/modules/settings";
 import { signalShutdown } from "../support/dbus";
 
 // @vue/component
-const DashboardPage = tsx.componentFactory.mixin(DoesFirstRun).mixin(HasImages).create({
+const DashboardPage = tsx.componentFactory.mixin(DoesStartup).mixin(DoesFirstRun).mixin(HasImages).create({
     name:     "DashboardPage",
     computed: {
         ...mapModuleState(devices, "devices", ["devices"]),
+        ...mapModuleState(settings, "settings", [ "iconSize", "powerOnSwitchesAtStart" ]),
+        imageClasses(): string[] {
+            return [ "image", "icon", this.iconSize ];
+        },
     },
     mounted() {
         this.$nextTick(async () => {
-            await this.doFirstRun();
-
-            // TODO: await this.powerOn(); // if the user wants this
+            await this.onStart(() => this.doFirstRun());
 
             try {
                 await this.$loading.while(this.refresh());
             } catch (error) {
                 await this.$dialogs.error(error);
             }
+
+            await this.onStart(async () => {
+                if (this.powerOnSwitchesAtStart) {
+                    await this.powerOn();
+                }
+            });
         });
     },
     methods: {
@@ -68,7 +78,7 @@ const DashboardPage = tsx.componentFactory.mixin(DoesFirstRun).mixin(HasImages).
                 <div class="dashboard">{
                     this.devices.map(device => (
                         <button class="button is-light" title={device.source.title} onClick={() => this.select(device)}>
-                            <figure class="image icon is-128x128">
+                            <figure class={this.imageClasses}>
                                 <img src={this.images.get(device.source)} alt=""/>
                             </figure>
                         </button>

@@ -67,7 +67,6 @@ export type Device = {
 };
 
 type DevicesState = {
-    booted: boolean;
     devices: Device[];
     drivers: Driver[];
     ports: SerialPortEntry[];
@@ -78,15 +77,11 @@ type DriveResult = [ Switch, Driver|Error ];
 // noinspection JSUnusedGlobalSymbols
 const devices = storeModule<DevicesState, RootState>().make({
     state: {
-        booted:  false,
         devices: [] as Device[],
         drivers: [] as Driver[],
         ports:   [] as SerialPortEntry[],
     },
     mutations: {
-        doneBooting: state => {
-            state.booted = true;
-        },
         update: (state, params: [ Device[], Driver[] ]) => {
             state.devices.splice(0);
             state.devices.push(...params[0]);
@@ -165,12 +160,8 @@ const devices = storeModule<DevicesState, RootState>().make({
         powerOff: async ({ state }) => {
             await Promise.all(state.drivers.map(driver => driver.powerOff()));
         },
-        powerOn: async ({ commit, state }) => {
-            if (!state.booted) {
-                await Promise.all(state.drivers.map(driver => driver.powerOn()));
-
-                commit("doneBooting");
-            }
+        powerOn: async ({ state }) => {
+            await Promise.all(state.drivers.map(driver => driver.powerOn()));
         },
         getPorts: async ({ commit }) => {
             const ports = await SerialPort.list();

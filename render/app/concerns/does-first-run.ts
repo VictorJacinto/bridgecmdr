@@ -17,30 +17,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import Vue from "vue";
-import { mapModuleActions, mapModuleMutations, mapModuleState } from "../../foundation/helpers/vuex";
+import { mapModuleActions, mapModuleState } from "../../foundation/helpers/vuex";
 import autoStart from "../store/modules/auto-start";
-import session from "../store/modules/session";
-import settings from "../store/modules/settings";
+import { mapSetting } from "../store/modules/settings";
 
 const DoesFirstRun = Vue.extend({
     name:     "DoesFirstRun",
     computed: {
-        attemptedFirstRun: {
-            ...mapModuleState(session, "session", {
-                get: state => state.attemptedFirstRun || false,
-            }),
-            ...mapModuleMutations(session, "session", {
-                set: (commit, value: boolean) => commit("set", [ "attemptedFirstRun", value ]),
-            }),
-        },
-        doneFirstRun: {
-            ...mapModuleState(settings, "settings", {
-                get: state => state.doneFirstRun || 0,
-            }),
-            ...mapModuleMutations(settings, "settings", {
-                set: (commit, value: number) => commit("set", [ "doneFirstRun", value ]),
-            }),
-        },
+        doneFirstRun: mapSetting<number>("doneFirstRun"),
         ...mapModuleState(autoStart, "autoStart", {
             autoStart: "active",
         }),
@@ -48,28 +32,24 @@ const DoesFirstRun = Vue.extend({
     methods: {
         ...mapModuleActions(autoStart, "autoStart", [ "checkAutoStartState", "enableAutoStart" ]),
         async doFirstRun() {
-            if (!this.attemptedFirstRun) {
-                if (this.doneFirstRun < 1) {
-                    // 1. Auto-start file creation.
-                    const willAutoStart = await this.checkAutoStartState();
-                    if (!willAutoStart) {
-                        const createAutoStart = await this.$dialogs.confirm({
-                            message: "Do you want BridgeCmdr to start on boot?",
-                        });
+            if (this.doneFirstRun < 1) {
+                // 1. Auto-start file creation.
+                const willAutoStart = await this.checkAutoStartState();
+                if (!willAutoStart) {
+                    const createAutoStart = await this.$dialogs.confirm({
+                        message: "Do you want BridgeCmdr to start on boot?",
+                    });
 
-                        if (createAutoStart) {
-                            try {
-                                await this.enableAutoStart();
-                            } catch (error) {
-                                await this.$dialogs.error(error);
-                            }
+                    if (createAutoStart) {
+                        try {
+                            await this.enableAutoStart();
+                        } catch (error) {
+                            await this.$dialogs.error(error);
                         }
                     }
-
-                    this.doneFirstRun = 1;
                 }
 
-                this.attemptedFirstRun = true;
+                this.doneFirstRun = 1;
             }
         },
     },

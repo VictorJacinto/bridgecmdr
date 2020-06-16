@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { get, set } from "lodash";
-import { storeModule } from "../../../foundation/helpers/vuex";
+import { mapModuleMutations, mapModuleState, storeModule } from "../../../foundation/helpers/vuex";
 import { RootState } from "../root-state";
 
 export const IconSize = [ "is-128x128", "is-96x96", "is-64x64", "is-48x48" ] as const;
@@ -64,5 +64,16 @@ const settings = storeModule<SettingsState, RootState>().make({
     },
     namespaced: true,
 });
+
+export function mapSetting<T>(path: string): { get(): T; set(value: T): void } {
+    return {
+        ...mapModuleState(settings, "settings", {
+            get: state => get(state, path) as T,
+        }),
+        ...mapModuleMutations(settings, "settings", {
+            set: (commit, value: T) => commit("set", [ path, value ]),
+        }),
+    };
+}
 
 export default settings;
