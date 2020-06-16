@@ -20,15 +20,27 @@ import { get, set } from "lodash";
 import { storeModule } from "../../../foundation/helpers/vuex";
 import { RootState } from "../root-state";
 
+export const IconSize = [ "is-128x128", "is-96x96", "is-64x64", "is-48x48" ] as const;
+export type IconSize = typeof IconSize[number];
+
+export const PowerOffTaps = [ "single", "double" ] as const;
+export type PowerOffTaps = typeof PowerOffTaps[number];
+
 type SettingsState = {
+    powerOnSwitchesAtStart: boolean;
     doneFirstRun: number;
+    powerOffWhen: PowerOffTaps;
+    iconSize: IconSize;
 };
 
 const settings = storeModule<SettingsState, RootState>().make({
     state: () => {
         // Default settings state.
         const state = {
-            doneFirstRun: 0,
+            powerOnSwitchesAtStart: false,
+            doneFirstRun:           0,
+            powerOffWhen:           PowerOffTaps[0],
+            iconSize:               IconSize[0],
         };
 
         for (const [ path, setting ] of Object.entries(window.localStorage)) {

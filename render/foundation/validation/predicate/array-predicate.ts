@@ -23,10 +23,10 @@ import { makeInnerValidator, MessageGenerator, Validator } from "../core/validat
 import AnyPredicate from "./any-predicate";
 import ArrayLikePredicate from "./array-like-predicate";
 
-type TypedArrayPredicate<A extends unknown[]|undefined, E, R> =
-    Omit<ArrayPredicate<Exclude<A, unknown[]>|E[], R>, "ofType">;
+type TypedArrayPredicate<A extends readonly unknown[]|undefined, E, R> =
+    Omit<ArrayPredicate<Exclude<A, readonly unknown[]>|readonly E[], R>, "ofType">;
 
-export default class ArrayPredicate<A extends unknown[]|undefined, R> extends ArrayLikePredicate<A, R> {
+export default class ArrayPredicate<A extends readonly unknown[]|undefined, R> extends ArrayLikePredicate<A, R> {
     constructor(required: R) {
         super("element", "elements", Array, required);
     }

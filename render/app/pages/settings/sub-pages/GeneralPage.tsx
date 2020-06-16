@@ -26,15 +26,22 @@ import CardList from "../../../components/card-list/CardList";
 import CardListEntry from "../../../components/card-list/CardListEntry";
 import UsesSettingsTitle from "../../../concerns/uses-settings-title";
 import autoStart from "../../../store/modules/auto-start";
+import { IconSize, PowerOffTaps } from "../../../store/modules/settings";
 
-const iconSizes = {
+const iconSizes: Record<IconSize, string> = {
     "is-128x128": "128×128",
     "is-96x96":   "96×96",
     "is-64x64":   "64×64",
     "is-48x48":   "48×48",
 };
 
-const IconSizeSelect = simpleDropdown((size: keyof typeof iconSizes) => [ iconSizes[size], size ]);
+const powerOffTaps: Record<PowerOffTaps, string> = {
+    "single": "When tapped once",
+    "double": "When tapped twiced",
+};
+
+const IconSizeSelect = simpleDropdown((size: IconSize) => [ iconSizes[size], size ]);
+const PowerOffSelect = simpleDropdown((taps: PowerOffTaps) => [ powerOffTaps[taps], taps ]);
 
 // @vue/component
 const GeneralPage = tsx.componentFactory.mixin(UsesSettingsTitle).create({
@@ -65,7 +72,7 @@ const GeneralPage = tsx.componentFactory.mixin(UsesSettingsTitle).create({
                 <CardList>
                     <CardListEntry class="has-cursor-pointer">
                         <template slot="content">
-                            <IconSizeSelect options={Object.keys(iconSizes)} expanded scopedSlots={{
+                            <IconSizeSelect options={IconSize} expanded scopedSlots={{
                                 default: ({ label }) => (
                                     <div class="card-content">
                                         <p class="has-text-weight-semibold">Icon size</p>
@@ -76,15 +83,15 @@ const GeneralPage = tsx.componentFactory.mixin(UsesSettingsTitle).create({
                         </template>
                     </CardListEntry>
                     <CardListEntry>
-                        {/* TODO: Change to dropdowns, Android style toggles. */}
-                        <template slot="default">
-                            <p class="has-text-weight-semibold">Power button will power off</p>
-                            <p class="has-text-light">
-                                When tapped once
-                            </p>
-                        </template>
-                        <template slot="actions">
-                            <BSwitch passiveType="is-light" type="is-white"/>
+                        <template slot="content">
+                            <PowerOffSelect options={PowerOffTaps} expanded scopedSlots={{
+                                default: ({ label }) => (
+                                    <div class="card-content">
+                                        <p class="has-text-weight-semibold">Power button will power off</p>
+                                        <p class="has-text-light">{label}</p>
+                                    </div>
+                                ),
+                            }}/>
                         </template>
                     </CardListEntry>
                     <CardListEntry>
@@ -99,7 +106,7 @@ const GeneralPage = tsx.componentFactory.mixin(UsesSettingsTitle).create({
                     </CardListEntry>
                     <CardListEntry>
                         <template slot="default">
-                            <p class="has-text-weight-semibold">Start {packageInfo.productName} when system boots</p>
+                            <p class="has-text-weight-semibold">Start {packageInfo.productName} when the system boots</p>
                         </template>
                         <template slot="actions">
                             <BSwitch v-model={this.autoStart} passiveType="is-light" type="is-white"

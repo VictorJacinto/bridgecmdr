@@ -53,8 +53,8 @@ export class PredicateSet<U extends undefined = never, R = true> {
         return new AnyPredicate();
     }
 
-    get array(): ArrayPredicate<unknown[]|U, R> {
-        return new ArrayPredicate<unknown[]|U, R>(this.required);
+    get array(): ArrayPredicate<readonly unknown[]|U, R> {
+        return new ArrayPredicate<readonly unknown[]|U, R>(this.required);
     }
 
     get boolean(): BooleanPredicate<boolean|U, R> {
