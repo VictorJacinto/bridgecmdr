@@ -25,10 +25,12 @@ import { is, prop } from "../../../foundation/validation/valid";
 import IndicatesLoading from "../../concerns/indicates-loading";
 import devices from "../../store/modules/devices";
 import { Switch } from "../../store/modules/switches";
-import { validationStatus } from "../../support/validation";
-import Driver, { DriverDescriptor } from "../../system/driver";
+import { BFieldMessageProps, validationStatus } from "../../support/validation";
+import Driver, { DriverCapabilities, DriverDescriptor } from "../../system/driver";
 import DeviceLocationInput from "../DeviceLocationInput";
 import simpleDropdown from "../SimpleDropdown";
+
+const drivers = Driver.all();
 
 const DriverDropdown = simpleDropdown((about: DriverDescriptor) => [ about.title, about.guid ]);
 
@@ -59,6 +61,15 @@ const SwitchModal = tsx.componentFactory.mixin(IndicatesLoading).create({
         onSaveClicked() {
             this.$modals.confirm(this.source);
         },
+        driverStatus(errors: string[]): BFieldMessageProps {
+            const driver = this.source.driverId ?
+                drivers.find(driver_ => driver_.guid === this.source.driverId) || null :
+                null;
+
+            return driver && driver.capabilities & DriverCapabilities.Experimental ?
+                { props: { message: "This driver is experimental", type: "is-warning" } } :
+                validationStatus(errors);
+        },
     },
     render() {
         return (
@@ -87,8 +98,8 @@ const SwitchModal = tsx.componentFactory.mixin(IndicatesLoading).create({
                         }}/>
                         <ValidationProvider name="driver" rules="required" slim scopedSlots={{
                             default: ({ errors }) => (
-                                <BField label="Driver" expanded {...validationStatus(errors)}>
-                                    <DriverDropdown v-model={this.source.driverId} options={Driver.all()}
+                                <BField label="Driver" expanded {...this.driverStatus(errors)}>
+                                    <DriverDropdown v-model={this.source.driverId} options={drivers}
                                         placeholder="Required" expanded/>
                                 </BField>
                             ),

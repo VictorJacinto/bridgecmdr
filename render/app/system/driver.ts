@@ -28,6 +28,8 @@ export enum DriverCapabilities {
     HasMultipleOutputs = 1 << 0,
     /** The device support sending the audio output to a different channel. */
     CanDecoupleAudioOutput = 1 << 1,
+    /** Indicates the driver is experimental. */
+    Experimental = 1 << 2,
 }
 
 export enum DeviceType {

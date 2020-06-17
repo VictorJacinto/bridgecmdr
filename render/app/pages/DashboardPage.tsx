@@ -27,12 +27,19 @@ import devices from "../store/modules/devices";
 import settings from "../store/modules/settings";
 import { signalShutdown } from "../support/dbus";
 
+const powerOffDoubleTapTimeout = 2000;
+
 // @vue/component
 const DashboardPage = tsx.componentFactory.mixin(DoesStartup).mixin(DoesFirstRun).mixin(HasImages).create({
-    name:     "DashboardPage",
+    name: "DashboardPage",
+    data: function () {
+        return {
+            lastPowerOffTapTime: 0,
+        };
+    },
     computed: {
         ...mapModuleState(devices, "devices", ["devices"]),
-        ...mapModuleState(settings, "settings", [ "iconSize", "powerOnSwitchesAtStart" ]),
+        ...mapModuleState(settings, "settings", [ "iconSize", "powerOffWhen", "powerOnSwitchesAtStart" ]),
         imageClasses(): string[] {
             return [ "image", "icon", this.iconSize ];
         },
@@ -57,6 +64,21 @@ const DashboardPage = tsx.componentFactory.mixin(DoesStartup).mixin(DoesFirstRun
     methods: {
         ...mapModuleActions(devices, "devices", [ "refresh", "select", "powerOn", "powerOff" ]),
         async onPowerOffClicked() {
+            if (this.powerOffWhen === "single") {
+                await this.doPowerOff();
+            } else if (Date.now() - this.lastPowerOffTapTime <= powerOffDoubleTapTimeout) {
+                await this.doPowerOff();
+            } else {
+                this.lastPowerOffTapTime = Date.now();
+                this.$buefy.notification.open({
+                    message:  "Tap the power button again to power off",
+                    duration: powerOffDoubleTapTimeout,
+                    position: "is-bottom-left",
+                    type:     "is-danger",
+                });
+            }
+        },
+        async doPowerOff() {
             try {
                 await this.powerOff();
 

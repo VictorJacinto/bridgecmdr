@@ -19,29 +19,23 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { ColorModifiers } from "buefy/types/helpers";
 
 export const IDPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/u;
-export const NewOrIDPattern = /^(?:new)|(?:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$/u;
 
-type BFieldMessageProps = {
-    props: {
+export type BFieldMessageProps = {
+    props?: {
         message: string;
-        customClass?: string|undefined;
-        type?: ColorModifiers|undefined;
+        type?: ColorModifiers;
     };
 };
 
 export function unvalidated(): BFieldMessageProps {
-    return {
-        props: {
-            "message": "",
-        },
-    };
+    return { props: { message: "" } };
 }
 
 export function validationStatus(errors: string[]): BFieldMessageProps {
     return {
         props: {
-            "message": errors.length > 0 ? errors[0] : "",
-            "type":    errors.length > 0 ? "is-danger" : undefined,
+            message: errors.length > 0 ? errors[0] : "",
+            type:    errors.length > 0 ? "is-danger" : undefined,
         },
     };
 }

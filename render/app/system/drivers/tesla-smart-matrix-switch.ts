@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { openStream, SerialBits, SerialParity, SerialStopBits } from "../../support/streams/command";
 import Driver, { DeviceType, DriverCapabilities, DriverDescriptor } from "../driver";
 
-const capabilities = DriverCapabilities.None;
+const capabilities = DriverCapabilities.Experimental;
 const about: DriverDescriptor = Object.freeze({
     guid:  "91D5BC95-A8E2-4F58-BCAC-A77BA1054D61",
     title: "TeslaSmart-compatible matrix switch",
