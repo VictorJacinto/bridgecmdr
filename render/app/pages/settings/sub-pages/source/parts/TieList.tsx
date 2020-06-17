@@ -30,9 +30,14 @@ import ManagesTies from "../../../../../concerns/managers/manages-ties";
 import switches, { Switch } from "../../../../../store/modules/switches";
 import { Tie } from "../../../../../store/modules/ties";
 import { IDPattern } from "../../../../../support/validation";
-import Driver from "../../../../../system/driver";
+import Driver, { DeviceType } from "../../../../../system/driver";
 
 const drivers = Driver.all();
+const iconMap = {
+    [DeviceType.Switch]:  "video-switch",
+    [DeviceType.Monitor]: "monitor",
+};
+
 
 // @vue/component
 const TieList = tsx.componentFactory.mixin(ManagesTies).create({
@@ -55,6 +60,16 @@ const TieList = tsx.componentFactory.mixin(ManagesTies).create({
             const switch_ = this.getSwitch(tie);
 
             return switch_ ? switch_.title : null;
+        },
+        getDeviceIconForTie(tie: Tie): string {
+            const switch_ = this.getSwitch(tie);
+            const info = (switch_ && drivers.find(driver => driver.guid === switch_.driverId)) || null;
+            const icon = (info && iconMap[info.type]) || null;
+            if (icon) {
+                return icon;
+            }
+
+            return "cog";
         },
         getDriver(tie: Tie): string|null {
             const switch_ = this.getSwitch(tie);
@@ -107,7 +122,7 @@ const TieList = tsx.componentFactory.mixin(ManagesTies).create({
                                                 (<BIcon icon="volume-medium" size="is-small"/>),
                                                 ` ${tie.outputChannels.audio} `,
                                             ] : undefined,
-                                            (<BIcon icon="cog" size="is-small"/>),
+                                            (<BIcon icon={this.getDeviceIconForTie(tie)} size="is-small"/>),
                                             ` ${this.getDriver(tie)}`,
                                         ]}</p>
                                     </template>
