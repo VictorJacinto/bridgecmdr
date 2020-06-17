@@ -1,6 +1,5 @@
 Milestone 2.0.0 (in-progress)
 
-- Use the driver to pick a monitor or switch mini-icon in the tie list.
 - Add at least two new experimental drivers.
 - Snap distribution, if classic containment gets approved.
 
