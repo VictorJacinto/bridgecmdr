@@ -23,7 +23,7 @@ import _ from "lodash";
 import SerialPort from "serialport";
 
 export interface CommandStream {
-    setEncoding(encoding: string): this;
+    setEncoding(encoding: BufferEncoding): this;
     write(data: Buffer|string): Promise<void>;
     close(): Promise<void>;
     on(event: "data", listener: (chunk: any) => void): this;
@@ -38,7 +38,7 @@ abstract class AbstractStream<Stream extends stream.Duplex> implements CommandSt
         this.connection = connection;
     }
 
-    public setEncoding(encoding: string): this {
+    public setEncoding(encoding: BufferEncoding): this {
         this.connection.setEncoding(encoding);
 
         return this;

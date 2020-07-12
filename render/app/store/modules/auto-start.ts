@@ -1,25 +1,7 @@
-/*
-BridgeCmdr - A/V switch and monitor controller
-Copyright (C) 2019-2020 Matthew Holder
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 import { promises as fs } from "fs";
+import os from "os";
 import path from "path";
 import { isNil } from "lodash";
-import xdgBasedir from "xdg-basedir";
 import { storeModule } from "../../../foundation/helpers/vuex";
 import { RootState } from "../root-state";
 
@@ -28,7 +10,9 @@ type AutoStartState = {
     loading: boolean;
 };
 
-const configDir = xdgBasedir.config;
+// We don't use XDG due to Snap overriding this value.
+const homeDir = os.homedir();
+const homeConfigDir = path.join(homeDir, ".config");
 
 const autoStart = storeModule<AutoStartState, RootState>().make({
     state: {
@@ -45,8 +29,8 @@ const autoStart = storeModule<AutoStartState, RootState>().make({
                 commit("setLoading", true);
 
                 let active = false;
-                if (configDir) {
-                    const autoStartDir = path.resolve(configDir, "autostart");
+                if (homeConfigDir) {
+                    const autoStartDir = path.resolve(homeConfigDir, "autostart");
                     const autoStartFile = "org.sleepingcats.BridgeCmdr.desktop";
                     const autoStartPath = path.resolve(autoStartDir, autoStartFile);
 
@@ -68,11 +52,11 @@ const autoStart = storeModule<AutoStartState, RootState>().make({
             try {
                 commit("setLoading", true);
 
-                if (isNil(configDir)) {
+                if (isNil(homeConfigDir)) {
                     throw new ReferenceError("The auto-start folder location is unknown");
                 }
 
-                const autoStartDir = path.resolve(configDir, "autostart");
+                const autoStartDir = path.resolve(homeConfigDir, "autostart");
                 await fs.mkdir(autoStartDir, { recursive: true });
 
                 const autoStartFile = "org.sleepingcats.BridgeCmdr.desktop";
@@ -103,11 +87,11 @@ const autoStart = storeModule<AutoStartState, RootState>().make({
             try {
                 commit("setLoading", true);
 
-                if (isNil(configDir)) {
+                if (isNil(homeConfigDir)) {
                     throw new ReferenceError("The auto-start folder location is unknown");
                 }
 
-                const autoStartDir = path.resolve(configDir, "autostart");
+                const autoStartDir = path.resolve(homeConfigDir, "autostart");
                 const autoStartFile = "org.sleepingcats.BridgeCmdr.desktop";
                 const autoStartPath = path.resolve(autoStartDir, autoStartFile);
 
