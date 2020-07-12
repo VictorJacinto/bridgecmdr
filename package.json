@@ -46,6 +46,7 @@
     "appId": "org.sleepingcats.bridgecmdr",
     "productName": "BridgeCmdr",
     "copyright": "Copyright 2019-2020 Matthew Holder",
+    "buildDependenciesFromSource": true,
     "linux": {
       "category": "AudioVideo"
     },
