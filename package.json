@@ -19,7 +19,7 @@
     "dist": "npm run prod && npm run package",
     "dist:arm": "npm run prod && npm run package:arm",
     "dist:arm64": "npm run prod && npm run package:arm64",
-    "pack": "npm run prod && npm run package:dir",
+    "pack": "npm run prod && npm run package:dir"
   },
   "repository": {
     "type": "git",
