@@ -1,6 +1,9 @@
 Milestone 2.0.0 (in-progress)
 
 - Snap distribution, if classic containment gets approved.
+
+Milestone 2.1.0
+
 - Add at least two new experimental drivers.
 
 Milestone 3.0.0
