@@ -12,10 +12,14 @@
     "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules --config build/webpack.config.js",
     "start": "electron .",
     "test": "test.js",
-    "package": "electron-builder",
+    "package": "electron-builder --linux snap",
+    "package:arm": "electron-builder --armv7l --linux snap",
+    "package:arm64": "electron-builder --arm64 --linux snap",
     "package:dir": "electron-builder --dir",
     "dist": "npm run prod && npm run package",
-    "pack": "npm run prod && npm run package:dir"
+    "dist:arm": "npm run prod && npm run package:arm",
+    "dist:arm64": "npm run prod && npm run package:arm64",
+    "pack": "npm run prod && npm run package:dir",
   },
   "repository": {
     "type": "git",
@@ -50,6 +54,7 @@
       "dist/render/**/*"
     ],
     "snap": {
+      "summary": "Controls monitors and A/V equipment in a retrogaming setup",
       "confinement": "classic",
       "grade": "devel"
     }
