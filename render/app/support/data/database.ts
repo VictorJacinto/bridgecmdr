@@ -1,3 +1,4 @@
+import { isNil } from "lodash";
 import PouchDB from "pouchdb-browser";
 import Find from "pouchdb-find";
 import { v4 as uuid } from "uuid";
@@ -14,7 +15,7 @@ export type Document<T>         = PouchDB.Core.Document<T>;
 // Install the find plug-in.
 PouchDB.plugin(Find);
 
-export default class Database<Doc extends object> {
+export default class Database<Doc> {
     private readonly handle: PouchDB.Database<Doc>;
 
     private constructor(name: string) {
@@ -24,8 +25,8 @@ export default class Database<Doc extends object> {
     /**
      * Connects to a named database.
      */
-    public static async connect<Doc extends object>(name: string, indicesBlocks: Indices[]): Promise<Database<Doc>> {
-        const database = new Database<Doc>(name);
+    static async connect<NewDoc>(name: string, indicesBlocks: Indices[]): Promise<Database<NewDoc>> {
+        const database = new Database<NewDoc>(name);
 
         const waits = [] as Promise<void>[];
         for (const indices of indicesBlocks) {
@@ -48,23 +49,22 @@ export default class Database<Doc extends object> {
     /**
      * Compacts the database.
      */
-    public compact(): Promise<void> {
+    compact(): Promise<void> {
         return this.handle.compact().then(() => undefined);
     }
 
     /**
      * Provides a means to tap into the database interface directly.
      */
-    public query<Result>(callback: (db: PouchDB.Database<Doc>) => Promise<Result>): Promise<Result> {
+    query<Result>(callback: (db: PouchDB.Database<Doc>) => Promise<Result>): Promise<Result> {
         return callback(this.handle);
     }
 
     /**
      * Gets all document from the database.
      */
-    public async all(): Promise<ExistingDocument<Doc>[]> {
+    async all(): Promise<ExistingDocument<Doc>[]> {
         const response = await this.handle.allDocs({
-            // eslint-disable-next-line @typescript-eslint/camelcase
             include_docs: true,
             attachments:  true,
             binary:       true,
@@ -73,13 +73,14 @@ export default class Database<Doc extends object> {
             endkey:       "Z",
         });
 
-        return response.rows.map(row => row.doc as ExistingDocument<Doc>);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return response.rows.filter(row => !isNil(row.doc)).map(row => row.doc!);
     }
 
     /**
      * Gets the specified document from the database.
      */
-    public get(id: string, attachments = true): Promise<GetDocument<Doc>> {
+    get(id: string, attachments = true): Promise<GetDocument<Doc>> {
         return this.handle.get<Doc>(id, attachments ? {
             attachments: true,
             binary:      true,
@@ -89,7 +90,7 @@ export default class Database<Doc extends object> {
     /**
      * Adds a document to the database.
      */
-    public async add(doc: Document<Doc>, ...attachments: File[]): Promise<GetDocument<Doc>> {
+    async add(doc: Document<Doc>, ...attachments: File[]): Promise<GetDocument<Doc>> {
         doc._id = uuid().toUpperCase();
 
         await this.handle.put(doc);
@@ -103,7 +104,7 @@ export default class Database<Doc extends object> {
     /**
      * Updates an existing document in the database.
      */
-    public async update(doc: GetDocument<Doc>, ...attachments: File[]): Promise<GetDocument<Doc>> {
+    async update(doc: GetDocument<Doc>, ...attachments: File[]): Promise<GetDocument<Doc>> {
         const id  = doc._id;
         await this.handle.put(doc);
         if (attachments.length > 0) {
@@ -116,9 +117,7 @@ export default class Database<Doc extends object> {
     /**
      * Removes a document from the database.
      */
-    public async remove(id: string): Promise<void> {
-        // TODO: ow validation
-
+    async remove(id: string): Promise<void> {
         const doc = await this.get(id, false);
         await this.handle.remove(doc);
     }

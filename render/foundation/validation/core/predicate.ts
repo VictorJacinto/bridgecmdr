@@ -1,17 +1,15 @@
 import { isNil, isObject, isString } from "lodash";
-import { PropOptions } from "vue";
-import { BaseType, Constructor, DefaultOf, KnownPropOptions } from "./core";
-import { makeInnerValidator, MessageGenerator, SimpleValidator, Validator, ValidatorFunction } from "./validator";
+import type { PropOptions } from "vue";
+import type { BaseType, Constructor, DefaultOf, KnownPropOptions } from "./core";
+import type { MessageGenerator, SimpleValidator, Validator, ValidatorFunction } from "./validator";
+import { makeInnerValidator } from "./validator";
 
-export const IsPredicate = Symbol.for("@@Predicate");
+export const _isPredicate = Symbol.for("@@Predicate");
 
-// TODO: O optional rather than R required?
 export interface BasePredicate<T = unknown, R = false> {
-    readonly [IsPredicate]: true;
-
-    type: undefined|Constructor;
-
-    required: R;
+    readonly [_isPredicate]: true;
+    readonly type: undefined|Constructor;
+    readonly required: R;
 
     options<D extends T>($default?: DefaultOf<D>): KnownPropOptions<T, R>;
 
@@ -19,32 +17,22 @@ export interface BasePredicate<T = unknown, R = false> {
 }
 
 export function isPredicate(value: unknown): value is BasePredicate {
-    return isObject(value) && Boolean((value as BasePredicate)[IsPredicate]);
+    return isObject(value) && Boolean((value as BasePredicate)[_isPredicate]);
 }
 
 export default abstract class Predicate<T = unknown, R = false> implements BasePredicate<T, R> {
-    private readonly isRequired: R;
     private readonly myValidators: Validator<BaseType<T>>[];
-    private myType: undefined|Constructor;
+    private readonly myType: undefined|Constructor;
     private isNegated = false;
 
+    readonly [_isPredicate] = true;
+    readonly required;
+    readonly type;
+
     protected constructor(type: undefined|Constructor, required: R) {
-        this.isRequired = required;
+        this.required = required;
         this.myValidators = [];
-        this.myType = type;
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-    get [IsPredicate](): true {
-        return true;
-    }
-
-    get type(): undefined|Constructor {
-        return this.myType;
-    }
-
-    get required(): R {
-        return this.isRequired;
+        this.type = type;
     }
 
     get not(): this {
@@ -55,7 +43,7 @@ export default abstract class Predicate<T = unknown, R = false> implements BaseP
 
     options<D extends T>($default?: DefaultOf<D>): KnownPropOptions<T, R> {
         const options: PropOptions<T> = this.myType ? { type: this.myType } : {};
-        if (this.isRequired && isNil($default)) {
+        if (this.required && isNil($default)) {
             options.required = true;
         } else {
             options.default = $default;
@@ -130,9 +118,5 @@ export default abstract class Predicate<T = unknown, R = false> implements BaseP
         this.isNegated = false;
 
         return this;
-    }
-
-    protected setType(value: Constructor): void {
-        this.myType = value;
     }
 }

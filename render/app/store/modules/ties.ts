@@ -1,7 +1,8 @@
-import { ModuleState } from "../../../foundation/helpers/vuex";
-import Model from "../../support/data/model";
-import Module  from "../../support/data/module";
-import { RootState } from "../root-state";
+import type { RegisterOptions } from "../../../foundation/system/vuex";
+import { Module } from "../../../foundation/system/vuex";
+import type Model from "../../support/data/model";
+import DataModule from "../base/data-module";
+import store from "../store";
 
 export interface TieOutput {
     video: number;
@@ -24,25 +25,30 @@ export interface Tie extends EmptyTie {
     outputChannels: TieOutput;
 }
 
-const ties = Module.of<Tie, RootState, Tie, EmptyTie>({
-    name:    "ties",
-    indices: [
-        { sourceId: ["sourceId"] },
-        { switchId: ["switchId"] },
-    ],
-    term:  () => "tie",
-    empty: () => ({
-        _id:            undefined,
-        sourceId:       undefined,
-        switchId:       undefined,
-        inputChannel:   0,
-        outputChannels: {
-            audio: 0,
-            video: 0,
-        },
-    }),
-});
+@Module
+class Ties extends DataModule<Tie, Tie, EmptyTie> {
+    constructor(register: RegisterOptions) {
+        super(register, {
+            name:    "ties",
+            indices: [
+                { sourceId: ["sourceId"] },
+                { switchId: ["switchId"] },
+            ],
+            term:  () => "tie",
+            empty: () => ({
+                _id:            undefined,
+                sourceId:       undefined,
+                switchId:       undefined,
+                inputChannel:   0,
+                outputChannels: {
+                    audio: 0,
+                    video: 0,
+                },
+            }),
+        });
+    }
+}
 
-export type TiesState = ModuleState<typeof ties>;
+const ties = new Ties({ store });
 
 export default ties;

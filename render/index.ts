@@ -1,5 +1,5 @@
 // app scaffolding
-import Vue from "vue";
+import type Vue from "vue";
 import isBooted from "./app/boot/bootstrap";
 import { defaultOf } from "./foundation/helpers/module";
 
@@ -13,7 +13,8 @@ declare global {
 // The main application instance.
 window.addEventListener("DOMContentLoaded", async () => {
     await isBooted();
-    const Application = defaultOf(await import(/* webpackMode: "eager" */ "./app/Application"));
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const Application = defaultOf(await import(/* webpackMode: "eager" */ "./app/Application.vue"));
     window.theApp = new Application({ el: "#root" });
 });

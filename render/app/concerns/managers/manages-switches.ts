@@ -1,8 +1,12 @@
-import SwitchModal from "../../components/modals/SwitchModal";
+import type { VueConstructor } from "vue";
+import Component from "vue-class-component";
+import SwitchModal from "../../components/modals/SwitchModal.vue";
 import switches from "../../store/modules/switches";
-import managerData from "../manager-data";
+import ManagesData from "../base/manages-data";
 
-const ManagesSwitches = managerData(switches, SwitchModal);
+@Component({ name: "ManagesSwitches" })
+export default class ManagesSwitches extends ManagesData<typeof switches> {
+    module = (): typeof switches => switches;
 
-type ManagesSwitches = InstanceType<typeof ManagesSwitches>;
-export default ManagesSwitches;
+    modal = (): VueConstructor => SwitchModal;
+}

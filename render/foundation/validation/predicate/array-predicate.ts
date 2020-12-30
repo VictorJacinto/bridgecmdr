@@ -1,7 +1,9 @@
-import { every,isArray,some } from "lodash";
-import { BaseType } from "../core/core";
-import { BasePredicate } from "../core/predicate";
-import { makeInnerValidator, MessageGenerator, Validator } from "../core/validator";
+import { every, isArray, some, toString } from "lodash";
+import type { BaseType } from "../core/core";
+import { toReadableString } from "../core/core";
+import type { BasePredicate } from "../core/predicate";
+import type { MessageGenerator, Validator } from "../core/validator";
+import { makeInnerValidator } from "../core/validator";
 import AnyPredicate from "./any-predicate";
 import ArrayLikePredicate from "./array-like-predicate";
 
@@ -19,8 +21,8 @@ export default class ArrayPredicate<A extends readonly unknown[]|undefined, R> e
         }
 
         return this.wrapValidator(value => every(items, item => value.includes(item)),
-            value => `Expected to include all of ${items}, but received ${value}`,
-            value => `Expected to not include all of ${items}, but received ${value}`);
+            value => `Expected to include all of ${toReadableString(items)}, but received ${toString(value)}`,
+            value => `Expected to not include all of ${toReadableString(items)}, but received ${toString(value)}`);
     }
 
     includesAny(...items: BaseType<A>): this {
@@ -29,8 +31,8 @@ export default class ArrayPredicate<A extends readonly unknown[]|undefined, R> e
         }
 
         return this.wrapValidator(value => some(items, item => value.includes(item)),
-            value => `Expected to include some of ${items}, but received ${value}`,
-            value => `Expected to not include some of ${items}, but received ${value}`);
+            value => `Expected to include some of ${toReadableString(items)}, but received ${toString(value)}`,
+            value => `Expected to not include some of ${toReadableString(items)}, but received ${toString(value)}`);
     }
 
     ofType<E>(): TypedArrayPredicate<A, E, R>;

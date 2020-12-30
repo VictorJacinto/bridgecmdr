@@ -1,131 +1,72 @@
-import { isNil, tap } from "lodash";
-import { ModuleState } from "../../../foundation/helpers/vuex";
-import { Document, ExistingDocument } from "../../support/data/database";
-import Model from "../../support/data/model";
-import Module from "../../support/data/module";
-import { RootState } from "../root-state";
+import { isNil, omit } from "lodash";
+import type { RegisterOptions } from "../../../foundation/system/vuex";
+import { Action, Module } from "../../../foundation/system/vuex";
+import type { Document, GetDocument } from "../../support/data/database";
+import type Model from "../../support/data/model";
+import type { RevisionId } from "../../support/data/model";
+import type { DocumentArgs } from "../base/data-module";
+import DataModule, { DATABASE } from "../base/data-module";
+import store from "../store";
+import ties from "./ties";
 
 export interface Source extends Model {
     title: string;
     image: File;
 }
 
-type SourceDocument = Document<{
+type SourceDocument = Model & Document<{
     title: string;
     image: string;
 }>;
 
-const translate = {
-    one(doc: ExistingDocument<SourceDocument>): null|Source {
+@Module
+class Sources extends DataModule<Source, SourceDocument> {
+    constructor(register: RegisterOptions) {
+        super(register, {
+            name:  "sources",
+            term:  () => "source",
+            empty: () => ({
+                _id:   undefined,
+                image: undefined,
+                title: "",
+            }),
+        });
+    }
+
+    @Action
+    async remove(id: string): Promise<string> {
+        const connection = await this[DATABASE];
+        await connection.remove(id);
+
+        await ties.find({ sourceId: id });
+
+        await Promise.all(ties.items.map(item => ties.remove(item._id)));
+
+        return id;
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    protected toModel(doc: GetDocument<SourceDocument>): Source {
         if (!isNil(doc._attachments) && !isNil(doc._attachments[doc.image])) {
             const attachment = doc._attachments[doc.image] as PouchDB.Core.FullAttachment;
             if (!isNil(attachment.data)) {
-                return {
-                    _id:   doc._id,
-                    title: doc.title,
-                    image: new File([attachment.data as Blob], doc.image, { type: attachment.content_type }),
-                };
+                const image = new File([attachment.data as Blob], doc.image, { type: attachment.content_type });
+
+                return { ...omit(doc, "_attachments"), image };
             }
         }
 
-        return null;
-    },
-    many(docs: ExistingDocument<SourceDocument>[]): Source[] {
-        const records = [] as Source[];
-        for (const doc of docs) {
-            const record = translate.one(doc);
-            if (record) {
-                records.push(record);
-            }
-        }
+        throw new Error("Source missing image attachment");
+    }
 
-        return records;
-    },
-};
+    protected toDocument(model: Source): DocumentArgs<SourceDocument>;
+    protected toDocument(model: Source, rev: RevisionId): DocumentArgs<GetDocument<SourceDocument>>;
+    // eslint-disable-next-line class-methods-use-this
+    protected toDocument(model: Source, _rev?: RevisionId): DocumentArgs<SourceDocument> {
+        return [ { ...model, _rev, image: model.image.name }, model.image ];
+    }
+}
 
-const sources = Module.of<Source, RootState, SourceDocument>({
-    name:  "sources",
-    term:  () => "source",
-    empty: () => ({
-        _id:   undefined,
-        image: undefined,
-        title: "",
-    }),
-    actions: {
-        all: async ({ commit, database }) => {
-            const docs = await database.all();
-
-            commit("refresh", translate.many(docs));
-        },
-        get: async ({ commit, database }, id: string) => {
-            const record = translate.one(await database.get(id));
-            if (record) {
-                commit("show", record);
-            } else {
-                throw new ReferenceError(`Source "${id}" not found`);
-            }
-        },
-
-        find: async ({ commit, database }, selector: PouchDB.Find.FindRequest<Source>) => {
-            const docs = await database.query(async function (db) {
-                const response = await db.find({ selector });
-
-                return response.docs;
-            });
-
-            commit("refresh", translate.many(docs));
-        },
-
-        add: async ({ commit, database }, record: Source) => {
-            const doc = await database.add({
-                _id:   record._id,
-                title: record.title,
-                image: record.image.name,
-            }, record.image);
-
-            const result = {
-                _id:   doc._id,
-                title: doc.title,
-                image: record.image,
-            };
-
-            commit("append", result);
-
-            return result;
-        },
-
-        update: async ({ commit, database }, record: Source) => {
-            let doc = await database.get(record._id);
-            doc = await database.update(tap(doc, value => {
-                value.title = record.title;
-                value.image = record.image.name;
-            }), record.image);
-
-            const result = {
-                _rev:  doc._rev,
-                _id:   doc._id,
-                title: doc.title,
-                image: record.image,
-            };
-
-            commit("replace", result);
-
-            return result;
-        },
-
-        remove: async ({ commit, dispatch, rootState, database }, id: string) => {
-            await database.remove(id);
-            commit("delete", id);
-
-            await dispatch("ties/find", { sourceId: id }, { root: true });
-
-            await Promise.all(rootState.ties.items.map(item => dispatch("ties/remove", item._id, { root: true })));
-
-            return id;
-        },
-    },
-});
-
-export type SourcesState = ModuleState<typeof sources>;
+const sources = new Sources({ store });
 
 export default sources;

@@ -1,5 +1,6 @@
 import { defaults } from "lodash";
-import Vue, { VueConstructor } from "vue";
+import type { VueConstructor } from "vue";
+import type Vue from "vue";
 
 export const CanCancelActions = [ "escape", "outside", "x" ] as const;
 export type CanCancelActions = typeof CanCancelActions[number];
@@ -32,13 +33,9 @@ interface Modals {
 function $modals(this: Vue): Modals {
     return {
         open: (component, config = {}) => new Promise(resolve => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const confirm = (value: any): void => { resolve(value) };
+            const confirm = (value: never): void => { resolve(value) };
             const cancel = (): void => { resolve(null) };
             const events = { confirm, cancel };
-
-            // TODO: Resolve the component if a function...
-
             const resolved = defaults({ parent: this, onCancel: cancel, component, events, ...config },
                 defaultConfig);
 

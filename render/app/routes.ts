@@ -1,11 +1,11 @@
 import { route } from "../foundation/helpers/routing";
-import DashboardPage from "./pages/DashboardPage";
-import SettingsFramePage from "./pages/settings/SettingsFramePage";
-import GeneralPage from "./pages/settings/sub-pages/GeneralPage";
-import SettingsPage from "./pages/settings/sub-pages/SettingsPage";
-import SwitchList from "./pages/settings/sub-pages/SwitchList";
-import SourceList from "./pages/settings/sub-pages/source/SourceList";
-import SourcePage from "./pages/settings/sub-pages/source/SourcePage";
+import DashboardPage from "./pages/DashboardPage.vue";
+import SettingsFramePage from "./pages/settings/SettingsFramePage.vue";
+import GeneralPage from "./pages/settings/sub-pages/GeneralPage.vue";
+import SettingsPage from "./pages/settings/sub-pages/SettingsPage.vue";
+import SwitchList from "./pages/settings/sub-pages/SwitchList.vue";
+import SourceList from "./pages/settings/sub-pages/source/SourceList.vue";
+import SourcePage from "./pages/settings/sub-pages/source/SourcePage.vue";
 
 const routes = [
     // Home

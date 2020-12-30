@@ -1,7 +1,8 @@
+import Component from "vue-class-component";
 import ties from "../../../store/modules/ties";
-import dataSource from "../DataSource";
+import DataSource from "../../base/DataSource";
 
-const Ties = dataSource("ties", ties);
-
-type Ties = InstanceType<typeof Ties>;
-export default Ties;
+@Component({ name: "Ties" })
+export default class Ties extends DataSource<typeof ties> {
+    module = (): typeof ties => ties;
+}

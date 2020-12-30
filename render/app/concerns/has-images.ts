@@ -1,17 +1,12 @@
 import Vue from "vue";
+import Component from "vue-class-component";
 import ImageCache from "../support/image-cache";
 
-const HasImages = Vue.extend({
-    name: "HasImages",
-    data: function () {
-        return {
-            images: new ImageCache(),
-        };
-    },
-    beforeDestroy() {
-        this.images.revoke();
-    },
-});
+@Component({ name: "HasImages" })
+export default class HasImages extends Vue {
+    images = new ImageCache();
 
-type HasImages = InstanceType<typeof HasImages>;
-export default HasImages;
+    beforeDestroy(): void {
+        this.images.revoke();
+    }
+}

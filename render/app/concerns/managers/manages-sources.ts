@@ -1,8 +1,12 @@
-import SourceModal from "../../components/modals/SourceModal";
+import type { VueConstructor } from "vue";
+import Component from "vue-class-component";
+import SourceModal from "../../components/modals/SourceModal.vue";
 import sources from "../../store/modules/sources";
-import managerData from "../manager-data";
+import ManagesData from "../base/manages-data";
 
-const ManagesSources = managerData(sources, SourceModal);
+@Component({ name: "ManagesSources" })
+export default class ManagesSources extends ManagesData<typeof sources> {
+    module = (): typeof sources => sources;
 
-type ManagesSources = InstanceType<typeof ManagesSources>;
-export default ManagesSources;
+    modal = (): VueConstructor => SourceModal;
+}

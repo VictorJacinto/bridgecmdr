@@ -1,8 +1,12 @@
-import TieModal from "../../components/modals/TieModal";
+import Component from "vue-class-component";
+import type { VueConstructor } from "vue/types/umd";
+import TieModal from "../../components/modals/TieModal.vue";
 import ties from "../../store/modules/ties";
-import managerData from "../manager-data";
+import ManagesData from "../base/manages-data";
 
-const ManagesTies = managerData(ties, TieModal);
+@Component({ name: "ManagesTies" })
+export default class ManagesTies extends ManagesData<typeof ties> {
+    module = (): typeof ties => ties;
 
-type ManagesTies = InstanceType<typeof ManagesTies>;
-export default ManagesTies;
+    modal = (): VueConstructor => TieModal;
+}

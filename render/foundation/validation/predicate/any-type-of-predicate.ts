@@ -1,38 +1,30 @@
 import { isNil } from "lodash";
-import { PropOptions } from "vue";
-import { BaseType, Constructor, DefaultOf, KnownPropOptions } from "../core/core";
-import { BasePredicate, IsPredicate } from "../core/predicate";
-import { makeInnerValidator, Validator } from "../core/validator";
+import type { PropOptions } from "vue";
+import type { BaseType, Constructor, DefaultOf, KnownPropOptions } from "../core/core";
+import type { BasePredicate } from "../core/predicate";
+import { _isPredicate } from "../core/predicate";
+import type { Validator } from "../core/validator";
+import { makeInnerValidator } from "../core/validator";
 
 export default class AnyTypeOfPredicate<T, R> implements BasePredicate<T, R> {
-    private readonly isRequired: R;
     private readonly myPredicates: BasePredicate<unknown, true>[];
+
+    readonly [_isPredicate] = true;
+    readonly type = undefined;
+    readonly required;
 
     constructor(predicates: BasePredicate<unknown, true>[], required: R) {
         if (predicates.length === 0) {
             throw new Error("No predicates provided for Any validation");
         }
 
-        this.isRequired = required;
+        this.required = required;
         this.myPredicates = predicates;
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-    get [IsPredicate](): true {
-        return true;
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-    get type(): undefined|Constructor {
-        return undefined;
-    }
-
-    get required(): R {
-        return this.isRequired;
     }
 
     options<D extends T>($default?: DefaultOf<D>): KnownPropOptions<T, R> {
         this.myPredicates.forEach(predicate => {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (!predicate.required) {
                 console.warn("Nested predicates of Any should not be optional, " +
                              "consider making the Any optional");
@@ -52,7 +44,7 @@ export default class AnyTypeOfPredicate<T, R> implements BasePredicate<T, R> {
         }
 
         const options: PropOptions<T> = types.length > 0 ? { type: types } : {};
-        if (this.isRequired && isNil($default)) {
+        if (this.required && isNil($default)) {
             options.required = true;
         } else {
             options.default = $default;
@@ -95,7 +87,11 @@ export default class AnyTypeOfPredicate<T, R> implements BasePredicate<T, R> {
                     for (const predicate of this.myPredicates) {
                         if (nested || !isNil(predicate.type)) {
                             const [ first, ...validators ] = predicate.validators(true);
+                            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                             if (first) {
+                                // Test with the initial validator, but move on if it fails.
+                                // This is usually the basic type check validator.  Once passed,
+                                // the remaining validators are fatal.
                                 if (first.validate(value)) {
                                     // This validator set should be used.
 

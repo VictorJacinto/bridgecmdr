@@ -1,5 +1,5 @@
 import { isNil } from "lodash";
-import { Source } from "../store/modules/sources";
+import type { Source } from "../store/modules/sources";
 
 type IconData = {
     file: File;

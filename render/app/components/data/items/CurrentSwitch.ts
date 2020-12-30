@@ -1,7 +1,8 @@
+import Component from "vue-class-component";
 import switches from "../../../store/modules/switches";
-import dataItem from "../DataItem";
+import DataItem from "../../base/DataItem";
 
-const CurrentSwitch = dataItem("switches", switches);
-
-type CurrentSwitch = InstanceType<typeof CurrentSwitch>;
-export default CurrentSwitch;
+@Component({ name: "CurrentSwitch" })
+export default class CurrentSwitch extends DataItem<typeof switches> {
+    module = (): typeof switches => switches;
+}

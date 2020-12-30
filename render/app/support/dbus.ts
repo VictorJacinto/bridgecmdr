@@ -1,8 +1,8 @@
 import subprocess from "child_process";
 
 export enum DBus {
-    SYSTEM  = "--system",
-    SESSION = "--session",
+    system  = "--system",
+    session = "--session",
 }
 
 export function dbusSend(dbus: DBus, bus: string, objPath: string, ifName: string, member: string, ...args: string[]): Promise<void> {
@@ -20,6 +20,6 @@ export function dbusSend(dbus: DBus, bus: string, objPath: string, ifName: strin
 }
 
 export function signalShutdown(): Promise<void> {
-    return dbusSend(DBus.SYSTEM, "org.freedesktop.login1", "/org/freedesktop/login1",
+    return dbusSend(DBus.system, "org.freedesktop.login1", "/org/freedesktop/login1",
         "org.freedesktop.login1.Manager", "PowerOff", "boolean:false");
 }

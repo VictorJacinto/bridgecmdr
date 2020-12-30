@@ -1,5 +1,6 @@
-import { BLoadingComponent } from "buefy/types/components";
-import Vue, { VueConstructor } from "vue";
+import type { BLoadingComponent } from "buefy/types/components";
+import type { VueConstructor } from "vue";
+import Vue from "vue";
 
 interface Loading {
     while<R>(operation: PromiseLike<R>): Promise<R>;

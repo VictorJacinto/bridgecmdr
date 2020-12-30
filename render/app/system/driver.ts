@@ -5,20 +5,20 @@ import { once } from "lodash";
  */
 export enum DriverCapabilities {
     /** The device has no extended capabilities. */
-    None = 0,
+    none = 0b00000000,
     /** The device has multiple output channels. */
-    HasMultipleOutputs = 1 << 0,
+    hasMultipleOutputs = 0b00000001,
     /** The device support sending the audio output to a different channel. */
-    CanDecoupleAudioOutput = 1 << 1,
+    canDecoupleAudioOutput = 0b00000010,
     /** Indicates the driver is experimental. */
-    Experimental = 1 << 2,
+    experimental = 0b00000100,
 }
 
 export enum DeviceType {
     /** Indicates that the device is a switch. */
-    Switch,
+    switch,
     /** Indicates that the device is a monitor. */
-    Monitor,
+    monitor,
 }
 
 export type DriverDescriptor = {
@@ -78,7 +78,6 @@ export default abstract class Driver {
             throw new Error(`No such driver with GUID "${guid}"`);
         }
 
-        // eslint-disable-next-line new-cap
         return driver.load(path);
     }
 

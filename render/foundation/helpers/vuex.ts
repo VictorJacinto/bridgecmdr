@@ -1,30 +1,8 @@
-/*
-BridgeCmdr - A/V switch and monitor controller
-Copyright (C) 2019-2020 Matthew Holder
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/ban-types */
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { identity } from "lodash";
-import { SetRequired } from "type-fest";
-import { Module, ActionObject, mapActions, mapMutations, mapGetters, mapState } from "vuex";
-
-// noinspection JSUnusedGlobalSymbols
-export type ModuleState<M extends Module<any, any>> = M extends Module<infer S, any> ? S : never;
-// noinspection JSUnusedGlobalSymbols
-export type ModuleRootState<M extends Module<any, any>> = M extends Module<any, infer R> ? R : never;
+import type { SetRequired } from "type-fest";
+import type { Module, ActionObject } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 
 type AnyVuexModule = Module<any, any>;
 
@@ -80,41 +58,6 @@ export function mapModuleGetters(_module: any, namespace: any, targets?: any): a
     return mapGetters(namespace, targets);
 }
 
-type VuexModuleWithMutations = SetRequired<AnyVuexModule, "mutations">;
-
-type Commit<M extends VuexModuleWithMutations> = (type: keyof M["mutations"], payload?: any) => void;
-type InlineMutation<F extends Function, M extends VuexModuleWithMutations> =
-    F extends (commit: Commit<M>) => void ? () => void :
-    F extends (commit: Commit<M>, payload: infer P) => void ? (payload: P) => void :
-    never;
-
-type MutationMapHandler<M extends VuexModuleWithMutations> = (commit: Commit<M>, payload?: any) => void;
-
-type MutationMapTargets<M extends VuexModuleWithMutations> =
-    readonly (keyof M["mutations"])[]|
-    Record<string, keyof M["mutations"]>|
-    Record<string, MutationMapHandler<M>>;
-
-type DefinedMutation<F extends (...args: any) => any> =
-    F extends () => void ? () => void :
-    F extends (injectee: any) => void ? () => void :
-    F extends (injectee: any, payload: infer P) => void ? (payload: P) => void :
-    never;
-
-type ResolvedMutationMappings<M extends VuexModuleWithMutations, Map extends MutationMapTargets<M>> =
-    Map extends Record<string, MutationMapHandler<M>> ? { [P in keyof Map]: InlineMutation<Map[P], M> } :
-    Map extends Record<string, keyof M["mutations"]> ? { [P in keyof Map]: DefinedMutation<M["mutations"][Map[P]]> } :
-    Map extends readonly (keyof M["mutations"])[] ? { [K in Map[number]]: DefinedMutation<M["mutations"][K]> } :
-    never;
-
-export function mapModuleMutations<M extends VuexModuleWithMutations, Targets extends MutationMapTargets<M>>(
-    _module: M, namespace: string, targets: Targets): ResolvedMutationMappings<M, Targets>;
-export function mapModuleMutations<M extends VuexModuleWithMutations, Targets extends MutationMapTargets<M>>(
-    _module: M, targets: Targets): ResolvedMutationMappings<M, Targets>;
-export function mapModuleMutations(_module: any, namespace: any, targets?: any): any {
-    return mapMutations(namespace, targets);
-}
-
 type VuexModuleWithActions = SetRequired<AnyVuexModule, "actions">;
 
 type Dispatch<M extends VuexModuleWithActions> = (type: keyof M["actions"], payload?: any) => void;
@@ -157,7 +100,3 @@ export function mapModuleActions<M extends VuexModuleWithActions, Targets extend
 export function mapModuleActions(_module: any, namespace: any, targets?: any): any {
     return mapActions(namespace, targets);
 }
-
-export const storeModule = identity(<State extends object, RootState extends object = State>() => ({
-    make: identity(<M extends Module<State, RootState>>(config: M) => config),
-}));

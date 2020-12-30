@@ -1,6 +1,6 @@
 import { isEmpty } from "lodash";
-import { VueConstructor } from "vue";
-import { RouteConfig } from "vue-router";
+import type { VueConstructor } from "vue";
+import type { RouteConfig } from "vue-router";
 
 export function route<D extends VueConstructor>(name: string|undefined, path: string, component: D, children?: RouteConfig[]): RouteConfig {
     const props = path.includes(":");

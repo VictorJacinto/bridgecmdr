@@ -1,6 +1,6 @@
 import mdiSvgMetadata from "@mdi/svg/meta.json";
 import { keyBy } from "lodash";
-import { ElementType } from "../../foundation/helpers/typing";
+import type { ElementType } from "../../foundation/helpers/typing";
 
 export type IconMetaData = ElementType<typeof mdiSvgMetadata>;
 const icons = keyBy(mdiSvgMetadata, "name");

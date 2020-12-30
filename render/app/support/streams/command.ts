@@ -1,24 +1,6 @@
-/*
-BridgeCmdr - A/V switch and monitor controller
-Copyright (C) 2019-2020 Matthew Holder
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import net from "net";
-import stream from "stream";
+import type stream from "stream";
 import _ from "lodash";
 import SerialPort from "serialport";
 
@@ -38,19 +20,19 @@ abstract class AbstractStream<Stream extends stream.Duplex> implements CommandSt
         this.connection = connection;
     }
 
-    public setEncoding(encoding: BufferEncoding): this {
+    setEncoding(encoding: BufferEncoding): this {
         this.connection.setEncoding(encoding);
 
         return this;
     }
 
-    public on(event: string | symbol, listener: (...args: any[]) => void): this {
+    on(event: string | symbol, listener: (...args: any[]) => void): this {
         this.connection.on(event, listener);
 
         return this;
     }
 
-    public write(data: string|Buffer): Promise<void> {
+    write(data: string|Buffer): Promise<void> {
         return new Promise((resolve, reject) => {
             const ctx = {
                 then:  () => { resolve(); ctx.done() },
@@ -69,13 +51,14 @@ abstract class AbstractStream<Stream extends stream.Duplex> implements CommandSt
 }
 
 class SerialStream extends AbstractStream<SerialPort> {
-    public constructor(connection: SerialPort) {
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+    constructor(connection: SerialPort) {
         super(connection);
     }
 
-    public async close(): Promise<void> {
+    async close(): Promise<void> {
         await new Promise((resolve, reject) => {
-            this.connection.close(error => { error ? reject(error) : resolve() });
+            this.connection.close(error => { error ? reject(error) : resolve(undefined) });
         });
 
         this.connection.destroy();
@@ -83,14 +66,15 @@ class SerialStream extends AbstractStream<SerialPort> {
 }
 
 class NetStream extends AbstractStream<net.Socket> {
-    public constructor(connection: net.Socket) {
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+    constructor(connection: net.Socket) {
         super(connection);
     }
 
-    public async close(): Promise<void> {
+    async close(): Promise<void> {
         await new Promise((resolve, reject) => {
             this.connection.once("error", error => reject(error));
-            this.connection.end(() => resolve());
+            this.connection.end(() => resolve(undefined));
         });
 
         this.connection.destroy();
@@ -98,27 +82,27 @@ class NetStream extends AbstractStream<net.Socket> {
 }
 
 export enum SerialBits {
-    FIVE  = 5,
-    SIX   = 6,
-    SEVEN = 7,
-    EIGHT = 8,
+    five  = 5,
+    six   = 6,
+    seven = 7,
+    eight = 8,
 }
 
 export enum SerialStopBits {
-    ONE = 1,
-    TWO = 2,
+    one = 1,
+    two = 2,
 }
 
 export enum SerialParity {
-    NONE  = "none",
-    EVEN  = "even",
-    MARK  = "mark",
-    ODD   = "odd",
-    SPACE = "space",
+    none  = "none",
+    even  = "even",
+    mark  = "mark",
+    odd   = "odd",
+    space = "space",
 }
 
 export interface CombinedStreamOptions {
-    baudReat?: number;
+    baudRate?: number;
     bits?:     SerialBits;
     stopBits?: SerialStopBits;
     parity?:   SerialParity;
@@ -126,10 +110,10 @@ export interface CombinedStreamOptions {
 }
 
 const defaultOptions: CombinedStreamOptions = Object.freeze({
-    baudReat: 9600,
-    bits:     SerialBits.EIGHT,
-    stopBits: SerialStopBits.ONE,
-    parity:   SerialParity.NONE,
+    baudRate: 9600,
+    bits:     SerialBits.eight,
+    stopBits: SerialStopBits.one,
+    parity:   SerialParity.none,
     port:     23,
 });
 
@@ -138,7 +122,7 @@ export function openStream(path: string, options = defaultOptions): Promise<Comm
 
     if (path.startsWith("port:")) {
         const serialOptions: SerialPort.OpenOptions = {
-            baudRate: options.baudReat,
+            baudRate: options.baudRate,
             dataBits: options.bits,
             stopBits: options.stopBits,
             parity:   options.parity,

@@ -1,28 +1,20 @@
 import Vue from "vue";
+import Component from "vue-class-component";
 
-const IndicatesLoading = Vue.extend({
-    name: "IndicatesLoading",
-    data: function () {
-        return {
-            loadingWeight: 0,
-        };
-    },
-    computed: {
-        loading(): boolean {
-            return this.loadingWeight > 0;
-        },
-    },
-    methods: {
-        async loadingWhile<R>(operation: PromiseLike<R>) {
-            ++this.loadingWeight;
-            try {
-                return await operation;
-            } finally {
-                --this.loadingWeight;
-            }
-        },
-    },
-});
+@Component({ name: "IndicatesLoading" })
+export default class IndicatesLoading extends Vue {
+    loadingWeight = 0;
 
-type IndicatesLoading = InstanceType<typeof IndicatesLoading>;
-export default IndicatesLoading;
+    get loading(): boolean {
+        return this.loadingWeight > 0;
+    }
+
+    async loadingWhile<R>(operation: PromiseLike<R>): Promise<R> {
+        ++this.loadingWeight;
+        try {
+            return await operation;
+        } finally {
+            --this.loadingWeight;
+        }
+    }
+}

@@ -1,7 +1,7 @@
-import { isBoolean } from "lodash";
-import { BaseType } from "../core/core";
+import { isBoolean, toString } from "lodash";
+import type { BaseType } from "../core/core";
 import Predicate from "../core/predicate";
-import { Validator } from "../core/validator";
+import type { Validator } from "../core/validator";
 
 type ForcedBooleanPredicate<B extends false|true|boolean|undefined, V extends false|true, R> =
     Omit<BooleanPredicate<Exclude<B, boolean>|V, R>, "true" | "false">;
@@ -13,15 +13,15 @@ export default class BooleanPredicate<B extends false|true|boolean|undefined, R>
 
     get true(): ForcedBooleanPredicate<B, true, R> {
         return this.wrapValidator(value => value === true,
-            value => `Expected to be true, but received ${value}`,
-            value => `Expected to be false, but received ${value}`) as
+            value => `Expected to be true, but received ${toString(value)}`,
+            value => `Expected to be false, but received ${toString(value)}`) as
             ForcedBooleanPredicate<B, true, R>;
     }
 
     get false(): ForcedBooleanPredicate<B, false, R> {
         return this.wrapValidator(value => value === false,
-            value => `Expected to be false, but received ${value}`,
-            value => `Expected to be true, but received ${value}`) as
+            value => `Expected to be false, but received ${toString(value)}`,
+            value => `Expected to be true, but received ${toString(value)}`) as
             ForcedBooleanPredicate<B, false, R>;
     }
 

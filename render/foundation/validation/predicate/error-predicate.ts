@@ -1,10 +1,11 @@
 import { isObject } from "lodash";
-import { BaseType, Constructor } from "../core/core";
+import type { BaseType, Constructor } from "../core/core";
 import Predicate from "../core/predicate";
-import { Validator } from "../core/validator";
+import type { Validator } from "../core/validator";
 
 export default class ErrorPredicate<E extends Error|undefined, R> extends Predicate<E, R> {
-    public constructor(type: Constructor, required: R) {
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+    constructor(type: Constructor, required: R) {
         super(type, required);
     }
 
@@ -14,7 +15,6 @@ export default class ErrorPredicate<E extends Error|undefined, R> extends Predic
             value => `Not expected an error named ${name}, but received ${(value as Error).name}`);
     }
 
-    // eslint-disable-next-line class-methods-use-this
     protected validator(): Validator<BaseType<E>> {
         return {
             validate: (value: unknown) => value instanceof (this.type as Constructor),

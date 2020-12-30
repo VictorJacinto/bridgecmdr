@@ -1,10 +1,8 @@
 #set($MIXIN_NAME=${StringUtils.removeAndHump(${NAME}, "-")})
-
 import Vue from "vue";
+import Component from "vue-class-component";
 
-const ${MIXIN_NAME} = Vue.extend({
-    name: "${MIXIN_NAME}",
-});
+@Component<${MIXIN_NAME}>({ name: "${MIXIN_NAME}" })
+export default class ${MIXIN_NAME} extends Vue {
 
-type ${MIXIN_NAME} = InstanceType<typeof ${MIXIN_NAME}>;
-export default ${MIXIN_NAME};
+}

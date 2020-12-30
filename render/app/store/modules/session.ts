@@ -1,52 +1,45 @@
 import { get, set } from "lodash";
-import { mapModuleMutations, mapModuleState, storeModule } from "../../../foundation/helpers/vuex";
-import { RootState } from "../root-state";
+import type { RegisterOptions } from "../../../foundation/system/vuex";
+import { Getter, Module, Mutation, StoreModule } from "../../../foundation/system/vuex";
+import store from "../store";
 
-type SessionState = {
-    hasDoneStartup: boolean;
-};
+@Module
+class Session extends StoreModule {
+    hasDoneStartup = false;
 
-const session = storeModule<SessionState, RootState>().make({
-    state: () => {
-        // Default session state.
-        const state = {
-            hasDoneStartup: false,
-        };
+    constructor(options: RegisterOptions) {
+        super(options);
 
         for (const [ path, setting ] of Object.entries(window.sessionStorage)) {
             if (!path.startsWith("_")) {
                 try {
-                    set(state, path, JSON.parse(setting));
-                } catch (error) {
+                    set(this, path, JSON.parse(setting));
+                } catch (error: unknown) {
                     console.warn(error);
                 }
             }
         }
+    }
 
-        return state;
-    },
-    getters: {
-        get: (state, path: string) => get(state, path),
-    },
-    mutations: {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        set: (state, [ path , value ]: [ string, any ]) => {
-            set(state, path, value);
+    @Getter
+    get(path: string): unknown {
+        return get(this, path);
+    }
 
-            window.sessionStorage.setItem(path, JSON.stringify(value));
-        },
-    },
-    namespaced: true,
-});
+    @Mutation
+    set(path: string, value: unknown): void {
+        set(this, path, value);
+
+        window.sessionStorage.setItem(path, JSON.stringify(value));
+    }
+}
+
+const session = new Session({ store });
 
 export function mapSession<T>(path: string): { get(): T; set(value: T): void } {
     return {
-        ...mapModuleState(session, "session", {
-            get: state => get(state, path) as T,
-        }),
-        ...mapModuleMutations(session, "session", {
-            set: (commit, value: T) => commit("set", [ path, value ]),
-        }),
+        get: () => session.get(path) as T,
+        set: (value: T) => { session.set(path, value) },
     };
 }
 

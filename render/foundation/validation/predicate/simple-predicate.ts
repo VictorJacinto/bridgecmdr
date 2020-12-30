@@ -1,6 +1,6 @@
-import { BaseType, Constructor } from "../core/core";
+import type { BaseType, Constructor } from "../core/core";
 import Predicate from "../core/predicate";
-import { Validator, ValidatorFunction } from "../core/validator";
+import type { Validator, ValidatorFunction } from "../core/validator";
 
 export default class SimplePredicate<T, R> extends Predicate<T, R> {
     private readonly myValidator: Validator<BaseType<T>>;

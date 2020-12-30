@@ -1,31 +1,31 @@
 export enum DeviceLocation {
-    PATH = 0,
-    PORT = 1,
-    IP   = 2,
+    path = 0,
+    port = 1,
+    ip   = 2,
 }
 
-export function rebuildUri(location: DeviceLocation, path: string): string {
-    if (location === DeviceLocation.IP) {
+export function rebuildUri(location: DeviceLocation|undefined, path: string|undefined): string {
+    if (location === DeviceLocation.ip) {
         return `ip:${path}`;
     }
 
-    if (location === DeviceLocation.PORT) {
+    if (location === DeviceLocation.port) {
         return `port:${path}`;
     }
 
-    return path;
+    return path || "";
 }
 
 export function getLocationFromUri(path: string): DeviceLocation {
     if (path.startsWith("ip:")) {
-        return DeviceLocation.IP;
+        return DeviceLocation.ip;
     }
 
     if (path.startsWith("port:")) {
-        return DeviceLocation.PORT;
+        return DeviceLocation.port;
     }
 
-    return DeviceLocation.PATH;
+    return DeviceLocation.path;
 }
 
 export function getPathFromUri(path: string): string {

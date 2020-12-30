@@ -3,6 +3,8 @@
 
 A/V switch and monitor controller
 
+`TODO: This file needs updating again, Laravel Mix, AppImage, Electron Builder, and no more TSX` 
+
 ## NOTICE
 
 BridgeCmdr 2.0 and later will not carry over settings from version 1.0, this is due to the method by which snap package
@@ -85,20 +87,20 @@ Finally, the following tools or libraries were used to build BridgeCmdr.
 - [cross-env](https://github.com/kentcdodds/cross-env).
 - [read-package-json](https://github.com/npm/read-package-json).
 - [TypeScript](https://www.typescriptlang.org/).
-- [ESLint](https://eslint.org/), and the following third-party plug-ins;
+- [ESLint](https://eslint.org/) with the following third-party plug-ins;
     - [ESLint Import Plug-in](https://github.com/benmosher/eslint-plugin-import),
     - [ESLint Promise Plug-in](https://github.com/xjamundx/eslint-plugin-promise),
     - [ESLint Node Plug-in](https://github.com/mysticatea/eslint-plugin-node),
-- [WebPack](https://webpack.js.org/), and the following third-party plug-ins;
+- [WebPack](https://webpack.js.org/) with the following third-party plug-ins;
     - [Babel Loader](https://github.com/babel/babel-loader),
     - [TypeScript Loader](https://github.com/TypeStrong/ts-loader),
     - [Resolve URL Loader](https://github.com/bholloway/resolve-url-loader),
     - [Node Externals](https://github.com/liady/webpack-node-externals),
     - [HTML WebPack Plug-in](https://github.com/jantimon/html-webpack-plugin),
-    - [Dart Sass](https://sass-lang.com/dart-sass), and the following third-party plug-ins;
+    - [Dart Sass](https://sass-lang.com/dart-sass) with the following third-party plug-ins;
         - [Node Fibers](https://github.com/laverdet/node-fibers)
 - [Electron Builder](https://www.electron.build/).
-- [PHPStorm](https://www.jetbrains.com/phpstorm/), but no PHP code was harmed in the making of this software.
+- [PHPStorm](https://www.jetbrains.com/phpstorm/) yet no PHP code was harmed in the making of this software.
 
 Other tools or licenses not listed are part of one of the above packages.
 
@@ -107,7 +109,11 @@ Other tools or licenses not listed are part of one of the above packages.
 ### Development
 
 If you want to help with the development of BridgeCmdr, downloading, building, then running the project on a GNU/Linux
-based operating system is required. The following steps will get you setup on a Debian-base operating system.
+based operating system is required. The following steps will get you set up on a Debian-base operating system.
+
+1. QEmu: `sudo apt install qemu-user-static`
+2. Docker: `sudo apt install docker.io`
+3. ARM support in Docker: `docker run --rm --privileged multiarch/qemu-user-static:register`
 
 1. Install the `build-essential` package; `sudo apt install build-essential -y`
 2. Acquire the source:
@@ -124,7 +130,7 @@ You should now be able to run the program with `npm run start`.
 
 To package or build the installer, you will need to follow the above steps to acquire a working copy of the source
 code on a Raspberry Pi running Raspbian/Raspberry Pi OS, the only supported operating system.  Packaging the installer
-requires a Raspberry Pi 4 Model B with 2GiB or more of RAM.
+requires a Raspberry Pi 4 Model B with 2 GiB or more of RAM.
 
 1. Install the node packages; `npm ci`
 2. Build the installer package; `npm run dist`

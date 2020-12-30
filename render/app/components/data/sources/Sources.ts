@@ -1,7 +1,8 @@
+import Component from "vue-class-component";
 import sources from "../../../store/modules/sources";
-import dataSource from "../DataSource";
+import DataSource from "../../base/DataSource";
 
-const Sources = dataSource("sources", sources);
-
-type Sources = InstanceType<typeof Sources>;
-export default Sources;
+@Component({ name: "Sources" })
+export default class Sources extends DataSource<typeof sources> {
+    module = (): typeof sources => sources;
+}

@@ -1,9 +1,12 @@
 import axios from "axios";
+import { merge } from "lodash";
 
-// eslint-disable-next-line dot-notation
-axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
-// eslint-disable-next-line dot-notation
-axios.defaults.headers.common["Accept"] = "application/json";
+merge(axios.defaults.headers, {
+    common: Object.fromEntries([
+        [ "X-Requested-With", "XMLHttpRequest" ],
+        [ "Accept", "application/json" ],
+    ]),
+});
 
 // This module is resolved once it executes.
 export default Promise.resolve();

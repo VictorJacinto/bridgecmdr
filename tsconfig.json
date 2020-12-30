@@ -3,9 +3,8 @@
   "compilerOptions": {
     "module": "esnext",
     "target": "ES2019",
-    "inlineSourceMap": true,
+    "sourceMap": true,
 
-    "jsx": "preserve",
     "allowJs": false,
     "checkJs": false,
     "strict": true,
@@ -15,12 +14,16 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
 
+    "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
 
     "noEmitOnError": true,
-    "noErrorTruncation": true
+    "noErrorTruncation": true,
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
   }
 }

@@ -1,7 +1,8 @@
+import Component from "vue-class-component";
 import sources from "../../../store/modules/sources";
-import dataItem from "../DataItem";
+import DataItem from "../../base/DataItem";
 
-const CurrentSource = dataItem("sources", sources);
-
-type CurrentSource = InstanceType<typeof CurrentSource>;
-export default CurrentSource;
+@Component({ name: "CurrentSource" })
+export default class CurrentSource extends DataItem<typeof sources> {
+    module = (): typeof sources => sources;
+}

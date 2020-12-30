@@ -1,7 +1,8 @@
-import { isNumber, isString } from "lodash";
-import { BaseType } from "../core/core";
+import { isNumber, isString, toString } from "lodash";
+import type { BaseType } from "../core/core";
+import { toReadableString } from "../core/core";
 import Predicate from "../core/predicate";
-import { Validator } from "../core/validator";
+import type { Validator } from "../core/validator";
 
 export default class EnumPredicate<E extends string|number|undefined, R> extends Predicate<E, R> {
     private readonly baseValidator: Validator<BaseType<E>>;
@@ -18,13 +19,13 @@ export default class EnumPredicate<E extends string|number|undefined, R> extends
                 return check(value);
             },
             message(value: unknown): string {
-                return `Expected to be one of ${values}, but received ${value}`;
+                return `Expected to be one of ${toReadableString(values)}, but received ${toString(value)}`;
             },
         };
 
         this.wrapValidator(value => values.includes(value),
-            value => `Expected to be one of ${values}, but received ${value}`,
-            value => `Expected to not be one of ${values}, but received ${value}`);
+            value => `Expected to be one of ${toReadableString(values)}, but received ${toString(value)}`,
+            value => `Expected to not be one of ${toReadableString(values)}, but received ${toString(value)}`);
     }
 
     protected validator(): Validator<BaseType<E>> {
