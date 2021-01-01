@@ -1,6 +1,7 @@
 import { isNil } from "lodash";
-import PouchDB from "pouchdb-browser";
-import Find from "pouchdb-find";
+import adapter from "pouchdb-adapter-idb";
+import PouchDb from "pouchdb-core";
+import find from "pouchdb-find";
 import { v4 as uuid } from "uuid";
 
 type IndexFields  = string[];
@@ -12,14 +13,15 @@ export type ExistingDocument<T> = PouchDB.Core.ExistingDocument<T & PouchDB.Core
 export type GetDocument<T>      = PouchDB.Core.Document<T> & PouchDB.Core.GetMeta;
 export type Document<T>         = PouchDB.Core.Document<T>;
 
-// Install the find plug-in.
-PouchDB.plugin(Find);
+// Install the IndexDB adapter and find plug-in.
+PouchDb.plugin(adapter);
+PouchDb.plugin(find);
 
 export default class Database<Doc> {
     private readonly handle: PouchDB.Database<Doc>;
 
     private constructor(name: string) {
-        this.handle = new PouchDB<Doc>(name);
+        this.handle = new PouchDb<Doc>(name);
     }
 
     /**

@@ -130,3 +130,13 @@
         }
     }
 </script>
+
+<style lang="scss" scoped>
+    .dashboard {
+        .button {
+            margin-top: 0.25rem;
+            margin-left: 0.25rem;
+            height: auto;
+        }
+    }
+</style>

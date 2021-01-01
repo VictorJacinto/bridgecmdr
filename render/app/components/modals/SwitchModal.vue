@@ -46,7 +46,7 @@
     import type { BFieldMessageProps } from "../../support/validation";
     import Driver, { DriverCapabilities } from "../../system/driver";
     import DeviceLocationInput from "../DeviceLocationInput.vue";
-    import DriverDropdown from "../dropdowns/DriverDropdown";
+    import DriverDropdown from "../dropdowns/DriverDropdown.vue";
 
     @Component<SwitchModal>({
         name:       "SwitchModal",

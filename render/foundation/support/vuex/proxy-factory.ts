@@ -55,7 +55,7 @@ function getModuleChain(bottom: StoreModuleClass): StoreModuleClass[] {
             modules.push(module);
         }
 
-        if (module.prototype === StoreModule.prototype) {
+        if ((module.prototype as unknown) === StoreModule.prototype) {
             return modules.reverse();
         }
 
@@ -137,7 +137,7 @@ export class StoreProxyFactory {
                     } else if (isAction(key)) {
                         this.moduleDefinition.actions[key] = base.prototype[key] as LocalAction;
                     } else if (isWatcher(key)) {
-                        this.moduleDefinition.watchers[key] = base.prototype[key] as WatchDescriptor;
+                        this.moduleDefinition.watchers[key] = watchers?.[key] as WatchDescriptor;
                     } else if (isLocal(key)) {
                         this.moduleDefinition.locals[key] = base.prototype[key] as LocalFunction;
                     }
@@ -215,7 +215,7 @@ export class StoreProxyFactory {
             module.getters[key] = (state: Record<string, unknown>, getters: GetterTree<Record<string, unknown>, unknown>) => {
                 const getterProxy = this.getProxy({ state, getters }, "getter");
 
-                return (args: unknown[]) => accessor.call(getterProxy, ...args);
+                return (args: unknown[]) => accessor.call(getterProxy, ...args) as unknown;
             };
         }
 
@@ -255,6 +255,8 @@ export class StoreProxyFactory {
         } else {
             store.registerModule(name, module);
         }
+
+        console.log(this.moduleDefinition.state);
     }
 
     private getProxy(context: ProxyContext, kind: ProxyKind): StoreModuleInterface {

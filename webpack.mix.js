@@ -15,11 +15,16 @@ const tsOptions = {
     onlyCompileBundledFiles: true,
     errorFormatter,
 };
-const htmlOptions = { inject: false };
+
+const htmlOptions = {
+    inject: false,
+};
+
 const webpackOptions = {
     target:    "electron-renderer",
     externals: [{ "serialport": "commonjs serialport" }],
 };
+
 const lintOptions = {
     extensions: [ "js", "ts", "vue" ],
     formatter:  "unix",
@@ -35,7 +40,6 @@ mix.setPublicPath("dist").
     // Main process
     ts("main/index.ts", "dist/main", tsOptions).
     // Options
-    alias("buefy$", "buefy/dist/buefy.esm.js").
     webpackConfig(webpackOptions).
     options(mixOptions).
     sourceMaps(true, "inline-source-map").

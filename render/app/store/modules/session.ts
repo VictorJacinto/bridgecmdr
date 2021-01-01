@@ -1,6 +1,6 @@
 import { get, set } from "lodash";
-import type { RegisterOptions } from "../../../foundation/system/vuex";
-import { Getter, Module, Mutation, StoreModule } from "../../../foundation/system/vuex";
+import type { RegisterOptions } from "../../../foundation/support/vuex";
+import { Getter, Module, Mutation, StoreModule } from "../../../foundation/support/vuex";
 import store from "../store";
 
 @Module
