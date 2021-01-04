@@ -1,15 +1,11 @@
-import type { LocalMutation, StoreModuleClass } from "./details";
+import type { LocalMutation } from "./details";
 import { MUTATIONS } from "./details";
 import type { StoreModule } from "./store-modules";
 
-type Descriptor = TypedPropertyDescriptor<LocalMutation>;
+type Descriptor<M extends StoreModule> = TypedPropertyDescriptor<LocalMutation<M>>;
 
-export function Mutation<T extends StoreModule>(target: T, key: string, descriptor: Descriptor): Descriptor {
-    const module = target.constructor as StoreModuleClass;
-    const methods = module[MUTATIONS] || (module[MUTATIONS] = {});
+export function Mutation<M extends StoreModule>(_target: M, _key: string, descriptor: Descriptor<M>): Descriptor<M> {
     if (typeof descriptor.value === "function") {
-        methods[key] = descriptor.value;
-
         descriptor.value[MUTATIONS] = true;
     }
 

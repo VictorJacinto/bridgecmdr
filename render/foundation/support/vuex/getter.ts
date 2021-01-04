@@ -1,15 +1,11 @@
-import type { LocalAccessor, StoreModuleClass } from "./details";
+import type { LocalAccessor } from "./details";
 import { ACCESSORS } from "./details";
 import type { StoreModule } from "./store-modules";
 
-type Descriptor = TypedPropertyDescriptor<LocalAccessor>;
+type Descriptor<M extends StoreModule> = TypedPropertyDescriptor<LocalAccessor<M>>;
 
-export function Getter<T extends StoreModule>(target: T, key: string, descriptor: Descriptor): Descriptor {
-    const module = target.constructor as StoreModuleClass;
-    const methods = module[ACCESSORS] || (module[ACCESSORS] = {});
+export function Getter<M extends StoreModule>(_target: M, _key: string, descriptor: Descriptor<M>): Descriptor<M> {
     if (typeof descriptor.value === "function") {
-        methods[key] = descriptor.value;
-
         descriptor.value[ACCESSORS] = true;
     }
 

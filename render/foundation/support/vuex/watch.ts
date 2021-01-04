@@ -1,26 +1,24 @@
 import type { WatchOptions } from "vue";
-import type { LocalWatcher, StoreModuleClass } from "./details";
+import type { LocalWatcher } from "./details";
 import { WATCHERS } from "./details";
 import type { StoreModule } from "./store-modules";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Descriptor = TypedPropertyDescriptor<LocalWatcher>;
+type Descriptor<M extends StoreModule> = TypedPropertyDescriptor<LocalWatcher<M>>;
 
-export function Watch(path: string, options?: WatchOptions): MethodDecorator {
-    return (<T extends StoreModule>(target: T, key: string, descriptor: Descriptor): Descriptor => {
-        const module = target.constructor as StoreModuleClass;
-        const methods = module[WATCHERS] || (module[WATCHERS] = {});
+interface WatchDecorator {
+    <M extends StoreModule>(target: M, key: string, descriptor: Descriptor<M>): Descriptor<M>;
+}
+
+export function Watch(path: string, options?: WatchOptions): WatchDecorator {
+    return <M extends StoreModule>(_target: M, _key: string, descriptor: Descriptor<M>): Descriptor<M> => {
         if (typeof descriptor.value === "function") {
-            const watch = {
+            descriptor.value[WATCHERS] = {
                 callback: descriptor.value,
                 path,
                 options,
             };
-
-            descriptor.value[WATCHERS] = watch;
-            methods[key] = watch;
         }
 
         return descriptor;
-    }) as MethodDecorator;
+    };
 }

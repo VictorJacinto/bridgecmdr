@@ -1,72 +1,59 @@
 import type { WatchOptions } from "vue";
-import type {ModuleOptions, RegisterOptions} from "./options";
-import {StoreModule} from "./store-modules";
+import type { Commit, Dispatch } from "vuex";
+import type { ModuleOptions } from "./options";
+import type { StoreModule } from "./store-modules";
 
-export const DEFINITION = Symbol("ModuleDefinition");
-export const OPTIONS = Symbol("Options");
-
-export const INSTANCE = Symbol("Instance");
 export const ACCESSORS = Symbol("Accessors");
 export const MUTATIONS = Symbol("Mutations");
 export const ACTIONS = Symbol("Actions");
 export const WATCHERS = Symbol("Watchers");
-export const IS_PROXY = Symbol("Proxy");
 
 export type ProxyKind = "public"|"getter"|"mutation"|"action";
 
-export interface StoreModuleInterface extends Record<string|symbol, unknown> {
-    // constructor: new (options: RegisterOptions) => StoreModuleInterface;
-}
+export type LocalGetter<M extends StoreModule> = (this: M) => unknown;
+export type LocalSetter<M extends StoreModule> = (this: M, value: unknown) => void;
 
-export type LocalGetter<M = StoreModuleInterface> = (this: M) => unknown;
-export type LocalSetter<M = StoreModuleInterface> = (this: M, value: unknown) => void;
-
-// export type LocalAccessor = (this: StoreModuleInterface, ...args: unknown[]) => unknown;
-export interface LocalAccessor<M = StoreModuleInterface> {
+export interface LocalAccessor<M extends StoreModule> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (this: M, ...args: any[]): any;
-    [ACCESSORS]?: undefined|boolean;
+    [ACCESSORS]?: undefined|true;
 }
 
-// export type LocalMutation = (this: StoreModuleInterface, ...args: unknown[]) => void;
-export interface LocalMutation<M = StoreModuleInterface> {
+export interface LocalMutation<M extends StoreModule> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (this: M, ...args: any[]): void;
-    [MUTATIONS]?: undefined|boolean;
+    [MUTATIONS]?: undefined|true;
 }
 
-// export type LocalAction = (this: StoreModuleInterface, ...args: unknown[]) => Promise<unknown>;
-export interface LocalAction<M = StoreModuleInterface> {
+export interface LocalAction<M extends StoreModule> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (this: M, ...args: any[]): Promise<any>;
-    [ACTIONS]?: undefined|boolean;
+    [ACTIONS]?: undefined|true;
 }
 
-// export type LocalWatcher = (this: StoreModuleInterface, newValue: unknown, oldValue: unknown) => void;
-export interface LocalWatcher<M = StoreModuleInterface> {
+export interface LocalWatcher<M extends StoreModule> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (this: M, newValue: any, oldValue: any): void;
     [WATCHERS]?: undefined|WatchDescriptor<M>;
 }
 
-export type WatchDescriptor<M = StoreModuleInterface> = {
+export type WatchDescriptor<M extends StoreModule> = {
     callback: LocalWatcher<M>;
     path: string;
     options?: WatchOptions;
 };
 
-export type LocalFunction<M = StoreModuleInterface> = (this: M, ...args: unknown[]) => unknown;
+export type LocalFunction<M extends StoreModule> = (this: M, ...args: unknown[]) => unknown;
 
-export type LocalMember<M = StoreModuleInterface> =
+export type LocalMember<M extends StoreModule> =
     LocalAccessor<M>|LocalMutation<M>|LocalAction<M>|LocalWatcher<M>|LocalFunction<M>;
 
 export type ProxyAccess = (args: unknown[]) => unknown;
 
-export class ModuleDefinition<M> {
-    options: ModuleOptions;
-    // // HACK: TypeScript doesn't allow symbols as arbitrary indexers.
-    // fields = {} as Record<string|symbol, unknown>;
-    // state = {} as Record<string, unknown>;
+type MemberKind = "state"|"getter"|"accessor"|"mutation"|"action"|"watcher"|"local";
+
+export class ModuleDefinition<M extends StoreModule> {
+    state = new Set<keyof M>();
     getters = new Map<string|keyof M, LocalGetter<M>>();
     setters = new Map<string|keyof M, LocalSetter<M>>();
     accessors = new Map<string|keyof M, LocalAccessor<M>>();
@@ -74,19 +61,17 @@ export class ModuleDefinition<M> {
     actions = new Map<string|keyof M, LocalAction<M>>();
     watchers = new Map<string|keyof M, WatchDescriptor<M>>();
     locals = new Map<string|keyof M, LocalFunction<M>>();
+    members = new Map<string|keyof M, MemberKind>();
+    options: ModuleOptions;
 
     constructor(options: ModuleOptions) {
         this.options = options;
     }
 }
 
-export interface StoreModuleClass<M = StoreModuleInterface> {
-    new (options: RegisterOptions): M;
-    [ACCESSORS]?: Record<string, LocalAccessor<M>>;
-    [MUTATIONS]?: Record<string, LocalMutation<M>>;
-    [ACTIONS]?: Record<string, LocalAction<M>>;
-    [WATCHERS]?: Record<string, WatchDescriptor<M>>;
-    [IS_PROXY]?: boolean;
-
-    prototype: Record<string, LocalMember<M>>;
+export interface ProxyContext<M extends StoreModule> {
+    state: M;
+    getters?: Record<string, unknown>;
+    commit?: Commit;
+    dispatch?: Dispatch;
 }

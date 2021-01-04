@@ -1,15 +1,11 @@
-import type { LocalAction, StoreModuleClass } from "./details";
+import type { LocalAction } from "./details";
 import { ACTIONS } from "./details";
 import type { StoreModule } from "./store-modules";
 
-type Descriptor = TypedPropertyDescriptor<LocalAction>;
+type Descriptor<M extends StoreModule> = TypedPropertyDescriptor<LocalAction<M>>;
 
-export function Action<T extends StoreModule>(target: T, key: string, descriptor: Descriptor): Descriptor {
-    const module = target.constructor as StoreModuleClass;
-    const methods = module[ACTIONS] || (module[ACTIONS] = {});
+export function Action<M extends StoreModule>(_target: M, _key: string, descriptor: Descriptor<M>): Descriptor<M> {
     if (typeof descriptor.value === "function") {
-        methods[key] = descriptor.value;
-
         descriptor.value[ACTIONS] = true;
     }
 
