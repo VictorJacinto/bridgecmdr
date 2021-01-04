@@ -1,4 +1,4 @@
-import { Module, StoreModule } from "../../../foundation/system/vuex";
+import { Module, StoreModule } from "../../../foundation/support/vuex";
 import store from "../store";
 
 @Module({ openState: true })

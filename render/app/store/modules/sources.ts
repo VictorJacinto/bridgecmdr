@@ -1,6 +1,6 @@
 import { isNil, omit } from "lodash";
-import type { RegisterOptions } from "../../../foundation/system/vuex";
-import { Action, Module } from "../../../foundation/system/vuex";
+import type { RegisterOptions } from "../../../foundation/support/vuex";
+import { Action, Module } from "../../../foundation/support/vuex";
 import type { Document, GetDocument } from "../../support/data/database";
 import type Model from "../../support/data/model";
 import type { RevisionId } from "../../support/data/model";
