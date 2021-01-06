@@ -1,6 +1,6 @@
+import type { RegisterOptions } from "decoration-vuex";
+import { Action, Mutation, StoreModule } from "decoration-vuex";
 import { findIndex, iteratee, tap } from "lodash";
-import type { RegisterOptions } from "../../../foundation/support/vuex";
-import { Action, Mutation, StoreModule } from "../../../foundation/support/vuex";
 import Database from "../../support/data/database";
 import type { Indices, GetDocument } from "../../support/data/database";
 import type Model from "../../support/data/model";

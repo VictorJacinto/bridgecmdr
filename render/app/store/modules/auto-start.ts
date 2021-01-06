@@ -1,8 +1,8 @@
 import { promises as fs } from "fs";
 import os from "os";
 import path from "path";
+import { Action, Module, Mutation, StoreModule } from "decoration-vuex";
 import { isNil } from "lodash";
-import { Action, Module, Mutation, StoreModule } from "../../../foundation/support/vuex";
 import store from "../store";
 
 // We don't use XDG due to Snap overriding this value.

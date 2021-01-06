@@ -1,6 +1,6 @@
+import { Action, Module, Mutation, StoreModule } from "decoration-vuex";
 import { isNil, last, tail } from "lodash";
 import SerialPort from "serialport";
-import { Action, Module, Mutation, StoreModule } from "../../../foundation/support/vuex";
 import Driver from "../../system/driver";
 import store from "../store";
 import type { Source } from "./sources";

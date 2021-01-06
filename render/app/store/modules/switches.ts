@@ -1,5 +1,5 @@
-import type { RegisterOptions } from "../../../foundation/support/vuex";
-import { Action, Module } from "../../../foundation/support/vuex";
+import type { RegisterOptions } from "decoration-vuex";
+import { Action, Module } from "decoration-vuex";
 import type Model from "../../support/data/model";
 import DataModule, { DATABASE } from "../base/data-module";
 import store from "../store";
