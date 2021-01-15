@@ -1,18 +1,18 @@
 import { isNil } from "lodash";
+import v from "vahvista";
 import type { CreateElement, VNode } from "vue";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import type { Location } from "vue-router";
 import { normalizeSlot } from "../../../foundation/helpers/vue";
-import { is, maybe, prop } from "../../../foundation/validation/valid";
 
 @Component<CardListEntry>({ name: "CardListEntry" })
 export default class CardListEntry extends Vue {
-    @Prop(prop(maybe.string.notEmpty))
+    @Prop({ type: String, default: undefined, validator: v.notEmpty })
     readonly href!: undefined|string;
 
-    @Prop(prop(maybe(is.string.notEmpty, is.object<Location>())))
+    @Prop({ type: [ String, Object ], default: undefined, validator: v.notEmpty })
     readonly to!: undefined|string|Location;
 
     get tag(): "a"|"router-link"|"div" {

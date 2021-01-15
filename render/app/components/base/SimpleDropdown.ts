@@ -1,3 +1,4 @@
+import v from "vahvista";
 import type { VNode, CreateElement } from "vue";
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -5,7 +6,6 @@ import { Prop, Watch } from "vue-property-decorator";
 import type { BAnyValue } from "../../../foundation/helpers/buefy";
 import { KnownColorModifiers, PopupPositionModifiers, SizeModifiers } from "../../../foundation/helpers/buefy";
 import { normalizeScopedSlot } from "../../../foundation/helpers/vue";
-import { be, is, maybe, must, prop } from "../../../foundation/validation/valid";
 
 export const DropdownArialRoles = [ "menu", "list", "dialog" ] as const;
 export type DropdownArialRoles = typeof DropdownArialRoles[number];
@@ -20,64 +20,64 @@ const BInput = Vue.component("BInput");
 
 @Component({ name: "SimpleDropdown" })
 export default class SimpleDropdown<T, V extends BAnyValue> extends Vue {
-    @Prop(prop(is.any))
+    @Prop({ required: true })
     readonly value!: V;
 
-    @Prop(prop(is.array))
+    @Prop({ type: Array, required: true })
     readonly options!: T[];
 
-    @Prop(prop(is.string.notEmpty, "Select an item"))
+    @Prop({ type: String, default: "Select an item", validator: v.notEmpty })
     readonly placeholder!: string;
 
-    @Prop(prop(is.enum(DropdownTrigger), "input"))
+    @Prop({ type: String, default: "input", validator: v.enum(DropdownTrigger) })
     readonly trigger!: DropdownTrigger;
 
     // === Dropdown == ==
 
-    @Prop(prop(is.enum(PopupPositionModifiers), "is-bottom-right"))
+    @Prop({ type: String, default: "is-bottom-right", validator: v.enum(PopupPositionModifiers) })
     readonly position!: PopupPositionModifiers;
 
-    @Prop(prop(is.string.notEmpty, "fade"))
+    @Prop({ type: String, default: "fade", validator: v.notEmpty })
     readonly animation!: string;
 
-    @Prop(prop(is.boolean, true))
+    @Prop({ type: Boolean, default: true })
     readonly mobileModal!: boolean;
 
-    @Prop(prop(maybe.enum(DropdownArialRoles)))
+    @Prop({ type: String, default: undefined, validator: v.enum(DropdownArialRoles) })
     readonly ariaRole!: DropdownArialRoles;
 
-    @Prop(prop(is.boolean, true))
+    @Prop({ type: Boolean, default: true })
     readonly scrollable!: boolean;
 
-    @Prop(prop(must(be.number.integer.positive, be.string.notEmpty), "260px"))
+    @Prop({ type: [ Number, String ], default: "260px", validator: v.or(v.integer.positive, v.notEmpty) })
     readonly maxHeight!: number|string;
 
     // === Button/Input == ==
 
-    @Prop(prop(maybe.enum(KnownColorModifiers)))
+    @Prop({ type: String, default: undefined, validator: v.enum(KnownColorModifiers) })
     readonly type!: undefined|KnownColorModifiers;
 
-    @Prop(prop(maybe.enum(SizeModifiers)))
+    @Prop({ type: String, default: undefined, validator: v.enum(SizeModifiers) })
     readonly size!: undefined|SizeModifiers;
 
-    @Prop(prop(maybe.boolean))
+    @Prop(Boolean)
     readonly loading!: undefined|boolean;
 
-    @Prop(prop(maybe.boolean))
+    @Prop(Boolean)
     readonly inverted!: undefined|boolean;
 
-    @Prop(prop(maybe.boolean))
+    @Prop(Boolean)
     readonly rounded!: undefined|boolean;
 
-    @Prop(prop(maybe.boolean))
+    @Prop(Boolean)
     readonly outlined!: undefined|boolean;
 
     // === Both == ==
 
-    @Prop(prop(maybe.boolean))
+    @Prop(Boolean)
     readonly disabled!: undefined|boolean;
 
-    @Prop(prop(maybe.boolean))
+    @Prop(Boolean)
     readonly expanded!: undefined|boolean;
 
     // === Overrides == ==

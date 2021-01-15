@@ -57,9 +57,9 @@
 </template>
 
 <script lang="ts">
+    import v from "vahvista";
     import Component, { mixins } from "vue-class-component";
     import { Prop } from "vue-property-decorator";
-    import { is, prop } from "../../../../../../foundation/validation/valid";
     import CardList from "../../../../../components/card-list/CardList";
     import CardListEntry from "../../../../../components/card-list/CardListEntry";
     import Ties from "../../../../../components/data/sources/Ties";
@@ -67,7 +67,6 @@
     import type { Switch } from "../../../../../store/modules/switches";
     import switches from "../../../../../store/modules/switches";
     import type { Tie } from "../../../../../store/modules/ties";
-    import { idPattern } from "../../../../../support/validation";
     import Driver, { DeviceType } from "../../../../../system/driver";
 
     const drivers = Driver.all();
@@ -85,7 +84,7 @@
         },
     })
     export default class TieList extends mixins(ManagesTies) {
-        @Prop(prop(is.string.matches(idPattern)))
+        @Prop({ type: String, required: true, validator: v.id })
         readonly sourceId!: string;
 
         get switches(): Switch[] {

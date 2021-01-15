@@ -32,8 +32,9 @@ class Switches extends DataModule<Switch> {
         await connection.remove(id);
 
         await ties.find({ switchId: id });
-
         await Promise.all(ties.items.map(item => ties.remove(item._id)));
+
+        this.delete(id);
 
         return id;
     }

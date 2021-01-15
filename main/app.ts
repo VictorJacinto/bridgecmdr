@@ -82,8 +82,3 @@ app.on("activate", async (): Promise<void> => {
         await createWindow();
     }
 });
-
-console.log(app.getPath("appData"));
-console.log(app.getPath("userData"));
-console.log(app.getPath("cache"));
-console.log(app.getPath("temp"));

@@ -1,17 +1,17 @@
 import { omit } from "lodash";
+import v from "vahvista";
 import type { CreateElement, VNode } from "vue";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop, Watch } from "vue-property-decorator";
 import { normalizeScopedSlot } from "../helpers/vue";
-import { is, prop } from "../validation/valid";
 
 @Component<Watcher>({ name: "Watcher" })
 export default class Watcher extends Vue {
-    @Prop(prop(is.any))
+    @Prop({ required: true })
     readonly watching!: unknown;
 
-    @Prop(prop(is.string.notEmpty, "div"))
+    @Prop({ type: String, default: "div", validator: v.notEmpty })
     readonly tag!: string;
 
     @Watch("watching", { deep: true })

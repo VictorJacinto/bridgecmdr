@@ -1,7 +1,5 @@
 import type { ColorModifiers } from "buefy/types/helpers";
 
-export const idPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/u;
-
 export type BFieldMessageProps = {
     message: string;
     type?: ColorModifiers;

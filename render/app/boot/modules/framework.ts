@@ -1,5 +1,7 @@
 import Buefy from "buefy";
 import { toString } from "lodash";
+import type { Predicate } from "vahvista";
+import vahvista from "vahvista";
 import { configure, localize, extend, ValidationObserver, ValidationProvider } from "vee-validate";
 import en from "vee-validate/dist/locale/en.json";
 import * as rules from "vee-validate/dist/rules";
@@ -62,3 +64,18 @@ extend("location", (value: unknown) => {
 });
 
 export default Promise.resolve();
+
+/*
+ | ---------------------------------------------------------------------------------------------------------------------
+ | vahvista, composable validation framework
+ | ---------------------------------------------------------------------------------------------------------------------
+*/
+
+vahvista.register<string>("id", value =>
+    (/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/u).test(value));
+
+declare module "vahvista" {
+    interface Rules {
+        id: Predicate<string>;
+    }
+}

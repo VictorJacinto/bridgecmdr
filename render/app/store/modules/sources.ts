@@ -39,8 +39,9 @@ class Sources extends DataModule<Source, SourceDocument> {
         await connection.remove(id);
 
         await ties.find({ sourceId: id });
-
         await Promise.all(ties.items.map(item => ties.remove(item._id)));
+
+        this.delete(id);
 
         return id;
     }

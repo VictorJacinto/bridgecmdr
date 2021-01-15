@@ -53,10 +53,10 @@
 </template>
 
 <script lang="ts">
+    import v from "vahvista";
     import Component, { mixins } from "vue-class-component";
     import { Prop } from "vue-property-decorator";
     import Watcher from "../../../../../foundation/components/Watcher";
-    import { is, prop } from "../../../../../foundation/validation/valid";
     import CardList from "../../../../components/card-list/CardList";
     import CardListEntry from "../../../../components/card-list/CardListEntry";
     import CurrentSource from "../../../../components/data/items/CurrentSource";
@@ -65,7 +65,6 @@
     import ManagesSources from "../../../../concerns/managers/manages-sources";
     import UsesSettingsTitle from "../../../../concerns/uses-settings-title";
     import type { Source } from "../../../../store/modules/sources";
-    import { idPattern } from "../../../../support/validation";
     import TieList from "./parts/TieList.vue";
 
     @Component<SourcePage>({
@@ -79,7 +78,7 @@
         },
     })
     export default class SourcePage extends mixins(HasImages, UsesSettingsTitle, ManagesSources, DoesValidation) {
-        @Prop(prop(is.string.matches(idPattern)))
+        @Prop({ type: String, required: true, validator: v.id })
         readonly id!: string;
 
         onLoading(): void {

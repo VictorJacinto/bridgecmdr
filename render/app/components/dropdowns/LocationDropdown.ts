@@ -1,8 +1,8 @@
 import { cloneDeep } from "lodash";
+import v from "vahvista";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import type { ElementType } from "../../../foundation/helpers/typing";
-import { is, prop } from "../../../foundation/validation/valid";
 import { DeviceLocation } from "../../system/device-uri";
 import SimpleDropdown from "../base/SimpleDropdown";
 
@@ -16,7 +16,7 @@ type Location = ElementType<typeof locations>;
 
 @Component<LocationDropdown>({ name: "LocationDropdown" })
 export default class LocationDropdown extends SimpleDropdown<Location, DeviceLocation> {
-    @Prop(prop(is.array, () => cloneDeep(locations)))
+    @Prop({ type: Array, default: () => cloneDeep(locations), validator: v.shape(v.object) })
     readonly options!: Location[];
 
     predicate = (location: Location): [ string, DeviceLocation ] => [ location.label, location.location ];

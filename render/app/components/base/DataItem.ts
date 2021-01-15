@@ -1,24 +1,23 @@
 import { isError, toString } from "lodash";
+import v from "vahvista";
 import type { CreateElement, VNode } from "vue";
 import Component, { mixins } from "vue-class-component";
 import { Prop, Watch } from "vue-property-decorator";
 import { normalizeScopedSlot } from "../../../foundation/helpers/vue";
-import { is, maybe, prop } from "../../../foundation/validation/valid";
 import IndicatesLoading from "../../concerns/indicates-loading";
 import type DataModule from "../../store/base/data-module";
 import type { ModelType } from "../../store/base/data-module";
 import type Model from "../../support/data/model";
-import { idPattern } from "../../support/validation";
 
 @Component({ name: "DataItem" })
 export default class DataItem<D extends DataModule<M, Model>, M extends Model = ModelType<D>> extends mixins(IndicatesLoading) {
-    @Prop(prop(is.string.matches(idPattern)))
+    @Prop({ type: String, required: true, validator: v.id })
     readonly id!: string;
 
-    @Prop(prop(is.string.notEmpty, "div"))
+    @Prop({ type: String, default: "div", validator: v.notEmpty })
     readonly tag!: string;
 
-    @Prop(prop(maybe.boolean))
+    @Prop(Boolean)
     readonly slim!: undefined|boolean;
 
     readonly module!: () => D;

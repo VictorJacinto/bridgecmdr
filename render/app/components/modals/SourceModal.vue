@@ -45,7 +45,6 @@
     import { cloneDeep } from "lodash";
     import Component, { mixins } from "vue-class-component";
     import { Prop } from "vue-property-decorator";
-    import { is, prop } from "../../../foundation/validation/valid";
     import DoesValidation from "../../concerns/does-validation";
     import type { Source } from "../../store/modules/sources";
     import SvgIcon from "../SvgIcon.vue";
@@ -57,7 +56,7 @@
         },
     })
     export default class SourceModal extends mixins(DoesValidation) {
-        @Prop(prop(is.object<Partial<Source>>()))
+        @Prop({ type: Object, required: true })
         readonly item!: Partial<Source>;
 
         source = cloneDeep(this.item);

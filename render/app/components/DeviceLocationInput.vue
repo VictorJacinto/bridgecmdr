@@ -9,11 +9,12 @@
 
 <script lang="ts">
     import { clone, isNil } from "lodash";
+    import v from "vahvista";
     import Vue from "vue";
     import Component from "vue-class-component";
     import { Prop, Watch } from "vue-property-decorator";
     import { KnownColorModifiers } from "../../foundation/helpers/buefy";
-    import { is, maybe, prop } from "../../foundation/validation/valid";
+    // import { is, maybe, prop } from "../../foundation/validation/valid";
     import type { SerialPortEntry } from "../store/modules/devices";
     import { DeviceLocation, getLocationFromUri, getPathFromUri, rebuildUri } from "../system/device-uri";
     import DeviceDropdown from "./dropdowns/DeviceDropdown";
@@ -27,16 +28,16 @@
         },
     })
     export default class DeviceLocationInput extends Vue {
-        @Prop(prop(maybe.string))
+        @Prop({ type: String, default: undefined })
         readonly value!: undefined|string;
 
-        @Prop(prop(is.array.ofType(is.object<SerialPortEntry>())))
+        @Prop({ type: Array, required: true, validator: v.shape([v.object]) })
         readonly ports!: SerialPortEntry[];
 
-        @Prop(prop(is.enum(KnownColorModifiers), "is-primary"))
+        @Prop({ type: String, default: "is-primary", validator: v.enum(KnownColorModifiers) })
         readonly type!: KnownColorModifiers;
 
-        @Prop(prop(maybe.boolean))
+        @Prop(Boolean)
         readonly loading!: undefined|boolean;
 
         innerValue = this.value;

@@ -37,7 +37,6 @@
     import { cloneDeep } from "lodash";
     import Component, { mixins } from "vue-class-component";
     import { Prop } from "vue-property-decorator";
-    import { is, prop } from "../../../foundation/validation/valid";
     import DoesValidation from "../../concerns/does-validation";
     import IndicatesLoading from "../../concerns/indicates-loading";
     import type { SerialPortEntry } from "../../store/modules/devices";
@@ -56,7 +55,7 @@
         },
     })
     export default class SwitchModal extends mixins(DoesValidation, IndicatesLoading) {
-        @Prop(prop(is.object<Partial<Switch>>()))
+        @Prop({ type: Object, required: true })
         readonly item!: Partial<Switch>;
 
         get ports(): SerialPortEntry[] {

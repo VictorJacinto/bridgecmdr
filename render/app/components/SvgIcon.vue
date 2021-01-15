@@ -8,33 +8,33 @@
 
 <script lang="ts">
     import * as mdiPaths from "@mdi/js";
+    import v from "vahvista";
     import Vue from "vue";
     import Component from "vue-class-component";
     import { Prop } from "vue-property-decorator";
     import { KnownColorModifiers } from "../../foundation/helpers/buefy";
     import { KnownIconsSizes } from "../../foundation/helpers/bulma";
-    import { is, maybe, prop } from "../../foundation/validation/valid";
 
     const icons = mdiPaths as Record<string, string>;
 
     @Component<SvgIcon>({ name: "SvgIcon" })
     export default class SvgIcon extends Vue {
-        @Prop(prop(maybe.string.notEmpty))
+        @Prop({ type: String, default: undefined, validator: v.notEmpty })
         readonly path!: undefined|string;
 
-        @Prop(prop(maybe.string.notEmpty))
+        @Prop({ type: String, default: undefined, validator: v.notEmpty })
         readonly name!: undefined|string;
 
-        @Prop(prop(is.enum(KnownIconsSizes), "is-48x48"))
+        @Prop({ type: String, default: "is-48x48", validator: v.enum(KnownIconsSizes) })
         readonly size!: KnownIconsSizes;
 
-        @Prop(prop(maybe.enum(KnownColorModifiers)))
+        @Prop({ type: String, default: undefined, validator: v.enum(KnownColorModifiers) })
         readonly type!: undefined|KnownColorModifiers;
 
-        @Prop(prop(maybe.boolean))
+        @Prop(Boolean)
         readonly rounded!: undefined|boolean;
 
-        @Prop(prop(maybe.boolean))
+        @Prop(Boolean)
         readonly inverted!: undefined|boolean;
 
         get pathData(): string {

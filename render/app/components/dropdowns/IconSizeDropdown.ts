@@ -1,6 +1,6 @@
+import v from "vahvista";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
-import { is, prop } from "../../../foundation/validation/valid";
 import { IconSize } from "../../store/modules/settings";
 import SimpleDropdown from "../base/SimpleDropdown";
 
@@ -13,7 +13,7 @@ const iconSizes: Record<IconSize, string> = {
 
 @Component<IconSizeDropdown>({ name: "IconSizeDropdown" })
 export default class IconSizeDropdown extends SimpleDropdown<IconSize, IconSize> {
-    @Prop(prop(is.array, () => [...IconSize]))
+    @Prop({ type: Array, default: () => [...IconSize], validator: v.shape([v.enum(IconSize)]) })
     readonly options!: IconSize[];
 
     predicate = (size: IconSize): [ string, IconSize ] => [ iconSizes[size], size ];
