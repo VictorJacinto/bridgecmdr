@@ -5,6 +5,8 @@ const { errorFormatter } = require("./build/helpers/typescript");
 require("./build/mixers/mix-alias");
 require("./build/mixers/mix-ejs");
 require("./build/mixers/mix-eslint");
+require("./build/mixers/mix-externals");
+require("./build/mixers/mix-target");
 
 const mixOptions = {
     globalVueStyles:  "render/sass/settings.scss",
@@ -20,17 +22,13 @@ const htmlOptions = {
     inject: false,
 };
 
-const webpackOptions = {
-    target:    "electron-renderer",
-    externals: [{ "serialport": "commonjs serialport" }],
-};
-
 const lintOptions = {
     extensions: [ "js", "ts", "vue" ],
     formatter:  "unix",
 };
 
 mix.setPublicPath("dist").
+    target("electron-renderer").
     // Since the rendering output is `dist/render`, all assets are one directory back.
     setResourceRoot("../").
     // Front-end process
@@ -40,7 +38,7 @@ mix.setPublicPath("dist").
     // Main process
     ts("main/index.ts", "dist/main", tsOptions).
     // Options
-    webpackConfig(webpackOptions).
+    externals().
     options(mixOptions).
     sourceMaps(true, "inline-source-map").
     eslint(lintOptions);

@@ -1,0 +1,215 @@
+#!/usr/bin/env node
+/* eslint-disable node/shebang */
+
+const sysPath = require("path");
+const { get, head, isNil, isEmpty, once } = require("lodash");
+const sysReadPackageJson = require("read-package-json");
+
+const electron = {
+    packager:  require("electron-packager"),
+    rebuild:   require("electron-rebuild").rebuild,
+    installer: require("electron-installer-debian"),
+};
+
+const baseDir = process.cwd();
+
+const archMap = new Map(Object.entries({
+    i386: {
+        electron: "ia32",
+        debian:   "i386",
+    },
+    x64: {
+        electron: "x64",
+        debian:   "amd64",
+    },
+    arm: {
+        electron: "armv7l",
+        debian:   "armhf",
+    },
+    arm64: {
+        electron: "arm64",
+        debian:   "arm64",
+    },
+}));
+
+const packageIgnores = [
+    // In the root, exclude these patterns or paths
+    /^\/\./u,
+    /^\/out/u,
+    /^\/main/u,
+    /^\/render/u,
+    /^\/build/u,
+    /^\/bridgecmdr$/u,
+    /^\/[^/]+\.txt$/u,
+    /^\/[^/]+\.md/u,
+    /^\/[^/]+\.dic/u,
+    /^\/[^/]+\.mix\.js/u,
+    /^\/[^/]+-lock\.json/u,
+
+    // At all levels, exclude these patterns
+    /\/tsconfig\.json$/u,
+    /\.ts$/u,
+];
+
+function rebuildAfterCopy(buildPath, electronVersion, _platform, _arch, callback) {
+    electron.rebuild({ buildPath, electronVersion, arch: _arch }).
+        then(() => callback()).
+        catch(error => callback(error));
+}
+
+const readPackageJson = once(() => new Promise((resolve, reject) => {
+    const packageJsonLogger = (log, warn, error) => {
+        log && console.log(log);
+        warn && console.warn(warn);
+        error && console.error(error);
+    };
+
+    try {
+        sysReadPackageJson(sysPath.resolve(baseDir, "package.json"), packageJsonLogger, true, (error, data) => {
+            if (error) {
+                reject(error);
+            }
+
+            resolve(data);
+        });
+    } catch (error) {
+        reject(error);
+    }
+}));
+
+/**
+ * @param {object} object
+ * @param {string[]} paths
+ * @returns {undefined|string}
+ */
+function findFirst(object, paths) {
+    for (const path of paths) {
+        const value = get(object, path);
+        if (!isNil(value)) {
+            return value;
+        }
+    }
+
+    return undefined;
+}
+
+/**
+ * @param {object} packageInfo
+ * @param {string} what
+ * @param {string[]} sources
+ * @returns {string}
+ */
+function getRequiredData(packageInfo, what, sources = [what]) {
+    const value = findFirst(packageInfo, sources);
+    if  (isEmpty(value)) {
+        throw new Error(`Missing ${what}, please set one of: ${sources.join(",")}`);
+    }
+
+    return value;
+}
+
+/**
+ * @param {object} packageInfo
+ * @param {string} what
+ * @param {string[]} sources
+ * @returns {undefined|string}
+ */
+function getOptionalData(packageInfo, what, sources = [what]) {
+    return findFirst(packageInfo, sources);
+}
+
+const getBrandingData = packageInfo => ({
+    name:      getRequiredData(packageInfo, "product name", [ "branding.productName", "name" ]),
+    copyright: getRequiredData(packageInfo, "copyright", ["branding.copyright"]),
+    bundleId:  getRequiredData(packageInfo, "bundle ID", ["branding.bundleId"]),
+    summary:   getRequiredData(packageInfo, "summary", ["branding.summary"]),
+});
+
+const getInstallerData = packageInfo => ({
+    genericName: getOptionalData(packageInfo, "generic name", [ "installers.common.genericName",  "branding.productName", "name" ]),
+    section:     getOptionalData(packageInfo, "section", ["installers.common.section"]),
+    category:    getOptionalData(packageInfo, "category", ["installers.common.category"]),
+});
+
+const getSnapData = packageInfo => ({
+    confinement: getRequiredData(packageInfo, "confinement", ["installers.snap.confinement"]),
+    grade:       getRequiredData(packageInfo, "grade", ["installers.snap.grade"]),
+});
+
+const getPackageData = once(async () => {
+    const packageInfo = await readPackageJson();
+
+    return {
+        name:        getRequiredData(packageInfo, "name"),
+        version:     getRequiredData(packageInfo, "version"),
+        branding:    getBrandingData(packageInfo),
+        homepage:    getRequiredData(packageInfo, "homepage", [ "homepage", "author.url" ]),
+        author:      getRequiredData(packageInfo, "author", ["author.name"]),
+        email:       getRequiredData(packageInfo, "email", ["author.email"]),
+        description: getRequiredData(packageInfo, "description"),
+        installer:   getInstallerData(packageInfo),
+        snap:        getSnapData(packageInfo),
+    };
+});
+
+async function main() {
+    const packageInfo = await getPackageData();
+    const arch = archMap.get(process.arch);
+    if (!arch) {
+        throw new Error(`Unsupported architecture ${process.arch}`);
+    }
+
+    const packageOptions = {
+        name:           packageInfo.branding.name,
+        appVersion:     packageInfo.version,
+        appCopyright:   packageInfo.branding.copyright,
+        appBundleId:    packageInfo.branding.bundleId,
+        executableName: packageInfo.name,
+        platform:       "linux",
+        arch:           arch.electron,
+        dir:            baseDir,
+        out:            sysPath.resolve(baseDir, "int"),
+        overwrite:      true,
+        ignore:         packageIgnores,
+        afterCopy:      [rebuildAfterCopy],
+    };
+
+    /** @type {string[]} */
+    const packagePaths = await electron.packager(packageOptions);
+    if (packagePaths.length === 0) {
+        throw new Error("Packaging failed for an unknown reason");
+    }
+
+    console.log(`Application package created: ${packagePaths.join(", ")}`);
+
+    const installerOptions = {
+        // Application branding.
+        productName:        packageInfo.branding.name,
+        name:               packageInfo.name,
+        description:        packageInfo.description,
+        version:            packageInfo.version,
+        maintainer:         `${packageInfo.author} <${packageInfo.email}>`,
+        homepage:           packageInfo.homepage,
+        // Other installer branding.
+        // TODO: icon
+        genericName:        packageInfo.installer.genericName,
+        productDescription: packageInfo.branding.summary,
+        section:            packageInfo.installer.section,
+        categories:         [packageInfo.installer.category],
+        dest:               sysPath.resolve(baseDir, "out"),
+        src:                head(packagePaths),
+        bin:                packageInfo.name,
+        arch:               arch.debian,
+    };
+
+    console.log(`Debian package created: ${arch} in ${installerOptions.description}`);
+}
+
+main().
+    then(() => {
+        process.exit(0);
+    }).
+    catch(reason => {
+        console.error(reason);
+        process.exit(1);
+    });

@@ -24,6 +24,5 @@
     "noErrorTruncation": true,
 
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
   }
 }
